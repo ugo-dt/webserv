@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/03 19:43:26 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/09/21 16:39:24 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/09/21 15:42:33 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/09/21 16:40:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef CONFIG_HPP
+# define CONFIG_HPP
 
-int	main(int argc, char **argv)
+# include <fstream>
+# include <string>
+
+# define DEFAULT_CONFIG_PATH	"config/default"
+
+class Config
 {
-	if (argc > 2)
-	{
-		std::cerr << "webserv: too many arguments" << std::endl;
-		return (1);
-	}
+private:
+	std::string	_config_file;
 
-	// config
-	if (argv[1])
-		Config	config(argv[1]);
-	else
-		Config	config(DEFAULT_CONFIG_PATH);
+	Config();
 
-	// run
+public:
+	Config(std::string);
+	~Config();
+};
 
-	// clear
-	return (0);
-}
+#endif // CONFIG_HPP

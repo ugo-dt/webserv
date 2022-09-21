@@ -1,33 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/03 19:43:26 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/09/21 16:39:24 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/09/21 15:39:44 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/09/21 16:21:48 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef WEBSERV_H
+# define WEBSERV_H
 
-int	main(int argc, char **argv)
-{
-	if (argc > 2)
-	{
-		std::cerr << "webserv: too many arguments" << std::endl;
-		return (1);
-	}
+# include "Config.hpp"
+# include "Server.hpp"
 
-	// config
-	if (argv[1])
-		Config	config(argv[1]);
-	else
-		Config	config(DEFAULT_CONFIG_PATH);
+# include <iostream>
 
-	// run
-
-	// clear
-	return (0);
-}
+#endif // WEBSERV_H
