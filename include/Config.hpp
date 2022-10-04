@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/21 15:42:33 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/09/21 16:40:31 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/04 14:57:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,15 @@
 class Config
 {
 private:
-	std::string	_config_file;
+	std::string	_config_path;
 
 	Config();
 
 public:
-	Config(std::string);
+	Config(const char *);
 	~Config();
+
+	const std::string&	config_path(void) const;
 };
 
 #endif // CONFIG_HPP
