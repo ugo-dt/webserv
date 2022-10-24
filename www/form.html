@@ -1,0 +1,32 @@
+  <!DOCTYPE html>
+<html>
+	<head>
+		<a href=index.html>Home</a><br></br>
+		<title>webserv</title>
+		<style>
+			body
+			{
+				background-color: dimgray;
+			}
+			.center
+			{
+				padding-top: 5%;		
+				text-align: center;
+				font-size:x-large;
+				font-weight:bolder;
+				font-family:sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="center">
+			<h1>This form will send a POST request.</h1>
+			<form action="http://localhost:80/index.html" method="post" enctype="multipart/form-data">
+				<label>Name: <input name="name"></label>
+				<label>Upload file: <input type="file" name="myFile"></label>
+				<button>Send the file</button><br></br>
+				<a href=https://github.com/MaaZex/webserv>Github</a>
+			</form>
+		</div>
+	</body>
+</html>

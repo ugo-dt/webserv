@@ -1,0 +1,35 @@
+server
+{
+	listen			localhost
+	server_name		webserv
+	error_page		404	html/404.html
+
+	root			html
+
+	location / {
+		rewrite			/redirect.html /index.html
+		limit_except	GET POST DELETE
+	}
+
+	location /form.html {
+		limit_except	GET POST
+	}
+
+	location /cgi/ {
+	}
+
+	location /cgi/cgi.cgi {
+		limit_except	GET
+	}
+
+	location /cgi/cgi.c {
+		limit_except	GET
+	}
+}
+
+server{
+	listen					thisiswebserv.com:3000
+	server_name				second_server lol thisiswebserv
+	client_body_buffer_size	4200
+	error_page				404	/error-404.html
+}
