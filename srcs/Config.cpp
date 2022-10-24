@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/24 22:46:26 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/24 22:38:24 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/24 22:52:40 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
-#include <iostream>
+#include "Config.hpp"
 
-int	main(int argc, const char **argv)
+Config::Config(int argc, const char **argv)
+	: _path(),
+	  _token_list()
 {
-	try
-	{
-		// Config
-		// Run
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		return (EXIT_FAILURE);
-	}
-	return (EXIT_SUCCESS);
+}
+
+Config::~Config()
+{
+	if (_path)
+		free(_path);
 }

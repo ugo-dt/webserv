@@ -1,29 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/24 22:46:26 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/24 22:27:48 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/24 22:52:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
-#include <iostream>
+#ifndef CONFIG_HPP
+# define CONFIG_HPP
 
-int	main(int argc, const char **argv)
+# include <string>
+# include <vector>
+
+typedef enum e_token
 {
-	try
-	{
-		// Config
-		// Run
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		return (EXIT_FAILURE);
-	}
-	return (EXIT_SUCCESS);
-}
+	token_none,
+	token_word,
+	token_brace_open,
+	token_brace_close,
+	token_newline,
+	token_semicolon
+}Token;
+
+class Config
+{
+private:
+	std::string        *_path;
+	std::vector<Token> _token_list;
+
+public:
+	Config(int argc, const char **argv);
+	~Config(void);
+};
+
+#endif // CONFIG_HPP

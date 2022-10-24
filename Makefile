@@ -6,13 +6,15 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/24 20:55:26 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/24 22:47:18 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =	webserv
 
-SRCS =	srcs/main.cpp
+SRCS =	srcs/main.cpp \
+		srcs/Config.cpp \
+		srcs/Webserv.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

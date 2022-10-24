@@ -27,7 +27,27 @@
 
 	• CGI
 
+Status codes:
+# define STATUS_OK                  200
+# define CREATED                    201
+# define ACCEPTED                   202
+# define NO_CONTENT                 204
+# define MOVED_PERMANENTLY          301
+# define BAD_REQUEST                400
+# define FORBIDDEN                  403
+# define NOT_FOUND                  404
+# define METHOD_NOT_ALLOWED         405
+# define PAYLOAD_TOO_LARGE          413
+# define INTERNAL_SERVER_ERROR      500
+# define NOT_IMPLEMENTED            501
+# define HTTP_VERSION_NOT_SUPPORTED 505
+
 [Config]
+
+• config class:
+	- config file path
+	- 
+
 • Directives
 	- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided)
 	- server_name (used when processing request, see Request:Processing)
@@ -40,7 +60,7 @@
 	- rewrite (http redirection, 301/302)
 	- default
 	- root (a directory or a file from where the file should be searched)
-	- autoindex (turn directory listing on or off)
+	- autoindex (turn directory listing on or off) (generate a html page, with all links href to files in directory, see readdir(3))
 	- default_file (default file if request is a directory)
 	- upload (accept uploaded files and configure where they should be saved)
 
