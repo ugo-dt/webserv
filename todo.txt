@@ -1,0 +1,47 @@
+[Server]
+	• Request
+		1. Method. (The method is a one-word command that tells the server
+			what it should do with the resource. For example, the server could
+			be asked to send the resource to the client.)
+		2. Path. (The path component of the URL for the request.
+			The path identifies the resource on the server.)
+		3. HTTP version. (The HTTP version number, showing the HTTP specification to
+			which the client has tried to make the message comply.)
+
+		Request might contain additional items:
+			- Query string. (This provides a string of information that the resource
+				can use for some purpose. It follows the path, and is preceded by a question mark.)
+			- scheme (e.g. http), host (e.g. www.example.com)
+
+		Methods:
+			- GET (The GET method requests a representation of the specified resource.
+				Requests using GET should only retrieve data.)
+			- POST (The POST method submits an entity to the specified resource,
+				often causing a change in state or side effects on the server.)
+			- DELETE (The DELETE method deletes the specified resource.)
+
+		Processing:
+			https://nginx.org/en/docs/http/request_processing.html
+
+	• Response
+
+	• CGI
+
+[Config]
+• Directives
+	- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided)
+	- server_name (used when processing request, see Request:Processing)
+	- error_pages
+	- client_body_buffer_size
+	- location
+
+• Routes (location)
+	- limit_except (list of accepted methods for the route)
+	- rewrite (http redirection, 301/302)
+	- default
+	- root (a directory or a file from where the file should be searched)
+	- autoindex (turn directory listing on or off)
+	- default_file (default file if request is a directory)
+	- upload (accept uploaded files and configure where they should be saved)
+
+• Set the first server for specific host:port as the default one
