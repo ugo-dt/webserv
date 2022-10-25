@@ -18,7 +18,7 @@
 		- scheme (e.g. http), host (e.g. www.example.com)
 
 • Methods:
-	Method is case sensitive.
+	Methods are case-sensitive.
 	- GET (The GET method requests a representation of the specified resource.
 		Requests using GET should only retrieve data.)
 		Body is empty.
@@ -59,7 +59,8 @@
 	
 	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
 
-• Headers
+• Headers fields (headers)
+	Headers fields sare case-insensitive.
 	MIME types:
 		type/subtype, example text/html
 	some MIME types we can implement (maybe more, maybe less):
