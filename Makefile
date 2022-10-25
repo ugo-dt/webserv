@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+         #
+#    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/25 10:52:25 by madaniel         ###   ########.fr        #
+#    Updated: 2022/10/25 15:38:23 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ OBJS = $(SRCS:.cpp=.o)
 
 CC = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-INCLUDE = -I include
+INCLUDE = -I include -I include/core -I include/http -I include/parser
 
 all: $(NAME)
 

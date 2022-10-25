@@ -1,101 +1,114 @@
-[Server]
-	• Request
-		First line: 
-			- Method. (The method is a one-word command that tells the server
-				what it should do with the resource. For example, the server could
-				be asked to send the resource to the client.)
-			- Path. (The path component of the URL for the request.
-				The path identifies the resource on the server.)
-			- HTTP version. (The HTTP version number, showing the HTTP specification to
-				which the client has tried to make the message comply.)
-			
-			EXAMPLE:
-				GET / HTTP/1.1
-				Host: 
+• Request: Start line, header, body
+	First line: 
+		- Method. (The method is a one-word command that tells the server
+			what it should do with the resource. For example, the server could
+			be asked to send the resource to the client.)
+		- Path. (The path component of the URL for the request.
+			The path identifies the resource on the server.)
+		- HTTP version. (The HTTP version number, showing the HTTP specification to
+			which the client has tried to make the message comply.)
+		
+		EXAMPLE:
+			GET / HTTP/1.1
+			Host: 
 
-		Request might contain additional items:
-			- Query string. (This provides a string of information that the resource
-				can use for some purpose. It follows the path, and is preceded by a question mark.)
-			- scheme (e.g. http), host (e.g. www.example.com)
+	Request might contain additional items:
+		- Query string. (This provides a string of information that the resource
+			can use for some purpose. It follows the path, and is preceded by a question mark.)
+		- scheme (e.g. http), host (e.g. www.example.com)
 
-	• Methods:
-		- GET (The GET method requests a representation of the specified resource.
-			Requests using GET should only retrieve data.)
-		- POST (The POST method submits an entity to the specified resource,
-			often causing a change in state or side effects on the server.)
-		- DELETE (The DELETE method deletes the specified resource.)
+• Methods:
+	Methods are case-sensitive.
+	- GET (The GET method requests a representation of the specified resource.
+		Requests using GET should only retrieve data.)
+		Body is empty.
 
-		Processing:
-			https://nginx.org/en/docs/http/request_processing.html
-			make sure method is allowed in route!
+	- POST (The POST method submits an entity to the specified resource,
+		often causing a change in state or side effects on the server.)
 
-	• Response
-		- HTTP version.
-		- Status code (e.g. '200 OK')
+		If one or more resources has been created on the origin server
+		as a result of successfully processing a POST request, the origin
+		server SHOULD send a 201 (Created) response containing a Location header field that provides an identifier for the primary resource created (Section 10.2.2) and a representation that describes the status of the request while referring to the new resource(s).
 
-		Status codes:
-			# define STATUS_OK                  200
-			# define CREATED                    201
-			# define ACCEPTED                   202
-			# define NO_CONTENT                 204
-			# define MOVED_PERMANENTLY          301
-			# define BAD_REQUEST                400
-			# define FORBIDDEN                  403
-			# define NOT_FOUND                  404
-			# define METHOD_NOT_ALLOWED         405
-			# define PAYLOAD_TOO_LARGE          413
-			# define INTERNAL_SERVER_ERROR      500
-			# define NOT_IMPLEMENTED            501
-			# define HTTP_VERSION_NOT_SUPPORTED 505
+	- DELETE (The DELETE method deletes the specified resource.)
+	
+	More info on methods: https://httpwg.org/specs/rfc9110.html#methods
 
-	• Headers
-		MIME types:
-			type/subtype, example text/html
-		some MIME types we can implement (maybe more, maybe less):
-			.bmp		image/bmp
-			.css		text/css
-			.gif		image/gif
-			.htm .html	text/html
-			.ico		image/x-icon
-			.jpg .jpeg	image/jpeg
-			.png		image/png
-			.pdf		application/pdf
-			.sh			application/x-sh
-			use	text/plain by default
+	Processing:
+		https://nginx.org/en/docs/http/request_processing.html
+		Make sure method is allowed in route.
 
-		Header options we want:
-			accept (MIME types),
-			Connection (keep-alive, close: do we need to close the connection after receiving a request?)
-			Content-type (MIME types)
-			Content-length
-			date,
-			Host,
-			Location (It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response),
-			Server
+• Response
+	- HTTP version.
+	- Status code (e.g. '200 OK')
 
-	• CGI
+	Status codes:
+		# define STATUS_OK                  200
+		# define CREATED                    201
+		# define ACCEPTED                   202
+		# define NO_CONTENT                 204
+		# define MOVED_PERMANENTLY          301
+		# define BAD_REQUEST                400
+		# define FORBIDDEN                  403
+		# define NOT_FOUND                  404
+		# define METHOD_NOT_ALLOWED         405
+		# define PAYLOAD_TOO_LARGE          413
+		# define INTERNAL_SERVER_ERROR      500
+		# define NOT_IMPLEMENTED            501
+		# define HTTP_VERSION_NOT_SUPPORTED 505
+	
+	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
+
+• Headers fields (headers)
+	Headers fields sare case-insensitive.
+	MIME types:
+		type/subtype, example text/html
+	some MIME types we can implement (maybe more, maybe less):
+		.bmp		image/bmp
+		.css		text/css
+		.gif		image/gif
+		.htm .html	text/html
+		.ico		image/x-icon
+		.jpg .jpeg	image/jpeg
+		.png		image/png
+		.pdf		application/pdf
+		.sh			application/x-sh
+		use	text/plain by default
+
+	Header options we want:
+		accept (MIME types),
+		Connection (keep-alive, close: do we need to close the connection after receiving a request?)
+		Content-type (MIME types)
+		Content-length
+		date,
+		Host,
+		Location (It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response),
+		Server
+
+• CGI
 
 [Config]
 
 Parser:
 	1. Config file
-		• Directives
-			- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided)
-			- server_name (used when processing request, see Request:Processing)
-			- error_pages
-			- client_body_buffer_size
-			- location
+		For each 'server' block:
+			• Directives
+				- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided)
+				- server_name (used when processing request, see Request:Processing)
+				- error_pages
+				- client_body_buffer_size
+				- location
 
-		• Routes (location)
-			- limit_except (list of accepted methods for the route)
-			- rewrite (http redirection, 301/302)
-			- default
-			- root (a directory or a file from where the file should be searched)
-			- autoindex (turn directory listing on or off)
-				we should generate a html page with strings, add a href links to all files in directory (see readdir(3))
-				make sure location URI has trailing slash or autoindex should fail (we need a folder)
-			- default_file (default file if request is a directory)
-			- upload (accept uploaded files and configure where they should be saved)
+			• Routes (location)
+				- limit_except (list of accepted methods for the route)
+				- rewrite (http redirection, 301/302)
+				- default
+				- root (a directory or a file from where the file should be searched)
+				- autoindex (turn directory listing on or off)
+					we should generate a html page with strings, add a href links to all files in directory (see readdir(3))
+					make sure location URI has trailing slash or autoindex should fail (we need a folder)
+				- default_file (default file if request is a directory)
+				- upload (accept uploaded files and configure where they should be saved)
 	
 	2. Request Headers
 		• First line should be 'METHOD PATH HTTP/X.X'
@@ -103,9 +116,34 @@ Parser:
 		• such lines are of type 'Header: option', e.g. 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
 			(make sure to use lowercase strings when parsing header: e.g. 'content-type' should work)
 
-• Set the first server for specific host:port as the default one
+set the first server for specific host:port as the default one (that will answer requests)
 
 Files
 	- core: le cerveau, il appelle les autres
 	- parser: le parser en gros
 	- http: requests, responses, virtual servers, cgi
+
+Classes
+	• core
+		- Webserv (main class)
+		- Liste
+	• http
+		- Request
+		- Response
+		- Server
+	• Parser
+		- ConfigParser
+		- RequestParser
+
+steps
+	- parse config file
+	- setup webserver
+		for each Server:
+			socket()
+			fcntl(server_fd, F_SETFL, O_NONBLOCK);
+			struct sockaddr_in	shit
+			setsockopt(reuse);
+			bind()
+			listen()
+			add to fd set(server_fd)
+	- keep track of currently running servers (server_fd, ip and port)
