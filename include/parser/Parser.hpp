@@ -1,40 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Config.hpp                                         :+:      :+:    :+:   */
+/*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 22:27:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/24 22:52:13 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/25 11:37:31 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/25 11:45:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONFIG_HPP
-# define CONFIG_HPP
+#ifndef PARSER_HPP
+# define PARSER_HPP
 
 # include <string>
 # include <vector>
 
-typedef enum e_token
+template <class Token>
+class Parser
 {
-	token_none,
-	token_word,
-	token_brace_open,
-	token_brace_close,
-	token_newline,
-	token_semicolon
-}Token;
-
-class Config
-{
-private:
-	std::string        *_path;
+protected:
 	std::vector<Token> _token_list;
 
 public:
-	Config(int argc, const char **argv);
-	~Config(void);
+	Parser();
+	virtual	~Parser();
 };
 
-#endif // CONFIG_HPP
+class ConfigParser
+	: public Parser<int>
+{
+private:
+	std::string	_path;
+
+public:
+	ConfigParser(int argc, char **argv);
+	~ConfigParser();
+};
+
+#endif // PARSER_HPP
