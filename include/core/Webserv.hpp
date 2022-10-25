@@ -1,31 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 12:45:46 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/25 12:38:34 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
-#include <iostream>
+#ifndef WEBSERV_HPP
+# define WEBSERV_HPP
 
-Webserv	webserv;
-
-int	main(int argc, const char **argv)
+class Webserv
 {
-	try
-	{
-		// Config
-		// Run
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		return (EXIT_FAILURE);
-	}
-	return (EXIT_SUCCESS);
-}
+private:
+
+public:
+};
+
+#endif // WEBSERV_HPP
