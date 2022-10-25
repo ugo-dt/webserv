@@ -1,3 +1,7 @@
+Norme:
+	snake_case for functions, variables, structs.
+	PascalCase for classes names;
+
 • Request: Start line, header, body
 	First line: 
 		- Method. (The method is a one-word command that tells the server
@@ -41,21 +45,6 @@
 • Response
 	- HTTP version.
 	- Status code (e.g. '200 OK')
-
-	Status codes:
-		# define STATUS_OK                  200
-		# define CREATED                    201
-		# define ACCEPTED                   202
-		# define NO_CONTENT                 204
-		# define MOVED_PERMANENTLY          301
-		# define BAD_REQUEST                400
-		# define FORBIDDEN                  403
-		# define NOT_FOUND                  404
-		# define METHOD_NOT_ALLOWED         405
-		# define PAYLOAD_TOO_LARGE          413
-		# define INTERNAL_SERVER_ERROR      500
-		# define NOT_IMPLEMENTED            501
-		# define HTTP_VERSION_NOT_SUPPORTED 505
 	
 	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
 
@@ -63,29 +52,13 @@
 	Headers fields sare case-insensitive.
 	MIME types:
 		type/subtype, example text/html
-	some MIME types we can implement (maybe more, maybe less):
-		.bmp		image/bmp
-		.css		text/css
-		.gif		image/gif
-		.htm .html	text/html
-		.ico		image/x-icon
-		.jpg .jpeg	image/jpeg
-		.png		image/png
-		.pdf		application/pdf
-		.sh			application/x-sh
-		use	text/plain by default
-
-	Header options we want:
-		accept (MIME types),
-		Connection (keep-alive, close: do we need to close the connection after receiving a request?)
-		Content-type (MIME types)
-		Content-length
-		date,
-		Host,
-		Location (It only provides a meaning when served with a 3xx (redirection) or 201 (created) status response),
-		Server
 
 • CGI
+	CGI uses environment variables, passed with execve.
+	- Create an array of strings with env variables
+	- use full path (pwd + path) as PATH_INFO
+	https://www6.uniovi.es/~antonio/ncsa_httpd/cgi/env.html
+	https://en.wikipedia.org/wiki/Common_Gateway_Interface
 
 [Config]
 
@@ -108,7 +81,8 @@ Parser:
 					we should generate a html page with strings, add a href links to all files in directory (see readdir(3))
 					make sure location URI has trailing slash or autoindex should fail (we need a folder)
 				- default_file (default file if request is a directory)
-				- upload (accept uploaded files and configure where they should be saved)
+				- CGI file extension ('cgi_extension' probably)
+				- upload_files (accept uploaded files and configure where they should be saved)
 	
 	2. Request Headers
 		• First line should be 'METHOD PATH HTTP/X.X'
@@ -126,11 +100,28 @@ Files
 Classes
 	• core
 		- Webserv (main class)
-		- Liste
+			
 	• http
 		- Request
+			unsigned int					_method;
+			std::string						_uri;
+			std::string						_http_protocol;
+			std::string						_query_string;
+			std::vector<std::string>		_header_fields;
+			std::string						_body;
 		- Response
+			size_t							_status;
+			std::vector<std::string>		_header_fields;
+			std::string						_body;
 		- Server
+			int								_socket;
+			std::set<std::string>			_server_names;
+			std::map<size_t, std::string>	_error_pages;
+			size_t							_client_body_buffer_size;
+			std::vector<t_location>			_locations;
+
+		- Listen (std::string HOST, unsigned int PORT)
+			Each server uses one
 	• Parser
 		- ConfigParser
 		- RequestParser

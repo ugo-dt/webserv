@@ -1,38 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 22:39:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 20:58:10 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/25 23:25:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-# define REQUEST_HPP
+#include "Webserv.hpp"
 
-# include "http.hpp"
-# include <string>
-# include <vector>
-
-class Request
+Webserv::Webserv(void)
+	: _servers()
 {
-private:
-	unsigned int				_method;
-	std::string					_uri;
-	std::string					_http_protocol;
-	std::string					_query_string;
-	std::vector<std::string>	_header_fields;
-	std::string					_body;
+}
 
-public:
-	Request(void);
-	~Request(void);
+Webserv::~Webserv(void)
+{
+	clean();
+}
 
-	// getters
-	// setters
-};
+void
+Webserv::init(int argc, const char **argv)
+{
+	ConfigParser	parser(argc, argv);
+}
 
-#endif // REQUEST_HPP
+void
+Webserv::run(void)
+{
+	
+}
+
+void
+Webserv::clean(void)
+{
+	for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); it++)
+		(*it).clean();
+}

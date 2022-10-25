@@ -6,36 +6,31 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 11:37:31 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 11:45:14 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/25 23:28:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSER_HPP
 # define PARSER_HPP
 
+# include "ConfigParser.hpp"
+# include "RequestParser.hpp"
 # include <string>
 # include <vector>
 
-template <class Token>
-class Parser
+typedef enum e_token
 {
-protected:
-	std::vector<Token> _token_list;
+	token_none,
+	token_word,
 
-public:
-	Parser();
-	virtual	~Parser();
-};
+	// config file
+	token_open_brace,
+	token_close_brace,
+	token_newline,
+	token_semicolon,
 
-class ConfigParser
-	: public Parser<int>
-{
-private:
-	std::string	_path;
-
-public:
-	ConfigParser(int argc, char **argv);
-	~ConfigParser();
-};
+	// requests
+	token_colon
+}t_token;
 
 #endif // PARSER_HPP

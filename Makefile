@@ -6,15 +6,17 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/25 15:38:23 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/25 23:29:27 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =	webserv
 
 SRCS =	srcs/main.cpp \
-		srcs/Config.cpp \
-		srcs/Webserv.cpp
+		srcs/core/Webserv.cpp \
+		srcs/core/Server.cpp \
+		srcs/parser/ConfigParser.cpp \
+		srcs/parser/RequestParser.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -38,7 +40,6 @@ clean:
 
 fclean: clean
 	rm -rf $(NAME) debug
-	rm -rf target
 
 re: fclean all
 
