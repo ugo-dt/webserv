@@ -1,4 +1,4 @@
-• Request
+• Request: Start line, header, body
 	First line: 
 		- Method. (The method is a one-word command that tells the server
 			what it should do with the resource. For example, the server could
@@ -18,15 +18,25 @@
 		- scheme (e.g. http), host (e.g. www.example.com)
 
 • Methods:
+	Method is case sensitive.
 	- GET (The GET method requests a representation of the specified resource.
 		Requests using GET should only retrieve data.)
+		Body is empty.
+
 	- POST (The POST method submits an entity to the specified resource,
 		often causing a change in state or side effects on the server.)
+
+		If one or more resources has been created on the origin server
+		as a result of successfully processing a POST request, the origin
+		server SHOULD send a 201 (Created) response containing a Location header field that provides an identifier for the primary resource created (Section 10.2.2) and a representation that describes the status of the request while referring to the new resource(s).
+
 	- DELETE (The DELETE method deletes the specified resource.)
+	
+	More info on methods: https://httpwg.org/specs/rfc9110.html#methods
 
 	Processing:
 		https://nginx.org/en/docs/http/request_processing.html
-		make sure method is allowed in route!
+		Make sure method is allowed in route.
 
 • Response
 	- HTTP version.
@@ -46,6 +56,8 @@
 		# define INTERNAL_SERVER_ERROR      500
 		# define NOT_IMPLEMENTED            501
 		# define HTTP_VERSION_NOT_SUPPORTED 505
+	
+	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
 
 • Headers
 	MIME types:
