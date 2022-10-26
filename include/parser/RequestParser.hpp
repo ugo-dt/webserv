@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   RequestParser.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:49:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 14:59:55 by madaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 16:48:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REQUEST_PARSER_HPP
 # define REQUEST_PARSER_HPP
 
-# include "Parser.hpp"
+# include "parser.hpp"
 # include <list>
 # include <string>
 
