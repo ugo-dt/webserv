@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:49:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 23:28:18 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 10:57:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 # define REQUEST_PARSER_HPP
 
 # include "parser.hpp"
+# include <list>
 # include <string>
-# include <vector>
 
 class RequestParser
 {
 private:
-	std::vector<size_t>	_token_list;
+	std::list<size_t>	_token_list;
 	std::string			_request;
 
 	// get request as string
