@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 18:40:27 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 20:02:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,6 @@ Server::Server()
 	_error_pages[STATUS_INTERNAL_SERVER_ERROR] = "www/500.html";
 	_error_pages[STATUS_NOT_IMPLEMENTED] = "www/501.html";
 	_error_pages[STATUS_HTTP_VERSION_NOT_SUPPORTED] = "www/505.html";
-	for (size_t i = 0; i < MAX_CONNECTIONS; i++)
-	{
-		bzero(&_fds[i], sizeof(struct pollfd));
-		_fds[i].fd = -1;
-	}
 }
 
 Server::~Server()
@@ -73,26 +68,13 @@ Server::setup(void)
 
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		_throw_errno("listen");
-}
-
-ssize_t write_n(int fd, char *ptr, size_t n)
-{
-        ssize_t nleft = n, nwritten;
-
-        while (nleft > 0) {
-                if ((nwritten = write(fd, ptr, nleft)) <= 0 ) {
-                        if (nwritten < 0 && errno == EINTR) {
-                                nwritten = 0;   /* and call write() again */
-                        } else {
-                                return -1;
-                        }
-                }
-
-                nleft -= nwritten;
-                ptr += nwritten;
-        }
-
-        return n;
+	_fds[0].fd = _socket;
+	_fds[0].events = POLLIN;
+	for (size_t i = 1; i < MAX_CONNECTIONS; i++)
+	{
+		_fds[i].fd = -1;
+		_fds[i].events = POLLIN; 
+	}
 }
 
 void
@@ -104,9 +86,7 @@ Server::wait_connections(void)
 	ssize_t		n;
 	socklen_t	addrlen = (socklen_t)sizeof(_sockaddr);
 
-	_fds[0].fd = _socket;
-	_fds[0].events = POLLIN;
-	_poll_ret = poll(_fds, _nfds, -1);
+	_poll_ret = poll(_fds, _nfds, 0);
 	if (_poll_ret <= 0)
 		return ;
 
@@ -118,6 +98,11 @@ Server::wait_connections(void)
 			std::cerr << "could not accept: " << std::strerror(errno) << std::endl;
 			return ;
 		}
+
+		printf("Accept socket %d (%s : %hu)\n", 
+				fd, 
+            	inet_ntoa(_sockaddr.sin_addr),
+                ntohs(_sockaddr.sin_port));
 
 		// Save client socket into _fds array
 		i = 0;
@@ -132,18 +117,17 @@ Server::wait_connections(void)
 		}
 		if (i == MAX_CONNECTIONS)
 		{
-			std::cerr << "Error: too many _fds\n" << std::endl;
+			std::cerr << "Error: too many clients\n" << std::endl;
 			close(fd);
 		}
+		_fds[i].events = POLLIN;
 		if (i > _nfds)
 			_nfds = i;
-		_fds[i].events = POLLIN;
 
 		// No more readable file descriptors
-		if (--_poll_ret <= 0) {
+		if (--_poll_ret <= 0)
 			return ;
-		}
-	} 
+	}
 
 	// Check all clients to read data
 	for (i = 1; i <= _nfds; i++)
@@ -155,7 +139,8 @@ Server::wait_connections(void)
 		// If the client is readable or errors occur
 		if (_fds[i].revents & (POLLIN | POLLERR))
 		{
-			n = read(fd, _buffer, BUFFER_SIZE);
+			bzero(_buffer, BUFFER_SIZE);
+			n = recv(fd, _buffer, BUFFER_SIZE, 0);
 			if (n < 0)
 			{
 				fprintf(stderr, "Error: read from socket %d\n", fd);
@@ -171,13 +156,12 @@ Server::wait_connections(void)
 			else
 			{
 				printf("Read %zu bytes from socket %d\n", n, fd);
-				write_n(fd, _buffer, n);
+				send(fd, "Bien recu\n", 11, 0);
 			}
 
 			// No more readable file descriptors
-			if (--_poll_ret <= 0) {
-					break;
-			}
+			if (--_poll_ret <= 0)
+				break;
 		}
 	}
 }
