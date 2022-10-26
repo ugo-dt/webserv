@@ -81,7 +81,7 @@ Parser:
 					make sure location URI has trailing slash or autoindex should fail (we need a folder)
 				- default_file (default file if request is a directory) 
 				- CGI file extension ('cgi_extension' probably)
-				- upload_files (accept uploaded files and configure where they should be saved)
+				- upload_path (accept uploaded files and configure where they should be saved)
 	
 	2. Request Headers
 		• First line should be 'METHOD PATH HTTP/X.X'

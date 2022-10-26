@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 14:25:17 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:32:44 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define DIRECTIVE_AUTOINDEX				"autoindex"
 # define DIRECTIVE_DEFAULT_FILE				"default_file"
 # define DIRECTIVE_CGI_EXTENSION			"cgi_extension"
-# define DIRECTIVE_UPLOAD_FILES				"upload_files"
+# define DIRECTIVE_UPLOAD_PATH				"upload_path"
 
 typedef enum e_state
 {
@@ -48,7 +48,7 @@ typedef enum e_state
 	state_client_body_buffer_size = 0x80,
 	state_default_file            = 0x100,
 	state_cgi_extension           = 0x200,
-	state_upload_files            = 0x400
+	state_upload_path            = 0x400
 }t_state;
 
 class ConfigParser
@@ -80,7 +80,7 @@ private:
 	void 			_parse_directive_autoindex(std::list<Token>::const_iterator& cur, Location& l);
 	void			_parse_directive_default_file(std::list<Token>::const_iterator& cur, Location& l);
 	void			_parse_directive_cgi_extension(std::list<Token>::const_iterator& cur, Location& l);
-	void			_parse_directive_upload_files(std::list<Token>::const_iterator& cur, Location& l);
+	void			_parse_directive_upload_path(std::list<Token>::const_iterator& cur, Location& l);
 
 public:
 	ConfigParser();
