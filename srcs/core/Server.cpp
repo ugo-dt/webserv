@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:40:09 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 18:40:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 Server::Server()
 	: _socket(-1),
+	  _fds(),
+	  _nfds(1),
 	  _listen(),
 	  _sockaddr(),
 	  _server_names(),
@@ -32,6 +34,11 @@ Server::Server()
 	_error_pages[STATUS_INTERNAL_SERVER_ERROR] = "www/500.html";
 	_error_pages[STATUS_NOT_IMPLEMENTED] = "www/501.html";
 	_error_pages[STATUS_HTTP_VERSION_NOT_SUPPORTED] = "www/505.html";
+	for (size_t i = 0; i < MAX_CONNECTIONS; i++)
+	{
+		bzero(&_fds[i], sizeof(struct pollfd));
+		_fds[i].fd = -1;
+	}
 }
 
 Server::~Server()
@@ -51,7 +58,7 @@ Server::setup(void)
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
 		_throw_errno("setsockopt");
 
-	memset((char *)&_sockaddr, 0, sizeof(_sockaddr)); 
+	bzero((char *)&_sockaddr, sizeof(_sockaddr)); 
 	_sockaddr.sin_family = AF_INET; 
 	if (_listen.host == "localhost")
 		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
@@ -64,15 +71,126 @@ Server::setup(void)
 
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
-	if (listen(_socket, MAX_PENDING_CONNECTIONS) < 0)
+	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		_throw_errno("listen");
+}
+
+ssize_t write_n(int fd, char *ptr, size_t n)
+{
+        ssize_t nleft = n, nwritten;
+
+        while (nleft > 0) {
+                if ((nwritten = write(fd, ptr, nleft)) <= 0 ) {
+                        if (nwritten < 0 && errno == EINTR) {
+                                nwritten = 0;   /* and call write() again */
+                        } else {
+                                return -1;
+                        }
+                }
+
+                nleft -= nwritten;
+                ptr += nwritten;
+        }
+
+        return n;
+}
+
+void
+Server::wait_connections(void)
+{
+	int			fd;
+	int			_poll_ret;
+	size_t		i;
+	ssize_t		n;
+	socklen_t	addrlen = (socklen_t)sizeof(_sockaddr);
+
+	_fds[0].fd = _socket;
+	_fds[0].events = POLLIN;
+	_poll_ret = poll(_fds, _nfds, -1);
+	if (_poll_ret <= 0)
+		return ;
+
+	// Check new connection
+	if (_fds[0].revents & POLLIN)
+	{
+		if ((fd = accept(_socket, (struct sockaddr *)&_sockaddr, (socklen_t *)&addrlen)) < 0)
+		{
+			std::cerr << "could not accept: " << std::strerror(errno) << std::endl;
+			return ;
+		}
+
+		// Save client socket into _fds array
+		i = 0;
+		while (i < MAX_CONNECTIONS)
+		{
+			if (_fds[i].fd < 0)
+			{
+				_fds[i].fd = fd;
+				break;
+			}
+			i++;
+		}
+		if (i == MAX_CONNECTIONS)
+		{
+			std::cerr << "Error: too many _fds\n" << std::endl;
+			close(fd);
+		}
+		if (i > _nfds)
+			_nfds = i;
+		_fds[i].events = POLLIN;
+
+		// No more readable file descriptors
+		if (--_poll_ret <= 0) {
+			return ;
+		}
+	} 
+
+	// Check all clients to read data
+	for (i = 1; i <= _nfds; i++)
+	{
+		fd = _fds[i].fd;
+		if (fd < 0)
+			continue;
+
+		// If the client is readable or errors occur
+		if (_fds[i].revents & (POLLIN | POLLERR))
+		{
+			n = read(fd, _buffer, BUFFER_SIZE);
+			if (n < 0)
+			{
+				fprintf(stderr, "Error: read from socket %d\n", fd);
+				close(fd);
+				_fds[i].fd = -1;
+			}
+			else if (n == 0)
+			{    // connection closed by client
+				printf("Close socket %d\n", fd);
+				close(fd);
+				_fds[i].fd = -1;                                        
+			}
+			else
+			{
+				printf("Read %zu bytes from socket %d\n", n, fd);
+				write_n(fd, _buffer, n);
+			}
+
+			// No more readable file descriptors
+			if (--_poll_ret <= 0) {
+					break;
+			}
+		}
+	}
 }
 
 void
 Server::clean()
 {
+	// close fds
 	if (_socket != -1)
+	{
 		close(_socket);
+		_socket = -1;
+	}
 }
 
 const int& Server::get_socket() const
@@ -81,6 +199,8 @@ const std::string& Server::get_host() const
 	{return _listen.host;}
 const int& Server::get_port() const
 	{return _listen.port;}
+struct sockaddr_in& Server::get_sockaddr()
+	{return _sockaddr;}
 const std::set<std::string>& Server::get_server_names() const
 	{return _server_names;}
 const std::map<uint16_t, std::string>& Server::get_error_pages() const

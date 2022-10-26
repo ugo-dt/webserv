@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:40:29 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 18:36:53 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,18 @@
 # include "http.hpp"
 # include "Location.hpp"
 # include <arpa/inet.h>
-# include <unistd.h>
+# include <fcntl.h>
+# include <poll.h>
 # include <sys/socket.h>
 # include <unistd.h>
-# include <fcntl.h>
 
 # include <map>
 # include <set>
 # include <string>
 # include <vector>
 
-# define MAX_PENDING_CONNECTIONS	32 // no idea for now, this is totally random need to check later
+# define MAX_CONNECTIONS	32 // no idea for now, this is totally random need to check later
+# define BUFFER_SIZE		2048
 
 typedef struct s_listen
 {
@@ -43,6 +44,9 @@ class Server
 {
 private:
 	int								_socket; // previously _serverFd
+	struct pollfd					_fds[MAX_CONNECTIONS];
+	nfds_t							_nfds;
+	char							_buffer[BUFFER_SIZE];
 	t_listen						_listen; // host:port
 	struct sockaddr_in				_sockaddr;
 	std::set<std::string>			_server_names;
@@ -60,14 +64,17 @@ public:
 	void									clean();
 
 	const int&								get_socket() const;
+	const int&								get_client() const;
 	const std::string&						get_host() const;
 	const int&								get_port() const;
+	struct sockaddr_in&						get_sockaddr();
 	const std::set<std::string>&			get_server_names() const;
 	const std::map<uint16_t, std::string>&	get_error_pages() const;
 	const size_t&							get_client_body_buffer_size() const;
 	const std::set<Location>&				get_locations() const;
 
 	void									set_socket(const int& socket);
+	void									set_client(const int& client);
 	void									set_host(const std::string& host);
 	void									set_port(const int& port);
 	void									set_server_names(const std::set<std::string> server_names);
@@ -82,6 +89,8 @@ public:
 	// parser
 	void			set_state(unsigned int x);
 	unsigned int	get_state() const;
+
+	void	wait_connections();
 };
 
 std::ostream&	operator<<(std::ostream &o, const Server& s);

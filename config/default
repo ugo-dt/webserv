@@ -1,6 +1,6 @@
 server
 {
-	listen			localhost
+	listen			localhost:3000
 	server_name		webserv
 
 	location / {

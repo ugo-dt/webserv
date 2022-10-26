@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 16:42:46 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 18:38:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Webserv::Webserv(void)
 	: _servers(),
-	  _fds(0),
+	  _sockets(0),
 	  _running(true),
 	  _default_error_pages()
 {
@@ -37,44 +37,38 @@ void
 Webserv::init(int argc, const char **argv)
 {
 	ConfigParser	parser;
-	size_t			_sz;
 
-	_fds = 0;
 	parser.init(argc, argv);
 	parser.run(_servers);
-	_sz = _servers.size();
-	if (!_sz)
+	_nsockets = _servers.size();
+	if (!_nsockets)
 	{
 		std::cout << "webserv: no servers found." << std::endl;
 		exit(EXIT_SUCCESS);
 	}
-	_fds = (struct pollfd *)malloc(sizeof(struct pollfd) * _sz);
-	if (!_fds)
+	_sockets = (int *)malloc(sizeof(int) * _nsockets);
+	if (!_sockets)
 		_throw_errno("malloc");
-	for (size_t i = 0; i < _sz; i++)
+	for (size_t i = 0; i < _nsockets; i++)
 	{
 		std::cout << _servers[i];
 		_servers[i].setup();
-		memset(&_fds[i], 0, sizeof(struct pollfd));
-		_fds[i].fd = _servers[i].get_socket();
-		_fds[i].events = POLLIN;
-		WS_VALUE_LOG("Socket", _fds[i].fd);
+		memset(&_sockets[i], 0, sizeof(struct pollfd));
+		_sockets[i] = _servers[i].get_socket();
+		WS_VALUE_LOG("Socket", _sockets[i].fd);
 	}
 }
 
 void
 Webserv::run(void)
 {
-	int		_poll_ret;
-
 	while (_running)
 	{
-		_poll_ret = poll(_fds, _nfds, 0);
-		if (_poll_ret < 0)
-			_throw_errno("poll");
-		if (_poll_ret > 0)
+		for (size_t i = 0; i < _nsockets; i++)
 		{
-			std::cout << "poll return >0" << std::endl;
+			_servers[i].wait_connections();
+			// wait incoming connections
+			// handle requests
 		}
 	}
 }
@@ -84,9 +78,9 @@ Webserv::clean(void)
 {
 	for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); it++)
 		(*it).clean();
-	if (_fds)
+	if (_sockets)
 	{
-		free(_fds);
-		_fds = NULL;
+		free(_sockets);
+		_sockets = NULL;
 	}
 }
