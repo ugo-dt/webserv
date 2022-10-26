@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:40:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:49:54 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Webserv
 private:
 	std::vector<Server>				_servers;
 	struct pollfd					*_fds; // This is an array.
+	nfds_t							_nfds;
 	bool							_running;
 	std::map<uint32_t, std::string>	_default_error_pages;
 

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:12:54 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:40:09 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ Server::~Server()
 }
 
 void
-Server::init_connection(void)
+Server::setup(void)
 {
 	int		option;
 
@@ -66,8 +66,6 @@ Server::init_connection(void)
 
 	if (listen(_socket, MAX_PENDING_CONNECTIONS) < 0)
 		_throw_errno("listen");
-	
-	//	add to fd set(server_fd)
 }
 
 void
