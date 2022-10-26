@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:04:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:12:54 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ Server::init_connection(void)
 
 	memset((char *)&_sockaddr, 0, sizeof(_sockaddr)); 
 	_sockaddr.sin_family = AF_INET; 
-	std::cout << "host: " << _listen.host << std::endl;
 	if (_listen.host == "localhost")
 		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
 	else
@@ -121,6 +120,7 @@ unsigned int Server::get_state(void) const
 
 std::ostream&	operator<<(std::ostream &o, const Server& s)
 {
+#ifdef DEBUG
 	o << "\e[93m[Server]" << std::endl << "Host: " << s.get_host() << std::endl
 			<< "Port: " << s.get_port() << std::endl << "Names: " << std::endl;
 		for (std::set<std::string>::const_iterator i = s.get_server_names().begin(); i != s.get_server_names().end(); i++)
@@ -149,5 +149,8 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 				<< "Upload path: " << (*it).get_upload_path() << std::endl;
 		}
 		o << "--------\e[0m" << std::endl;
+#else
+	(void)s;
+#endif
 	return (o);
 }

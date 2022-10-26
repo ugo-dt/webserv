@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:03:58 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:28:28 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,11 @@ Webserv::init(int argc, const char **argv)
 		_throw_errno("malloc");
 	for (size_t i = 0; i < _sz; i++)
 	{
-		std::cout << _servers[i] << std::endl;
+		std::cout << _servers[i];
 		_servers[i].init_connection();
 		memset(&_fds[i], 0, sizeof(struct pollfd));
 		_fds[i].fd = _servers[i].get_socket();
-		std::cout << "socket " << _fds[i].fd << std::endl;
+		WS_VALUE_LOG("Socket", _fds[i].fd);
 	}
 }
 
