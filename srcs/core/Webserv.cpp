@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 16:10:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 16:23:47 by madaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ Webserv::init(int argc, const char **argv)
 		_servers[i].setup();
 		memset(&_fds[i], 0, sizeof(struct pollfd));
 		_fds[i].fd = _servers[i].get_socket();
-		_fds[i].events = POLLIN;
 		WS_VALUE_LOG("Socket", _fds[i].fd);
 	}
 }
@@ -65,17 +64,9 @@ Webserv::init(int argc, const char **argv)
 void
 Webserv::run(void)
 {
-	int		_poll_ret;
-
 	while (_running)
 	{
-		_poll_ret = poll(_fds, _nfds, 0);
-		if (_poll_ret < 0)
-			_throw_errno("poll");
-		if (_poll_ret > 0)
-		{
-			std::cout << "poll return >0" << std::endl;
-		}
+		
 	}
 }
 
