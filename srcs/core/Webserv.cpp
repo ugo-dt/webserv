@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:42:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 13:07:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,18 @@
 
 Webserv::Webserv(void)
 	: _servers(),
-	  _fds(NULL),
-	  _running(true)
+	  _fds(0),
+	  _running(true),
+	  _default_error_pages()
 {
+	_default_error_pages[STATUS_BAD_REQUEST] = "www/400.html";
+	_default_error_pages[STATUS_FORBIDDEN] = "www/403.html";
+	_default_error_pages[STATUS_NOT_FOUND] = "www/404.html";
+	_default_error_pages[STATUS_METHOD_NOT_ALLOWED] = "www/405.html";
+	_default_error_pages[STATUS_PAYLOAD_TOO_LARGE] = "www/413.html";
+	_default_error_pages[STATUS_INTERNAL_SERVER_ERROR] = "www/500.html";
+	_default_error_pages[STATUS_NOT_IMPLEMENTED] = "www/501.html";
+	_default_error_pages[STATUS_HTTP_VERSION_NOT_SUPPORTED] = "www/505.html";
 }
 
 Webserv::~Webserv(void)
@@ -27,9 +36,11 @@ Webserv::~Webserv(void)
 void
 Webserv::init(int argc, const char **argv)
 {
-	ConfigParser	parser(argc, argv);
+	ConfigParser	parser;
 	size_t			_sz;
 
+	_fds = 0;
+	parser.init(argc, argv);
 	parser.run(_servers);
 	_sz = _servers.size();
 	if (!_sz)
@@ -60,5 +71,8 @@ Webserv::clean(void)
 	for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); it++)
 		(*it).clean();
 	if (_fds)
+	{
 		free(_fds);
+		_fds = NULL;
+	}
 }

@@ -6,19 +6,19 @@
 #    By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/26 12:41:54 by madaniel         ###   ########.fr        #
+#    Updated: 2022/10/26 14:00:54 by madaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =	webserv
 
 SRCS =	srcs/main.cpp \
-		srcs/core/Webserv.cpp \
+		srcs/core/Location.cpp \
 		srcs/core/Server.cpp \
+		srcs/core/Webserv.cpp \
 		srcs/parser/ConfigParser.cpp \
 		srcs/parser/RequestParser.cpp \
 		srcs/parser/Token.cpp \
-		srcs/parser/server_parser.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

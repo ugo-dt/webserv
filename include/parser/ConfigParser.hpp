@@ -6,15 +6,16 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:38:29 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 13:13:07 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_PARSER_HPP
 # define CONFIG_PARSER_HPP
 
-# include "Token.hpp"
+# include "Location.hpp"
 # include "Server.hpp"
+# include "Token.hpp"
 # include <fstream>
 # include <list>
 # include <sys/stat.h>
@@ -31,6 +32,7 @@
 # define DIRECTIVE_REWRITE					"rewrite"
 # define DIRECTIVE_ROOT						"root"
 # define DIRECTIVE_AUTOINDEX				"autoindex"
+# define DIRECTIVE_DEFAULT_FILE				"default_file"
 # define DIRECTIVE_CGI_EXTENSION			"cgi_extension"
 # define DIRECTIVE_UPLOAD_FILES				"upload_files"
 
@@ -43,7 +45,10 @@ typedef enum e_state
 	state_error_pages             = 0x10,
 	state_listen                  = 0x20,
 	state_server_name             = 0x40,
-	state_client_body_buffer_size = 0x80
+	state_client_body_buffer_size = 0x80,
+	state_default_file            = 0x100,
+	state_cgi_extension           = 0x200,
+	state_upload_files            = 0x400
 }t_state;
 
 class ConfigParser
@@ -54,7 +59,7 @@ private:
 private:
 	std::list<Token>	_token_list;
 	std::string			_path;
-	std::fstream		_file;
+	std::ifstream		_file;
 
 	void	_open_file();
 	void	_close_file();
@@ -65,11 +70,23 @@ private:
 	const Server	_parse_server_block(std::list<Token>::const_iterator& cur);
 	void			_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s);
 	void			_parse_directive_server_name(std::list<Token>::const_iterator&, Server&);
+	void			_parse_directive_error_page(std::list<Token>::const_iterator& cur, Server& s);
+	void			_parse_directive_client_body_buffer_size(std::list<Token>::const_iterator& cur, Server& x);
+
+	void			_parse_location_block(std::list<Token>::const_iterator& cur, Server& s);
+	void 			_parse_directive_limit_except(std::list<Token>::const_iterator& cur, Location& l);
+	void 			_parse_directive_rewrite(std::list<Token>::const_iterator& cur, Location& l);
+	void 			_parse_directive_root(std::list<Token>::const_iterator& cur, Location& l);
+	void 			_parse_directive_autoindex(std::list<Token>::const_iterator& cur, Location& l);
+	void			_parse_directive_default_file(std::list<Token>::const_iterator& cur, Location& l);
+	void			_parse_directive_cgi_extension(std::list<Token>::const_iterator& cur, Location& l);
+	void			_parse_directive_upload_files(std::list<Token>::const_iterator& cur, Location& l);
 
 public:
-	ConfigParser(int argc, const char **argv);
+	ConfigParser();
 	~ConfigParser();
 
+	void	init(int argc, const char **argv);
 	void	run(std::vector<Server>& servers);
 };
 

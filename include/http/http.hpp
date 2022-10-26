@@ -6,15 +6,12 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 22:24:40 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 12:40:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
-
-# include "Request.hpp"
-# include "Response.hpp"
 
 # define HTTP_PROTOCOL						"HTTP/1.1"
 
@@ -23,10 +20,10 @@
 # define CRLF								"\r\n"
 
 // Methods
-# define METHOD_UNKNOWN						1
-# define METHOD_GET							2
-# define METHOD_POST						3
-# define METHOD_DELETE						4
+# define METHOD_UNKNOWN						0x1
+# define METHOD_GET							0x2
+# define METHOD_POST						0x4
+# define METHOD_DELETE						0x8
 
 // Status codes
 # define STATUS_OK							200

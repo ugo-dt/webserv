@@ -6,15 +6,12 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:02:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 10:36:59 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 12:40:18 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CORE_HPP
 # define CORE_HPP
-
-# include "http.hpp"
-# include "parser.hpp"
 
 # include <iostream>
 # include <stdexcept>
