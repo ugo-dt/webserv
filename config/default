@@ -2,19 +2,20 @@ server
 {
 	listen			localhost
 	server_name		webserv
-	error_page		404	html/404.html
 
 	location / {
-		root			html
+		root			www
 		rewrite			/redirect.html /index.html
 		limit_except	GET POST DELETE
 	}
 
 	location /form.html {
 		limit_except	GET POST
+		autoindex		off
 	}
 
 	location /cgi/ {
+		autoindex	on
 	}
 
 	location /cgi/cgi.cgi {

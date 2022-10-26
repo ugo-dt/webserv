@@ -102,25 +102,19 @@ Classes
 			
 	• http
 		- Request
-			unsigned int					_method;
-			std::string						_uri;
-			std::string						_http_protocol;
-			std::string						_query_string;
-			std::vector<std::string>		_header_fields;
-			std::string						_body;
+			unsigned int				_method;
+			std::string					_uri;
+			std::string					_http_protocol;
+			std::string					_query_string;
+			std::vector<std::string>	_header_fields;
+			std::string					_body;
 		- Response
-			size_t							_status;
-			std::vector<std::string>		_header_fields;
-			std::string						_body;
+			size_t						_status;
+			std::vector<std::string>	_header_fields;
+			std::string					_body;
 		- Server
-			int								_socket;
-			std::set<std::string>			_server_names;
-			std::map<size_t, std::string>	_error_pages;
-			size_t							_client_body_buffer_size;
-			std::vector<Location>			_locations;
+			Listen
 
-		- Listen (std::string HOST, unsigned int PORT)
-			Each server uses one
 	• Parser
 		- ConfigParser
 		- RequestParser
