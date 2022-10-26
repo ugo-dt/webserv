@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 13:14:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 14:41:53 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,7 +352,12 @@ ConfigParser::_parse_directive_autoindex(std::list<Token>::const_iterator& cur, 
 	if (_ai != "on" && _ai != "off")
 		throw_token_error(_path, (*cur), "autoindex: wrong parameter ('" + _ai + "')");
 	if (_ai == "on")
+	{
+		// Make sure location is a folder
+		if (l.get_uri().at(l.get_uri().length() - 1) != '/')
+			throw_token_error(_path, (*cur), "autoindex: not a folder ('" + l.get_uri() + "')");
 		l.set_autoindex(true);
+	}
 	else
 		l.set_autoindex(false);
 	cur++;

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 13:13:07 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 14:25:17 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,8 @@ public:
 	void	init(int argc, const char **argv);
 	void	run(std::vector<Server>& servers);
 };
+
+void print_server_info_debug(const Server &s);
 
 static inline
 bool
