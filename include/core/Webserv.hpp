@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:40:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 14:59:46 by madaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "core.hpp"
 # include "http.hpp"
-# include "parser.hpp"
+# include "Parser.hpp"
 # include "Server.hpp"
 # include <cstdlib>
 # include <map>
