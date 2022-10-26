@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:40:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:04:43 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 # define HTTP_HPP
 
 # define HTTP_PROTOCOL						"HTTP/1.1"
+# define DEFAULT_PORT						8080
 
 # define CR									(u_char)'\r'
 # define LF									(u_char)'\n'
 # define CRLF								"\r\n"
+
 
 // Methods
 # define METHOD_UNKNOWN						0x1
