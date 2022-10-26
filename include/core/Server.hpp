@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:26:34 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 11:33:59 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ private:
 	size_t							_client_body_buffer_size;
 	std::set<t_location>			_locations;
 
+	unsigned int					_state;
+
 public:
 	Server();
 	~Server();
@@ -88,6 +90,11 @@ public:
 	void									add_server_name(const std::string& name);
 	void									add_error_page(uint16_t code, const std::string& path);
 	void									add_location(const t_location& l);
+
+	// parser
+	void			set_state(unsigned int x);
+	void			unset_state(unsigned int x);
+	unsigned int	get_state() const;
 };
 
 #endif // SERVER_HPP

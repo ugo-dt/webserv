@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:29:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 11:40:52 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ Server::Server()
 	  _client_body_buffer_size(8192),
 	  _locations()
 {
-	_listen.host = "";
-	_listen.port = -1;
+	_listen.host = "0.0.0.0";
+	_listen.port = 80;
 }
 
 Server::~Server()
@@ -42,8 +42,6 @@ Server::init(void)
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
 		_throw_errno("setsockopt");
 
-	if (_listen.port == -1)
-		throw std::invalid_argument("invalid port");
 	memset((char *)&_sockaddr, 0, sizeof(_sockaddr)); 
 	_sockaddr.sin_family = AF_INET; 
 	_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
@@ -102,3 +100,8 @@ void Server::add_error_page(uint16_t code, const std::string& path)
 	{_error_pages.insert(std::make_pair(code, path));}
 void Server::add_location(const t_location& l)
 	{_locations.insert(l);}
+
+void Server::set_state(unsigned int x)
+	{_state |= x;}
+unsigned int Server::get_state(void) const
+	{return _state;}

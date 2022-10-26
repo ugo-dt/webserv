@@ -66,8 +66,8 @@ Parser:
 	1. Config file
 		For each 'server' block:
 			• Directives
-				- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided)
-				- server_name (used when processing request, see Request:Processing)
+				- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided) √
+				- server_name (used when processing request, see Request:Processing) √
 				- error_pages
 				- client_body_buffer_size
 				- location

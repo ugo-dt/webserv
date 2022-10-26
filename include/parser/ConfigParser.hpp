@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:16:23 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 11:38:29 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,18 @@
 # define DIRECTIVE_CGI_EXTENSION			"cgi_extension"
 # define DIRECTIVE_UPLOAD_FILES				"upload_files"
 
+typedef enum e_state
+{
+	state_http_hethods            = 0x01,
+	state_http_redirection        = 0x02,
+	state_root                    = 0x04,
+	state_autoindex               = 0x08,
+	state_error_pages             = 0x10,
+	state_listen                  = 0x20,
+	state_server_name             = 0x40,
+	state_client_body_buffer_size = 0x80
+}t_state;
+
 class ConfigParser
 {
 private:
@@ -50,7 +62,9 @@ private:
 	void	_check_order();
 	void	_parse();
 
-	void	_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s);
+	const Server	_parse_server_block(std::list<Token>::const_iterator& cur);
+	void			_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s);
+	void			_parse_directive_server_name(std::list<Token>::const_iterator&, Server&);
 
 public:
 	ConfigParser(int argc, const char **argv);

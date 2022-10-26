@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:03:51 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 11:42:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ Webserv::init(int argc, const char **argv)
 		_throw_errno("malloc");
 	for (size_t i = 0; i < _sz; i++)
 	{
-		std::cout << _servers[i].get_client_body_buffer_size() << std::endl;
+		// add servers sockets to fds and poll
 	}
 }
 

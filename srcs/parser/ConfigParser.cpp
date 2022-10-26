@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:32:00 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 11:41:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,8 +213,51 @@ ConfigParser::_parse_directive_listen(std::list<Token>::const_iterator& cur, Ser
 	s.set_state(state_listen);
 }
 
+void
+ConfigParser::_parse_directive_server_name(std::list<Token>::const_iterator& cur, Server& s)
+{
+	std::list<Token>::const_iterator	_end;
+
+	cur++;
+	_end = _token_list.end();
+	while (cur != _end && get_type(cur) == token_word)
+	{
+		s.add_server_name(get_word(cur));
+		cur++;
+	}
+	s.set_state(state_server_name);
+}
+
+void
+Parser::_parse_directive_error_page(std::list<Token>::const_iterator& cur, Server& s)
+{
+	unsigned int	_ec;
+
+	if (!(x.get_state() & state_error_pages))
+		x.clear_error_pages();
+	// error code
+	cur++;
+	if (get_type(cur) != token_word)
+		throw_token_error(_path, *cur, "error_page: expected error code");
+	if (not str_is_numeric(get_word(cur).c_str()))
+		throw_token_error(_path, *cur, "error_page: error code should only contain numbers");
+	_ec = atoi(get_word(cur).c_str());
+	cur++;
+	// uri
+	if (get_type(cur) != token_word)
+		throw_token_error(_path, *cur, "error_page: expected uri");
+	x.set_error_page(_ec, get_word(cur));
+	cur++;
+	if (!is_line_break(get_type(cur)))
+	{
+		show_token_error(_path, (*cur), "error_page: unexpected parameter: '" + get_word(cur) + "'");
+		std::__throw_logic_error(ERROR_PAGE_USAGE);
+	}
+	x.set_state(state_error_pages);
+}
+
 const Server
-Parser::_parse_server_block(std::list<Token>::const_iterator& cur)
+ConfigParser::_parse_server_block(std::list<Token>::const_iterator& cur)
 {
 	Server								s;
 	int									_braces;
@@ -226,9 +269,9 @@ Parser::_parse_server_block(std::list<Token>::const_iterator& cur)
 	_braces = 1;
 	while (_braces && cur != _end)
 	{
-		if (get_type(cur) == token_brace_open)
+		if (get_type(cur) == token_open_brace)
 			_braces++;
-		else if (get_type(cur) == token_brace_close)
+		else if (get_type(cur) == token_close_brace)
 			_braces--;
 		else
 		{
@@ -249,8 +292,6 @@ Parser::_parse_server_block(std::list<Token>::const_iterator& cur)
 		}
 		cur++;
 	}
-	if (s.get_ports().size() < 1)
-		s.add_port(DEFAULT_PORT);
 	return (s);
 }
 
