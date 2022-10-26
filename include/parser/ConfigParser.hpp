@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:32:44 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:48:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,11 @@ private:
 	std::string			_path;
 	std::ifstream		_file;
 
-	void	_open_file();
-	void	_close_file();
-	void	_tokenize();
-	void	_check_order();
-	void	_parse();
+	void			_open_file();
+	void			_close_file();
+	void			_tokenize();
+	void			_check_order();
+	void			_parse();
 
 	const Server	_parse_server_block(std::list<Token>::const_iterator& cur);
 	void			_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s);
