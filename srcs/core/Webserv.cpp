@@ -6,7 +6,7 @@
 /*   By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 16:22:59 by madaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 16:23:47 by madaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ Webserv::init(int argc, const char **argv)
 	for (size_t i = 0; i < _sz; i++)
 	{
 		std::cout << _servers[i];
-		_servers[i].init_connection();
+		_servers[i].setup();
 		memset(&_fds[i], 0, sizeof(struct pollfd));
 		_fds[i].fd = _servers[i].get_socket();
 		WS_VALUE_LOG("Socket", _fds[i].fd);
