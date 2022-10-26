@@ -28,7 +28,7 @@ server
 }
 
 server{
-	listen					thisiswebserv.com:3000
+	listen					127.0.0.1:80
 	server_name				second_server lol thisiswebserv
 	client_body_buffer_size	4200
 	error_page				404	/error-404.html

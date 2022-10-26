@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:44:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 14:47:21 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ public:
 	Server();
 	~Server();
 
-	void									init();
+	void									init_connection();
 	void									clean();
 
 	const int&								get_socket() const;

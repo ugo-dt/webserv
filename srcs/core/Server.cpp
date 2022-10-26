@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 13:03:48 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 14:48:59 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ Server::~Server()
 }
 
 void
-Server::init(void)
+Server::init_connection(void)
 {
 	int		option;
 
@@ -53,7 +53,11 @@ Server::init(void)
 
 	memset((char *)&_sockaddr, 0, sizeof(_sockaddr)); 
 	_sockaddr.sin_family = AF_INET; 
-	_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
+	std::cout << "host: " << _listen.host << std::endl;
+	if (_listen.host == "localhost")
+		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
+	else
+		_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
 	_sockaddr.sin_port = htons(_listen.port);
 
 	if (bind(_socket, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0)
