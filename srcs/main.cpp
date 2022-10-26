@@ -6,25 +6,34 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 12:45:46 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/25 23:42:52 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include <iostream>
 
 Webserv	webserv;
+
+void	sig_handler(int signum)
+{
+	(void)signum;
+	std::cout << std::endl << "webserv: caught signal interrupt" << std::endl;
+	webserv.clean();
+	exit(EXIT_SUCCESS);
+}
 
 int	main(int argc, const char **argv)
 {
 	try
 	{
-		// Config
-		// Run
+		signal(SIGINT, sig_handler);
+		webserv.init(argc, argv);
+		webserv.run();
+		webserv.clean();
 	}
 	catch (std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "webserv: " << e.what() << std::endl;
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);

@@ -1,38 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   core.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 22:39:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 20:58:10 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/25 22:02:45 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/25 23:42:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-# define REQUEST_HPP
+#ifndef CORE_HPP
+# define CORE_HPP
 
 # include "http.hpp"
+# include "parser.hpp"
+
+# include <iostream>
+# include <stdexcept>
 # include <string>
-# include <vector>
 
-class Request
+// throws an exception with the error string correspondig to errno
+inline
+void _throw_errno(const std::string& msg)
 {
-private:
-	unsigned int				_method;
-	std::string					_uri;
-	std::string					_http_protocol;
-	std::string					_query_string;
-	std::vector<std::string>	_header_fields;
-	std::string					_body;
+	throw std::runtime_error(std::string(msg + ": " + strerror(errno)));
+}
 
-public:
-	Request(void);
-	~Request(void);
-
-	// getters
-	// setters
-};
-
-#endif // REQUEST_HPP
+#endif // CORE_HPP

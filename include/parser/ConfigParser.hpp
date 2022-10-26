@@ -1,38 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   ConfigParser.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 22:39:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 20:58:10 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/25 23:27:47 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-# define REQUEST_HPP
+#ifndef CONFIG_PARSER_HPP
+# define CONFIG_PARSER_HPP
 
-# include "http.hpp"
-# include <string>
+# include <fstream>
+# include <sys/stat.h>
 # include <vector>
 
-class Request
+# define DEFAULT_CONFIG_PATH	"config/default"
+
+class ConfigParser
 {
 private:
-	unsigned int				_method;
-	std::string					_uri;
-	std::string					_http_protocol;
-	std::string					_query_string;
-	std::vector<std::string>	_header_fields;
-	std::string					_body;
+	std::vector<size_t>	_token_list;
+	std::string			_path;
+	std::fstream		_file;
+
+	void _open_file();
+	void _close_file();
+	void _tokenize();
+	void _parse();
 
 public:
-	Request(void);
-	~Request(void);
-
-	// getters
-	// setters
+	ConfigParser(int argc, const char **argv);
+	~ConfigParser();
 };
 
-#endif // REQUEST_HPP
+#endif // CONFIG_PARSER_HPP
