@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/25 23:29:27 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/26 11:11:13 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,9 @@ SRCS =	srcs/main.cpp \
 		srcs/core/Webserv.cpp \
 		srcs/core/Server.cpp \
 		srcs/parser/ConfigParser.cpp \
-		srcs/parser/RequestParser.cpp
+		srcs/parser/RequestParser.cpp \
+		srcs/parser/Token.cpp \
+		srcs/parser/server_parser.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -33,7 +35,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 debug:
-	$(CC) $(INCLUDE) $(SRCS) -o $(NAME)
+	$(CC) $(INCLUDE) -DDEBUG $(SRCS) -o debug
 
 clean:
 	rm -rf $(OBJS)

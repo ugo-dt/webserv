@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Parser.hpp                                         :+:      :+:    :+:   */
+/*   parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 11:37:31 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/25 23:28:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 10:47:04 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,8 @@
 
 # include "ConfigParser.hpp"
 # include "RequestParser.hpp"
+# include "Token.hpp"
 # include <string>
 # include <vector>
-
-typedef enum e_token
-{
-	token_none,
-	token_word,
-
-	// config file
-	token_open_brace,
-	token_close_brace,
-	token_newline,
-	token_semicolon,
-
-	// requests
-	token_colon
-}t_token;
 
 #endif // PARSER_HPP
