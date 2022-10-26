@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:44:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:00:52 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ public:
 	Server();
 	~Server();
 
-	void									init();
+	void									init_connection();
 	void									clean();
 
 	const int&								get_socket() const;
@@ -83,5 +83,7 @@ public:
 	void			set_state(unsigned int x);
 	unsigned int	get_state() const;
 };
+
+std::ostream&	operator<<(std::ostream &o, const Server& s);
 
 #endif // SERVER_HPP

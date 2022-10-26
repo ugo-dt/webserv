@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 14:41:53 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:33:03 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ ConfigParser::_parse_directive_listen(std::list<Token>::const_iterator& cur, Ser
 		s.set_host(std::string(word.c_str(), word.find_first_of(':')));
 		word = std::string(word.c_str() + word.find_first_of(':') + 1);
 		if (!str_is_numeric(word))
-			throw_token_error(_path, *cur, "port should only contain numbers ('" + word + "')");
+			throw_token_error(_path, *cur, "listen: port should only contain numbers ('" + word + "')");
 		s.set_port(atoi(word.c_str()));
 	}
 	cur++;
@@ -315,7 +315,7 @@ ConfigParser::_parse_directive_rewrite(std::list<Token>::const_iterator& cur, Lo
 	_path = get_word(cur);
 	cur++;
 	if (cur == _end || get_type(cur) != token_word)
-		throw_token_error(_path, (*cur), "location: expected replacement");
+		throw_token_error(_path, (*cur), "rewrite: expected replacement");
 	l.add_redirection(_path, get_word(cur));
 	cur++;
 	if (get_type(cur) != token_newline && get_type(cur) != token_close_brace)
@@ -334,7 +334,7 @@ ConfigParser::_parse_directive_root(std::list<Token>::const_iterator& cur, Locat
 	l.set_root(get_word(cur));
 	cur++;
 	if (!is_line_break(get_type(cur)))
-		throw_token_error(_path, (*cur), "autoindex: unexpected parameter ('" + get_word(cur) + "')");
+		throw_token_error(_path, (*cur), "root: unexpected parameter ('" + get_word(cur) + "')");
 	l.set_state(state_root);
 }
 
@@ -371,6 +371,13 @@ ConfigParser::_parse_directive_default_file(std::list<Token>::const_iterator& cu
 {
 	if (l.get_state() & state_default_file)
 		show_repeat_warning(_path, (*cur));
+	cur++;
+	if (get_type(cur) == token_newline)
+		throw_token_error(_path, (*cur), "default_file: too few parameters");
+	l.set_default_file(get_word(cur));
+	cur++;
+	if (!is_line_break(get_type(cur)))
+		throw_token_error(_path, (*cur), "default_file: unexpected parameter ('" + get_word(cur) + "')");
 	l.set_state(state_default_file);
 }
 
@@ -379,15 +386,29 @@ ConfigParser::_parse_directive_cgi_extension(std::list<Token>::const_iterator& c
 {
 	if (l.get_state() & state_cgi_extension)
 		show_repeat_warning(_path, (*cur));
+	cur++;
+	if (get_type(cur) == token_newline)
+		throw_token_error(_path, (*cur), "cgi_extension: too few parameters");
+	l.set_cgi_extension(get_word(cur));
+	cur++;
+	if (!is_line_break(get_type(cur)))
+		throw_token_error(_path, (*cur), "cgi_extension: unexpected parameter ('" + get_word(cur) + "')");
 	l.set_state(state_cgi_extension);
 }
 
 void
-ConfigParser::_parse_directive_upload_files(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_upload_path(std::list<Token>::const_iterator& cur, Location& l)
 {
-	if (l.get_state() & state_upload_files)
+	if (l.get_state() & state_upload_path)
 		show_repeat_warning(_path, (*cur));
-	l.set_state(state_upload_files);
+	cur++;
+	if (get_type(cur) == token_newline)
+		throw_token_error(_path, (*cur), "upload_path: too few parameters");
+	l.set_upload_path(get_word(cur));
+	cur++;
+	if (!is_line_break(get_type(cur)))
+		throw_token_error(_path, (*cur), "upload_path: unexpected parameter ('" + get_word(cur) + "')");
+	l.set_state(state_upload_path);
 }
 
 void
@@ -431,8 +452,8 @@ ConfigParser::_parse_location_block(std::list<Token>::const_iterator& cur, Serve
 				_parse_directive_default_file(cur, l);
 			else if (get_word(cur) == DIRECTIVE_CGI_EXTENSION)
 				_parse_directive_cgi_extension(cur, l);
-			else if (get_word(cur) == DIRECTIVE_UPLOAD_FILES)
-				_parse_directive_upload_files(cur, l);
+			else if (get_word(cur) == DIRECTIVE_UPLOAD_PATH)
+				_parse_directive_upload_path(cur, l);
 			else if (get_word(cur) != "newline")
 				throw_token_error(_path, (*cur), "unknown location directive '" + get_word(cur) + "'");
 		}

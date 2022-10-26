@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 13:03:48 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:12:54 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Server::Server()
 	  _state(0)
 {
 	_listen.host = "0.0.0.0";
-	_listen.port = 80;
+	_listen.port = DEFAULT_PORT;
 	_error_pages[STATUS_BAD_REQUEST] = "www/400.html";
 	_error_pages[STATUS_FORBIDDEN] = "www/403.html";
 	_error_pages[STATUS_NOT_FOUND] = "www/404.html";
@@ -40,7 +40,7 @@ Server::~Server()
 }
 
 void
-Server::init(void)
+Server::init_connection(void)
 {
 	int		option;
 
@@ -53,7 +53,10 @@ Server::init(void)
 
 	memset((char *)&_sockaddr, 0, sizeof(_sockaddr)); 
 	_sockaddr.sin_family = AF_INET; 
-	_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
+	if (_listen.host == "localhost")
+		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
+	else
+		_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
 	_sockaddr.sin_port = htons(_listen.port);
 
 	if (bind(_socket, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0)
@@ -114,3 +117,40 @@ void Server::set_state(unsigned int x)
 	{_state |= x;}
 unsigned int Server::get_state(void) const
 	{return _state;}
+
+std::ostream&	operator<<(std::ostream &o, const Server& s)
+{
+#ifdef DEBUG
+	o << "\e[93m[Server]" << std::endl << "Host: " << s.get_host() << std::endl
+			<< "Port: " << s.get_port() << std::endl << "Names: " << std::endl;
+		for (std::set<std::string>::const_iterator i = s.get_server_names().begin(); i != s.get_server_names().end(); i++)
+			o << "\t" << (*i) << std::endl;
+		o << "Error pages: " << std::endl;
+		for (std::map<uint16_t, std::string>::const_iterator i = s.get_error_pages().begin(); i != s.get_error_pages().end(); i++)
+			o << "\t" << (*i).first << ":" << (*i).second << std::endl;
+		o << "buffer size: " << s.get_client_body_buffer_size() << std::endl;
+		for (std::set<Location>::const_iterator it = s.get_locations().begin(); it != s.get_locations().end(); it++)
+		{
+			o << "\e[91m[Location]: " << (*it).get_uri() << std::endl
+				<< "\e[93mAllowed methods: ";
+			if ((*it).get_methods() & METHOD_GET)
+				o << "GET ";
+			if ((*it).get_methods() & METHOD_POST)
+				o << "POST ";
+			if ((*it).get_methods() & METHOD_DELETE)
+				o << "DELETE";
+			o << std::endl << "Redirections: " << std::endl;
+			for (std::map<std::string, std::string>::const_iterator i = (*it).get_redirections().begin(); i != (*it).get_redirections().end(); i++)
+				o << "\t" << (*i).first << ":" << (*i).second << std::endl;
+			o << "Root: " << (*it).get_root() << std::endl
+				<< "Autoindex: " << (*it).is_autoindex_on() << std::endl
+				<< "Default file: " << (*it).get_default_file() << std::endl
+				<< "CGI extension: " << (*it).get_cgi_extension() << std::endl
+				<< "Upload path: " << (*it).get_upload_path() << std::endl;
+		}
+		o << "--------\e[0m" << std::endl;
+#else
+	(void)s;
+#endif
+	return (o);
+}

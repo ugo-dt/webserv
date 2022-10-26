@@ -66,7 +66,7 @@ Parser:
 	1. Config file
 		For each 'server' block:
 			• Directives
-				- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided) √
+				- listen (host:port, bind 0.0.0.0 and port 8080 by default, if not provided) √
 				- server_name (used when processing request, see Request:Processing) √
 				- error_pages √
 				- client_body_buffer_size √
@@ -81,7 +81,7 @@ Parser:
 					make sure location URI has trailing slash or autoindex should fail (we need a folder)
 				- default_file (default file if request is a directory) 
 				- CGI file extension ('cgi_extension' probably)
-				- upload_files (accept uploaded files and configure where they should be saved)
+				- upload_path (accept uploaded files and configure where they should be saved)
 	
 	2. Request Headers
 		• First line should be 'METHOD PATH HTTP/X.X'

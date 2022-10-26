@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:41:17 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 10:41:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 15:08:15 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #  define WS_INFO_LOG(msg)
 #  define WS_WARN_LOG(msg)
 #  define WS_ERROR_LOG(msg)
+#  define WS_VALUE_LOG(msg, val)
 # endif
 
 static inline void print_log(const char *type, const char *msg)
