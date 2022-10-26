@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 11:33:59 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 12:44:30 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define SERVER_HPP
 
 # include "core.hpp"
+# include "http.hpp"
+# include "Location.hpp"
 # include <arpa/inet.h>
 # include <unistd.h>
 # include <sys/socket.h>
@@ -27,26 +29,12 @@
 
 # define MAX_PENDING_CONNECTIONS	32 // no idea for now, this is totally random need to check later
 
-typedef struct s_location
-{
-	std::string		name;
-	unsigned int	methods;
-	std::string		root;
-	bool			redirect;
-	bool			autoindex;
-	std::string		default_file;
-	std::string		cgi_extension;
-	std::string		upload_files;
-}t_location;
-
 typedef struct s_listen
 {
 	std::string	host;
 	int			port;
 }t_listen;
 
-inline bool operator==(const t_location& x, const t_location& y)
-	{return (x.name == y.name);}
 inline bool operator==(const t_listen& x, const t_listen& y)
 	{return (x.host == y.host && x.port == y.port);}
 
@@ -60,7 +48,7 @@ private:
 	std::set<std::string>			_server_names;
 	std::map<uint16_t, std::string>	_error_pages;
 	size_t							_client_body_buffer_size;
-	std::set<t_location>			_locations;
+	std::set<Location>				_locations;
 
 	unsigned int					_state;
 
@@ -77,7 +65,7 @@ public:
 	const std::set<std::string>&			get_server_names() const;
 	const std::map<uint16_t, std::string>&	get_error_pages() const;
 	const size_t&							get_client_body_buffer_size() const;
-	const std::set<t_location>&				get_locations() const;
+	const std::set<Location>&				get_locations() const;
 
 	void									set_socket(const int& socket);
 	void									set_host(const std::string& host);
@@ -85,15 +73,14 @@ public:
 	void									set_server_names(const std::set<std::string> server_names);
 	void									set_error_pages(const std::map<uint16_t, std::string>& error_pages);
 	void									set_client_body_buffer_size(const size_t& size);
-	void									set_locations(const std::set<t_location>& locations);
+	void									set_locations(const std::set<Location>& locations);
 
 	void									add_server_name(const std::string& name);
-	void									add_error_page(uint16_t code, const std::string& path);
-	void									add_location(const t_location& l);
+	void									set_error_page(uint16_t code, const std::string& path);
+	void									add_location(const Location& l);
 
 	// parser
 	void			set_state(unsigned int x);
-	void			unset_state(unsigned int x);
 	unsigned int	get_state() const;
 };
 

@@ -68,7 +68,7 @@ Parser:
 			• Directives
 				- listen (host:port, bind 0.0.0.0 and port 80 by default, if not provided) √
 				- server_name (used when processing request, see Request:Processing) √
-				- error_pages
+				- error_pages √
 				- client_body_buffer_size
 				- location
 
@@ -118,7 +118,7 @@ Classes
 			std::set<std::string>			_server_names;
 			std::map<size_t, std::string>	_error_pages;
 			size_t							_client_body_buffer_size;
-			std::vector<t_location>			_locations;
+			std::vector<Location>			_locations;
 
 		- Listen (std::string HOST, unsigned int PORT)
 			Each server uses one

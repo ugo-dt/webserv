@@ -4,9 +4,8 @@ server
 	server_name		webserv
 	error_page		404	html/404.html
 
-	root			html
-
 	location / {
+		root			html
 		rewrite			/redirect.html /index.html
 		limit_except	GET POST DELETE
 	}
