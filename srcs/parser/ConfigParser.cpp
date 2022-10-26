@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 13:08:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/26 13:14:30 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,6 +362,30 @@ ConfigParser::_parse_directive_autoindex(std::list<Token>::const_iterator& cur, 
 }
 
 void
+ConfigParser::_parse_directive_default_file(std::list<Token>::const_iterator& cur, Location& l)
+{
+	if (l.get_state() & state_default_file)
+		show_repeat_warning(_path, (*cur));
+	l.set_state(state_default_file);
+}
+
+void
+ConfigParser::_parse_directive_cgi_extension(std::list<Token>::const_iterator& cur, Location& l)
+{
+	if (l.get_state() & state_cgi_extension)
+		show_repeat_warning(_path, (*cur));
+	l.set_state(state_cgi_extension);
+}
+
+void
+ConfigParser::_parse_directive_upload_files(std::list<Token>::const_iterator& cur, Location& l)
+{
+	if (l.get_state() & state_upload_files)
+		show_repeat_warning(_path, (*cur));
+	l.set_state(state_upload_files);
+}
+
+void
 ConfigParser::_parse_location_block(std::list<Token>::const_iterator& cur, Server& s)
 {
 	Location							l;
@@ -398,6 +422,12 @@ ConfigParser::_parse_location_block(std::list<Token>::const_iterator& cur, Serve
 				_parse_directive_root(cur, l);
 			else if (get_word(cur) == DIRECTIVE_AUTOINDEX)
 				_parse_directive_autoindex(cur, l);
+			else if (get_word(cur) == DIRECTIVE_DEFAULT_FILE)
+				_parse_directive_default_file(cur, l);
+			else if (get_word(cur) == DIRECTIVE_CGI_EXTENSION)
+				_parse_directive_cgi_extension(cur, l);
+			else if (get_word(cur) == DIRECTIVE_UPLOAD_FILES)
+				_parse_directive_upload_files(cur, l);
 			else if (get_word(cur) != "newline")
 				throw_token_error(_path, (*cur), "unknown location directive '" + get_word(cur) + "'");
 		}
