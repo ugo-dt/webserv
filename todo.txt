@@ -45,6 +45,12 @@ Norme:
 • Response
 	- HTTP version.
 	- Status code (e.g. '200 OK')
+	- Body
+
+	class:
+		size_t						_status;
+		std::vector<std::string>	_header_fields;
+
 	
 	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
 
@@ -60,67 +66,7 @@ Norme:
 	https://www6.uniovi.es/~antonio/ncsa_httpd/cgi/env.html
 	https://en.wikipedia.org/wiki/Common_Gateway_Interface
 
-[Config]
-
-Parser:
-	1. Config file
-		For each 'server' block:
-			• Directives
-				- listen (host:port, bind 0.0.0.0 and port 8080 by default, if not provided) √
-				- server_name (used when processing request, see Request:Processing) √
-				- error_pages √
-				- client_body_buffer_size √
-				- location √
-
-			• Routes (location)
-				- limit_except (list of accepted methods for the route) √
-				- rewrite (http redirection, 301/302) √
-				- root (a directory or a file from where the file should be searched) √
-				- autoindex (turn directory listing on or off) √
-				- default_file (default file if request is a directory) √
-				- CGI file extension ('cgi_extension' probably) √
-				- upload_path (accept uploaded files and configure where they should be saved) √
-	
-	2. Request Headers
-		• First line should be 'METHOD PATH HTTP/X.X'
-		• next lines are header options, do not reject unknown values, just ignore (we cant do all of them)
-		• such lines are of type 'Header: option', e.g. 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
-			(make sure to use lowercase strings when parsing header: e.g. 'content-type' should work)
-
-Files
-	- core: le cerveau, il appelle les autres
-	- parser: le parser en gros
-	- http: requests, responses, virtual servers, cgi
-
-Classes
-	• core
-		- Webserv (main class)
-			
-	• http
-		- Request
-			unsigned int				_method;
-			std::string					_uri;
-			std::string					_http_protocol;
-			std::string					_query_string;
-			std::vector<std::string>	_header_fields;
-			std::string					_body;
-		- Response
-			size_t						_status;
-			std::vector<std::string>	_header_fields;
-			std::string					_body;
-		- Server
-			Listen
-
-	• Parser
-		- ConfigParser
-		- RequestParser
-
-autoindex strategy:
-	generate a html page with strings. add href links to all files in directory (see readdir(3))
-
-set the first server for specific host:port as the default one (that will answer requests)
-
-parse query string:
+	parse query string:
 	query string starts from '?' character
 	format is <arg>=<value>
 	args are separated with &
@@ -128,3 +74,5 @@ parse query string:
 	example ?arg1=value1&arg2=value2
 	arg1 = value1;
 	arg2 = value2
+
+set the first server for specific host:port as the default one (that will answer requests)
