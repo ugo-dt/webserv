@@ -14,10 +14,6 @@ server
 	location /www/ {
 		autoindex	off
 	}
-
-	location /www/subject.pdf {
-		autoindex	on
-	}
 }
 
 server{

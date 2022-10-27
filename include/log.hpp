@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   log.h                                              :+:      :+:    :+:   */
+/*   log.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:41:17 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:08:15 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 12:24:07 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#ifndef LOG_H
-# define LOG_H
+#ifndef LOG_HPP
+# define LOG_HPP
 
 # include <iostream>
 
@@ -42,4 +41,4 @@ static inline void print_value(const std::string& name, const std::string& s)
 static inline void print_value(const std::string& name, size_t val)
 	{std::cerr << "\e[95m" << name << ": " << val << "\e[0m" << std::endl;}
 
-#endif // LOG_H
+#endif // LOG_HPP

@@ -117,7 +117,6 @@ Classes
 
 autoindex strategy:
 	generate a html page with strings. add href links to all files in directory (see readdir(3))
-		make sure location URI has trailing slash or autoindex should fail (we need a folder)
 
 set the first server for specific host:port as the default one (that will answer requests)
 

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 11:50:11 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 12:58:15 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "core.hpp"
 # include "http.hpp"
+# include "log.hpp"
 # include "Location.hpp"
 # include <arpa/inet.h>
 # include <fcntl.h>
@@ -49,6 +50,7 @@ private:
 	char							_buffer[BUFFER_SIZE];
 	t_listen						_listen; // host:port
 	struct sockaddr_in				_sockaddr;
+	size_t							_sockaddr_len;
 	std::set<std::string>			_server_names;
 	std::map<uint16_t, std::string>	_error_pages;
 	size_t							_client_body_buffer_size;
@@ -56,12 +58,15 @@ private:
 
 	unsigned int					_state;
 
+	void	_handle_request(int& _fd);
+
 public:
 	Server();
 	~Server();
 
 	void									setup();
 	void									clean();
+	void									wait_connections();
 
 	const int&								get_socket() const;
 	const int&								get_client() const;
@@ -90,8 +95,6 @@ public:
 	void			set_state(unsigned int x);
 	unsigned int	get_state() const;
 
-	void	wait_connections();
-	void	_handle_request();
 };
 
 std::ostream&	operator<<(std::ostream &o, const Server& s);

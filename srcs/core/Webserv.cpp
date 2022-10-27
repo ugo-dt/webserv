@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 11:41:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 13:08:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ Webserv::init(int argc, const char **argv)
 		_servers[i].setup();
 		memset(&_sockets[i], 0, sizeof(struct pollfd));
 		_sockets[i] = _servers[i].get_socket();
-		WS_VALUE_LOG("Socket", _sockets[i].fd);
+		WS_VALUE_LOG("Socket", _sockets[i]);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 16:13:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 12:15:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # define CR									(u_char)'\r'
 # define LF									(u_char)'\n'
 # define CRLF								"\r\n"
-
 
 // Methods
 # define METHOD_UNKNOWN						0x1

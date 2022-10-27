@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 12:04:12 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 13:11:20 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 Server::Server()
 	: _socket(-1),
 	  _fds(),
-	  _nfds(1),
+	  _nfds(MAX_CONNECTIONS),
+	  _buffer(),
 	  _listen(),
 	  _sockaddr(),
+	  _sockaddr_len(0),
 	  _server_names(),
 	  _error_pages(),
 	  _client_body_buffer_size(8192),
@@ -52,8 +54,9 @@ Server::setup(void)
 	option = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
 		_throw_errno("setsockopt");
-
-	bzero((char *)&_sockaddr, sizeof(_sockaddr)); 
+	
+	_sockaddr_len = sizeof(_sockaddr);
+	bzero((char *)&_sockaddr, _sockaddr_len); 
 	_sockaddr.sin_family = AF_INET; 
 	if (_listen.host == "localhost")
 		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
@@ -61,7 +64,7 @@ Server::setup(void)
 		_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
 	_sockaddr.sin_port = htons(_listen.port);
 
-	if (bind(_socket, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0)
+	if (bind(_socket, (struct sockaddr *)&_sockaddr, _sockaddr_len) < 0)
 		_throw_errno("bind");
 
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
@@ -75,47 +78,52 @@ Server::setup(void)
 		_fds[i].fd = -1;
 		_fds[i].events = POLLIN; 
 	}
-	_nfds = MAX_CONNECTIONS;
 }
 
 void
-Server::_handle_request(int fd_index)
+Server::_handle_request(int& _fd)
 {
-	int		&_fd = _fds[fd_index].fd;
 	size_t	_bytes;
 
+	// This will read data without removing it from the queue.
 	_bytes = recv(_fd, _buffer, 1, MSG_PEEK);
 	if (_bytes < 0)
 	{
 		fprintf(stderr, "Error: read from socket %d\n", _fd);
+		std::cout << "Could not read from client: " << std::strerror(errno) << std::endl;
+		WS_VALUE_LOG("Socket closed", _fd);
 		close(_fd);
 		_fd = -1;
 		return ;
 	}
 
+	// Read the data from the client.
 	bzero(_buffer, BUFFER_SIZE);
-	_bytes = recv(fd, _buffer, BUFFER_SIZE, 0);
-	else if (bytes == 0)
-	{    // connection closed by client
-		printf("Close socket %d\n", fd);
-		close(fd);
-		_fds[fd_index].fd = -1;                                        
-	}
-	else
+	_bytes = recv(_fd, _buffer, BUFFER_SIZE, 0);
+
+	if (_bytes == 0)
 	{
-		printf("Read %zu bytes from socket %d\n", n, fd);
-		send(fd, "Bien recu\n", 11, 0);
+		// Connection closed by client.
+		std::cout << "Connection closed." << std::endl;
+		close(_fd);
+		WS_VALUE_LOG("Socket closed", _fd);
+		_fd = -1;
+		return ;
 	}
+	// Parse request
+	// Create response
+	// Send response
+
+	printf("Read %zu bytes from socket %d\n", _bytes, _fd);
+	send(_fd, "Bien recu\n", 11, 0);
 }
 
 void
 Server::wait_connections(void)
 {
-	int			fd;
+	int			_incoming_fd;
 	int			_poll_ret;
 	size_t		i;
-	ssize_t		n;
-	socklen_t	addrlen = (socklen_t)sizeof(_sockaddr);
 
 	_poll_ret = poll(_fds, _nfds, 0);
 	if (_poll_ret <= 0)
@@ -124,30 +132,32 @@ Server::wait_connections(void)
 	// Check new connection
 	if (_fds[0].revents & POLLIN)
 	{
-		if ((fd = accept(_socket, (struct sockaddr *)&_sockaddr, (socklen_t *)&addrlen)) < 0)
+		_incoming_fd = accept(_socket, (struct sockaddr *)&_sockaddr, (socklen_t *)&_sockaddr_len);
+		if (_incoming_fd < 0)
 		{
 			std::cerr << "could not accept: " << std::strerror(errno) << std::endl;
 			return ;
 		}
-
 		printf("Accept socket %d (%s : %hu)\n", 
-				fd, 
+				_incoming_fd,
             	inet_ntoa(_sockaddr.sin_addr),
                 ntohs(_sockaddr.sin_port));
 
 		// Save client socket into _fds array
-		for (i = 0; i < MAX_CONNECTIONS; i++)
+		i = 0;
+		while (i < MAX_CONNECTIONS)
 		{
 			if (_fds[i].fd < 0)
 			{
-				_fds[i].fd = fd;
+				_fds[i].fd = _incoming_fd;
 				break;
 			}
+			i++;
 		}
 		if (i == MAX_CONNECTIONS)
 		{
-			std::cerr << "Error: too many clients\n" << std::endl;
-			close(fd);
+			std::cout << "Refused new connection: too many clients" << std::endl;
+			close(_incoming_fd);
 		}
 		_fds[i].events = POLLIN;
 
@@ -166,8 +176,6 @@ Server::wait_connections(void)
 		if (_fds[i].revents & (POLLIN | POLLERR))
 		{
 			_handle_request(_fds[i].fd);
-
-			// No more readable file descriptors
 			if (--_poll_ret <= 0)
 				break;
 		}

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: madaniel <madaniel@student.42.fr>          +#+  +:+       +#+         #
+#    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/26 14:00:54 by madaniel         ###   ########.fr        #
+#    Updated: 2022/10/27 12:36:18 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRCS =	srcs/main.cpp \
 		srcs/core/Webserv.cpp \
 		srcs/parser/ConfigParser.cpp \
 		srcs/parser/RequestParser.cpp \
-		srcs/parser/Token.cpp \
+		srcs/parser/Token.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
