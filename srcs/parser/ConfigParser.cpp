@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:27:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:54:50 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,13 +95,13 @@ ConfigParser::_tokenize(void)
 			{
 				// weird logic to get token, substract 127 with the character to get the value and cast it (see enum)
 				t = (t_token)(127 - line[_col]);
-				_token_list.push_back(Token(t, std::string(1, line[_col]), _row, _col));
+				_token_list.push_back(ConfigToken(t, std::string(1, line[_col]), _row, _col));
 				_col++;
 			}
 			else if (line[_col] == ';')
 			{
 				// semicolons are treated as newlines, might change later
-				_token_list.push_back(Token(token_newline, ";", _row, _col));
+				_token_list.push_back(ConfigToken(token_newline, ";", _row, _col));
 				_col++;
 			}
 			// skip end-of-line comments
@@ -117,21 +117,21 @@ ConfigParser::_tokenize(void)
 					_col++;
 				}
 				if (_col - j > 0)
-					_token_list.push_back(Token(token_word, std::string(line, j, _col - j), _row, _col));
+					_token_list.push_back(ConfigToken(token_word, std::string(line, j, _col - j), _row, _col));
 			}
 		}
 		_row++;
-		_token_list.push_back(Token(token_newline, "newline", _row, _col));
+		_token_list.push_back(ConfigToken(token_newline, "newline", _row, _col));
 	}
 }
 
 void
 ConfigParser::_check_order(void)
 {
-	Context								_context;
-	unsigned int						_braces;
-	std::list<Token>::const_iterator	cur;
-	std::list<Token>::const_iterator	_end;
+	Context									_context;
+	unsigned int							_braces;
+	std::list<ConfigToken>::const_iterator	cur;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	_context = http;
 	_braces = 0;
@@ -184,11 +184,11 @@ ConfigParser::_check_order(void)
 }
 
 void
-ConfigParser::_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s)
+ConfigParser::_parse_directive_listen(std::list<ConfigToken>::const_iterator& cur, Server& s)
 {
-	size_t								n;
-	std::string							word;
-	std::list<Token>::const_iterator	_end;
+	size_t									n;
+	std::string								word;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	cur++;
 	if (get_type(cur) == token_newline || get_type(cur) == token_open_brace || get_type(cur) == token_close_brace)
@@ -222,9 +222,9 @@ ConfigParser::_parse_directive_listen(std::list<Token>::const_iterator& cur, Ser
 }
 
 void
-ConfigParser::_parse_directive_server_name(std::list<Token>::const_iterator& cur, Server& s)
+ConfigParser::_parse_directive_server_name(std::list<ConfigToken>::const_iterator& cur, Server& s)
 {
-	std::list<Token>::const_iterator	_end;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	cur++;
 	_end = _token_list.end();
@@ -237,7 +237,7 @@ ConfigParser::_parse_directive_server_name(std::list<Token>::const_iterator& cur
 }
 
 void
-ConfigParser::_parse_directive_error_page(std::list<Token>::const_iterator& cur, Server& s)
+ConfigParser::_parse_directive_error_page(std::list<ConfigToken>::const_iterator& cur, Server& s)
 {
 	unsigned int	_ec;
 
@@ -260,7 +260,7 @@ ConfigParser::_parse_directive_error_page(std::list<Token>::const_iterator& cur,
 }
 
 void
-ConfigParser::_parse_directive_client_body_buffer_size(std::list<Token>::const_iterator& cur, Server& s)
+ConfigParser::_parse_directive_client_body_buffer_size(std::list<ConfigToken>::const_iterator& cur, Server& s)
 {
 	if (s.get_state() & state_client_body_buffer_size)
 		show_repeat_warning(_path, (*cur));
@@ -275,10 +275,10 @@ ConfigParser::_parse_directive_client_body_buffer_size(std::list<Token>::const_i
 }
 
 void
-ConfigParser:: _parse_directive_limit_except(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser:: _parse_directive_limit_except(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
-	std::string							_method;
-	std::list<Token>::const_iterator	_end;
+	std::string								_method;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	if (l.get_state() & state_server_name)
 		show_repeat_warning(_path, (*cur));
@@ -304,10 +304,10 @@ ConfigParser:: _parse_directive_limit_except(std::list<Token>::const_iterator& c
 
 // rewrite path replacement
 void
-ConfigParser::_parse_directive_rewrite(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
-	std::string							_path;
-	std::list<Token>::const_iterator	_end;
+	std::string								_path;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	_end = _token_list.end();
 	if (l.get_state() & state_http_redirection)
@@ -327,7 +327,7 @@ ConfigParser::_parse_directive_rewrite(std::list<Token>::const_iterator& cur, Lo
 }
 
 void
-ConfigParser::_parse_directive_root(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_root(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
 	if (l.get_state() & state_root)
 		show_repeat_warning(_path, (*cur));
@@ -342,7 +342,7 @@ ConfigParser::_parse_directive_root(std::list<Token>::const_iterator& cur, Locat
 }
 
 void
-ConfigParser::_parse_directive_autoindex(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
 	std::string	_ai;
 
@@ -370,7 +370,7 @@ ConfigParser::_parse_directive_autoindex(std::list<Token>::const_iterator& cur, 
 }
 
 void
-ConfigParser::_parse_directive_default_file(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_default_file(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
 	if (l.get_state() & state_default_file)
 		show_repeat_warning(_path, (*cur));
@@ -385,7 +385,7 @@ ConfigParser::_parse_directive_default_file(std::list<Token>::const_iterator& cu
 }
 
 void
-ConfigParser::_parse_directive_cgi_extension(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_cgi_extension(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
 	if (l.get_state() & state_cgi_extension)
 		show_repeat_warning(_path, (*cur));
@@ -400,7 +400,7 @@ ConfigParser::_parse_directive_cgi_extension(std::list<Token>::const_iterator& c
 }
 
 void
-ConfigParser::_parse_directive_upload_path(std::list<Token>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_upload_path(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
 	if (l.get_state() & state_upload_path)
 		show_repeat_warning(_path, (*cur));
@@ -415,11 +415,11 @@ ConfigParser::_parse_directive_upload_path(std::list<Token>::const_iterator& cur
 }
 
 void
-ConfigParser::_parse_location_block(std::list<Token>::const_iterator& cur, Server& s)
+ConfigParser::_parse_location_block(std::list<ConfigToken>::const_iterator& cur, Server& s)
 {
-	Location							l;
-	int									_braces;
-	std::list<Token>::const_iterator	_end;
+	Location								l;
+	int										_braces;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	_end = _token_list.end();
 	cur++;
@@ -469,11 +469,11 @@ ConfigParser::_parse_location_block(std::list<Token>::const_iterator& cur, Serve
 }
 
 const Server
-ConfigParser::_parse_server_block(std::list<Token>::const_iterator& cur)
+ConfigParser::_parse_server_block(std::list<ConfigToken>::const_iterator& cur)
 {
-	Server								s;
-	int									_braces;
-	std::list<Token>::const_iterator	_end;
+	Server									s;
+	int										_braces;
+	std::list<ConfigToken>::const_iterator	_end;
 
 	_end = _token_list.end();
 	while (cur != _end && get_type(cur) != token_word)
@@ -512,9 +512,9 @@ ConfigParser::run(std::vector<Server>& servers)
 {
 	_tokenize();
 	_check_order();
-	std::list<Token>::const_iterator	cur;
-	std::list<Token>::const_iterator	_end;
-	std::list<Token>::const_iterator	start;
+	std::list<ConfigToken>::const_iterator	cur;
+	std::list<ConfigToken>::const_iterator	_end;
+	std::list<ConfigToken>::const_iterator	start;
 
 	cur = _token_list.begin();
 	_end = _token_list.end();

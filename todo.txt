@@ -120,15 +120,11 @@ autoindex strategy:
 
 set the first server for specific host:port as the default one (that will answer requests)
 
-steps
-	- parse config file
-	- setup webserver
-		for each Server:
-			socket()
-			fcntl(server_fd, F_SETFL, O_NONBLOCK);
-			struct sockaddr_in	shit
-			setsockopt(reuse);
-			bind()
-			listen()
-			add to fd set(server_fd)
-	- keep track of currently running servers (server_fd, ip and port)
+parse query string:
+	query string starts from '?' character
+	format is <arg>=<value>
+	args are separated with &
+
+	example ?arg1=value1&arg2=value2
+	arg1 = value1;
+	arg2 = value2

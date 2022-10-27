@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 18:17:16 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:14:09 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 # include "core.hpp"
 # include "http.hpp"
-# include "parser.hpp"
+# include "ConfigParser.hpp"
+# include "RequestParser.hpp"
 # include "Server.hpp"
 # include <cstdlib>
 # include <map>

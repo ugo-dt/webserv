@@ -6,39 +6,39 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:57:55 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 10:58:18 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:57:42 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Token.hpp"
 
-Token::Token(void)
-	: _type(token_none),
-	  _word(""),
-	  _row(0),
+ConfigToken::ConfigToken(void)
+	: _row(0),
 	  _col(0)
 {
+	_type = token_none;
+	_word = "";
 }
 
-Token::Token(t_token t, const std::string &s, unsigned int row, unsigned int col)
-	: _type(t),
-	  _word(s),
-	  _row(row),
+ConfigToken::ConfigToken(t_token type, const std::string &word, unsigned int row, unsigned int col)
+	: _row(row),
 	  _col(col + 1)
 {
+	_type = type;
+	_word = word;
 }
 
-Token::Token(const Token &x)
-	: _type(x._type),
-	  _word(x._word),
-	  _row(x._row),
+ConfigToken::ConfigToken(const ConfigToken &x)
+	: _row(x._row),
 	  _col(x._col)
 {
+	_type = x._type;
+	_word = x._word;
 }
 
-Token::~Token() {}
+ConfigToken::~ConfigToken() {}
 
-const Token	&Token::operator=(const Token &x)
+const ConfigToken	&ConfigToken::operator=(const ConfigToken &x)
 {
 	if (this != &x)
 	{
@@ -51,17 +51,13 @@ const Token	&Token::operator=(const Token &x)
 }
 
 std::ostream&
-operator<<(std::ostream &o, const Token &t)
+operator<<(std::ostream &o, const ConfigToken &t)
 {
 	o << t.word();
 	return (o);
 }
 
-const std::string & Token::word(void) const
-	{return _word;}
-const t_token & Token::type(void) const  
-	{return _type;}
-unsigned int Token::row(void) const
+unsigned int ConfigToken::row(void) const
 	{return _row;}
-unsigned int Token::col(void) const
+unsigned int ConfigToken::col(void) const
 	{return _col;}

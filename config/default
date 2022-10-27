@@ -1,7 +1,7 @@
 server
 {
 	listen			localhost
-	server_name		webserv
+	server_name		webserv test
 
 	location / {
 		root			www

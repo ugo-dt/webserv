@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:27:44 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:52:30 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ private:
 	typedef enum e_context {http, server, location} Context;
 
 private:
-	std::list<Token>	_token_list;
+	std::list<ConfigToken>	_token_list;
 	std::string			_path;
 	std::ifstream		_file;
 
@@ -67,20 +67,20 @@ private:
 	void			_check_order();
 	void			_parse();
 
-	const Server	_parse_server_block(std::list<Token>::const_iterator& cur);
-	void			_parse_directive_listen(std::list<Token>::const_iterator& cur, Server& s);
-	void			_parse_directive_server_name(std::list<Token>::const_iterator&, Server&);
-	void			_parse_directive_error_page(std::list<Token>::const_iterator& cur, Server& s);
-	void			_parse_directive_client_body_buffer_size(std::list<Token>::const_iterator& cur, Server& x);
+	const Server	_parse_server_block(std::list<ConfigToken>::const_iterator& cur);
+	void			_parse_directive_listen(std::list<ConfigToken>::const_iterator& cur, Server& s);
+	void			_parse_directive_server_name(std::list<ConfigToken>::const_iterator&, Server&);
+	void			_parse_directive_error_page(std::list<ConfigToken>::const_iterator& cur, Server& s);
+	void			_parse_directive_client_body_buffer_size(std::list<ConfigToken>::const_iterator& cur, Server& x);
 
-	void			_parse_location_block(std::list<Token>::const_iterator& cur, Server& s);
-	void 			_parse_directive_limit_except(std::list<Token>::const_iterator& cur, Location& l);
-	void 			_parse_directive_rewrite(std::list<Token>::const_iterator& cur, Location& l);
-	void 			_parse_directive_root(std::list<Token>::const_iterator& cur, Location& l);
-	void 			_parse_directive_autoindex(std::list<Token>::const_iterator& cur, Location& l);
-	void			_parse_directive_default_file(std::list<Token>::const_iterator& cur, Location& l);
-	void			_parse_directive_cgi_extension(std::list<Token>::const_iterator& cur, Location& l);
-	void			_parse_directive_upload_path(std::list<Token>::const_iterator& cur, Location& l);
+	void			_parse_location_block(std::list<ConfigToken>::const_iterator& cur, Server& s);
+	void 			_parse_directive_limit_except(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void 			_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void 			_parse_directive_root(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void 			_parse_directive_autoindex(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void			_parse_directive_default_file(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void			_parse_directive_cgi_extension(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void			_parse_directive_upload_path(std::list<ConfigToken>::const_iterator& cur, Location& l);
 
 public:
 	ConfigParser();

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 12:58:15 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:42:43 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include "http.hpp"
 # include "log.hpp"
 # include "Location.hpp"
+# include "Request.hpp"
+# include "Response.hpp"
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <poll.h>
@@ -28,7 +30,8 @@
 # include <string>
 # include <vector>
 
-# define MAX_CONNECTIONS	32 // no idea for now, this is totally random need to check later
+// add 1 for server socket
+# define MAX_CONNECTIONS	(32 + 1) // no idea for now, this is totally random need to check later
 # define BUFFER_SIZE		2048
 
 typedef struct s_listen

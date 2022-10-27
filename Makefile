@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/27 12:36:18 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/27 14:42:52 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,9 @@ SRCS =	srcs/main.cpp \
 		srcs/core/Location.cpp \
 		srcs/core/Server.cpp \
 		srcs/core/Webserv.cpp \
+		srcs/http/Autoindex.cpp \
+		srcs/http/Request.cpp \
+		srcs/http/Response.cpp \
 		srcs/parser/ConfigParser.cpp \
 		srcs/parser/RequestParser.cpp \
 		srcs/parser/Token.cpp
