@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:33:03 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:27:02 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ ConfigParser::_tokenize(void)
 		_col = 0;
 		while (_col < line.length() && isspace(line[_col]))
 			_col++;
-		// discard comments
+		// Discard comments
 		if (line[_col] == '#')
 			continue ;
 		while (_col < line.length())
@@ -93,7 +93,7 @@ ConfigParser::_tokenize(void)
 				_col++;
 			if (line[_col] == '{' || line[_col] == '}')
 			{
-				// weird logic to get token, we substract 127 with the character to get the type value and cast it (see enum)
+				// weird logic to get token, substract 127 with the character to get the value and cast it (see enum)
 				t = (t_token)(127 - line[_col]);
 				_token_list.push_back(Token(t, std::string(1, line[_col]), _row, _col));
 				_col++;
@@ -104,12 +104,15 @@ ConfigParser::_tokenize(void)
 				_token_list.push_back(Token(token_newline, ";", _row, _col));
 				_col++;
 			}
+			// skip end-of-line comments
+			else if (line[_col] == '#')
+				_col = line.length();
 			else
 			{
 				j = _col;
 				while (_col < line.length())
 				{
-					if (isspace(line[_col]) || line[_col] == '{' || line[_col] == '}' || line[_col] == ';')
+					if (isspace(line[_col]) || is_separator(line[_col]))
 						break ;
 					_col++;
 				}

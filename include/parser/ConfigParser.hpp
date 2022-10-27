@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 15:48:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 14:27:44 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,13 @@ bool
 is_line_break(const t_token& t)
 {
 	return (t == token_newline || t == token_close_brace || t == token_semicolon);
+}
+
+static inline
+bool
+is_separator(const char& c)
+{
+	return (c == '{' || c == '}' || c == ';' || c == '#');
 }
 
 #endif // CONFIG_PARSER_HPP
