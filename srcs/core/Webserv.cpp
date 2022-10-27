@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 19:11:51 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 11:41:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,8 @@ void
 Webserv::run(void)
 {
 	while (_running)
-	{
 		for (size_t i = 0; i < _nsockets; i++)
-		{
 			_servers[i].wait_connections();
-			// wait incoming connections
-			// handle requests
-		}
-	}
 }
 
 void

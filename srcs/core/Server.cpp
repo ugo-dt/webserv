@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 20:02:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 12:04:12 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,37 @@ Server::setup(void)
 		_fds[i].fd = -1;
 		_fds[i].events = POLLIN; 
 	}
+	_nfds = MAX_CONNECTIONS;
+}
+
+void
+Server::_handle_request(int fd_index)
+{
+	int		&_fd = _fds[fd_index].fd;
+	size_t	_bytes;
+
+	_bytes = recv(_fd, _buffer, 1, MSG_PEEK);
+	if (_bytes < 0)
+	{
+		fprintf(stderr, "Error: read from socket %d\n", _fd);
+		close(_fd);
+		_fd = -1;
+		return ;
+	}
+
+	bzero(_buffer, BUFFER_SIZE);
+	_bytes = recv(fd, _buffer, BUFFER_SIZE, 0);
+	else if (bytes == 0)
+	{    // connection closed by client
+		printf("Close socket %d\n", fd);
+		close(fd);
+		_fds[fd_index].fd = -1;                                        
+	}
+	else
+	{
+		printf("Read %zu bytes from socket %d\n", n, fd);
+		send(fd, "Bien recu\n", 11, 0);
+	}
 }
 
 void
@@ -105,15 +136,13 @@ Server::wait_connections(void)
                 ntohs(_sockaddr.sin_port));
 
 		// Save client socket into _fds array
-		i = 0;
-		while (i < MAX_CONNECTIONS)
+		for (i = 0; i < MAX_CONNECTIONS; i++)
 		{
 			if (_fds[i].fd < 0)
 			{
 				_fds[i].fd = fd;
 				break;
 			}
-			i++;
 		}
 		if (i == MAX_CONNECTIONS)
 		{
@@ -121,8 +150,6 @@ Server::wait_connections(void)
 			close(fd);
 		}
 		_fds[i].events = POLLIN;
-		if (i > _nfds)
-			_nfds = i;
 
 		// No more readable file descriptors
 		if (--_poll_ret <= 0)
@@ -130,34 +157,15 @@ Server::wait_connections(void)
 	}
 
 	// Check all clients to read data
-	for (i = 1; i <= _nfds; i++)
+	for (i = 1; i < _nfds; i++)
 	{
-		fd = _fds[i].fd;
-		if (fd < 0)
+		if (_fds[i].fd < 0)
 			continue;
 
 		// If the client is readable or errors occur
 		if (_fds[i].revents & (POLLIN | POLLERR))
 		{
-			bzero(_buffer, BUFFER_SIZE);
-			n = recv(fd, _buffer, BUFFER_SIZE, 0);
-			if (n < 0)
-			{
-				fprintf(stderr, "Error: read from socket %d\n", fd);
-				close(fd);
-				_fds[i].fd = -1;
-			}
-			else if (n == 0)
-			{    // connection closed by client
-				printf("Close socket %d\n", fd);
-				close(fd);
-				_fds[i].fd = -1;                                        
-			}
-			else
-			{
-				printf("Read %zu bytes from socket %d\n", n, fd);
-				send(fd, "Bien recu\n", 11, 0);
-			}
+			_handle_request(_fds[i].fd);
 
 			// No more readable file descriptors
 			if (--_poll_ret <= 0)

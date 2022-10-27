@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:08:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 12:47:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 12:03:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ class Location
 {
 private:
 	std::string							_uri;
+	// bool								_is_directory;
 	unsigned int						_methods;
 	std::string							_root;
 	std::map<std::string, std::string>	_redirections;

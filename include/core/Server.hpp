@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/26 18:36:53 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/27 11:50:11 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ public:
 	unsigned int	get_state() const;
 
 	void	wait_connections();
+	void	_handle_request();
 };
 
 std::ostream&	operator<<(std::ostream &o, const Server& s);
