@@ -6,13 +6,14 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 09:55:57 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 13:53:22 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRING_UTILS_HPP
 # define STRING_UTILS_HPP
 
+# include <algorithm>
 # include <string>
 # include <sstream>
 

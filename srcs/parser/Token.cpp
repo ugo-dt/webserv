@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:57:55 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:57:42 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 13:54:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ ConfigToken::ConfigToken(t_token type, const std::string &word, unsigned int row
 }
 
 ConfigToken::ConfigToken(const ConfigToken &x)
-	: _row(x._row),
+	: Token(x._type, x._word),
+	  _row(x._row),
 	  _col(x._col)
 {
 	_type = x._type;

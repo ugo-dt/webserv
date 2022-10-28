@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:14:09 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 13:53:48 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "ConfigParser.hpp"
 # include "RequestParser.hpp"
 # include "Server.hpp"
+# include <csignal>
 # include <cstdlib>
 # include <map>
 # include <poll.h>
