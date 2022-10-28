@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 15:36:47 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:43:04 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,14 @@ int	test_request()
 	delete (req);
 	return (0);
 }
-
-
-// root / www
-// / -> /www/
-// index.html -> www/index.html
-//
-// index given path is localhost/www/index.html
-// so it will create links such as localhost/
 int	test_autoindex()
 {
+	// root / www
+	// / -> /www/
+	// index.html -> www/index.html
+	//
+	// index given path is localhost/www/index.html
+	// so it will create links such as localhost/
 	Autoindex	ai;
 	t_listen	listen = {"localhost", 7777};
 	std::string	path = "/mnt/nfs/homes/ugdaniel/sgoinfre/goinfre/ugdaniel/webserv/www";
@@ -76,17 +74,10 @@ void	sig_handler(int signum)
 int	main(int argc, const char **argv)
 {
 	// return (test_request());
-	try
-	{
-		signal(SIGINT, sig_handler);
-		webserv.init(argc, argv);
-		webserv.run();
-		webserv.clean();
-	}
-	catch (std::exception& e)
-	{
-		std::cout << "webserv: " << e.what() << "\e[0m" << std::endl;
+	signal(SIGINT, sig_handler);
+	if (webserv.init(argc, argv) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
-	}
+	webserv.run();
+	webserv.clean();
 	return (EXIT_SUCCESS);
 }

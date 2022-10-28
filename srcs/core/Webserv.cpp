@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 13:08:37 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:50:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,30 +33,47 @@ Webserv::~Webserv(void)
 	clean();
 }
 
-void
+int
 Webserv::init(int argc, const char **argv)
 {
 	ConfigParser	parser;
 
-	parser.init(argc, argv);
-	parser.run(_servers);
+	try
+	{
+		parser.init(argc, argv);
+		parser.run(_servers);
+	}
+	catch (std::invalid_argument& e)
+	{
+		std::cout << e.what() << "\e[0m" << std::endl;
+		return (EXIT_FAILURE);
+	}
 	_nsockets = _servers.size();
 	if (!_nsockets)
 	{
 		std::cout << "webserv: no servers found." << std::endl;
 		exit(EXIT_SUCCESS);
 	}
-	_sockets = (int *)malloc(sizeof(int) * _nsockets);
-	if (!_sockets)
-		_throw_errno("malloc");
-	for (size_t i = 0; i < _nsockets; i++)
+	try
 	{
-		std::cout << _servers[i];
-		_servers[i].setup();
-		memset(&_sockets[i], 0, sizeof(struct pollfd));
-		_sockets[i] = _servers[i].get_socket();
-		WS_VALUE_LOG("Socket", _sockets[i]);
+		_sockets = (int *)malloc(sizeof(int) * _nsockets);
+		if (!_sockets)
+			_throw_errno("malloc");
+		for (size_t i = 0; i < _nsockets; i++)
+		{
+			std::cout << _servers[i];
+			_servers[i].setup();
+			memset(&_sockets[i], 0, sizeof(struct pollfd));
+			_sockets[i] = _servers[i].get_socket();
+			WS_VALUE_LOG("Socket", _sockets[i]);
+		}
 	}
+	catch (std::runtime_error& e)
+	{
+		std::cerr << "webserv: error: " << e.what() << std::endl;
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
 void

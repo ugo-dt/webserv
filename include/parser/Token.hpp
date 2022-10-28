@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:46:44 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 15:57:23 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:50:51 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,9 @@ _get_error_string(const std::string &path, const ConfigToken &t, const std::stri
 
 	std::snprintf(col, 5, "%u", t.col());
 	std::snprintf(row, 5, "%u", t.row());
-	return (std::string("webserv: \e[1m" + path + ":"
+	return (std::string("\e[1m" + path + ":"
 	         + row + ":" + col
-	         + ": \e[31merror:\e[39m "
+	         + ": \e[31mfatal error:\e[39m "
 			 + msg
 			 + "\e[0m"));
 }
@@ -95,7 +95,7 @@ _get_warning_string(const std::string &path, const ConfigToken &t, const std::st
 
 	std::snprintf(col, 5, "%u", t.col());
 	std::snprintf(row, 5, "%u", t.row());
-	return (std::string("webserv: \e[1m" + path + ":"
+	return (std::string("\e[1m" + path + ":"
 	         + row + ":" + col
 	         + ": \e[95mwarning:\e[39m "
 			 + msg
@@ -109,7 +109,7 @@ static inline void show_token_warning(const std::string& path, const ConfigToken
 static inline void show_token_error(const std::string& path, const ConfigToken& t, const std::string& msg)
 	{std::cerr << _get_error_string(path, t, msg) << std::endl;}
 static inline void throw_token_error(const std::string& path, const ConfigToken& t, const std::string& msg)
-	{throw std::logic_error(_get_error_string(path, t, msg));}
+	{throw std::invalid_argument(_get_error_string(path, t, msg));}
 static inline const std::string& get_word(const std::list<ConfigToken>::const_iterator& x)
 	{return ((*x).word());}
 static inline const t_token& get_type(const std::list<ConfigToken>::const_iterator& x)

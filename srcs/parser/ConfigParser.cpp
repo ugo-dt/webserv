@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:54:50 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:51:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ ConfigParser::init(int argc, const char **argv)
 
 	// Use default file if none is provided
 	if (argc > 2)
-		throw std::invalid_argument("\e[1m\e[31merror:\e[39m too many arguments");
+		throw std::invalid_argument("webserv: \e[1m\e[31merror:\e[39m too many arguments");
 	if (argc < 2)
 	{
 		_path = DEFAULT_CONFIG_PATH;
@@ -35,13 +35,13 @@ ConfigParser::init(int argc, const char **argv)
 			if (stat(_path.c_str(), &_stat) == 0)
 			{
 				if (S_ISDIR(_stat.st_mode))
-					throw std::invalid_argument("\e[1m\e[31merror:\e[39m is a directory: '" + _path + "'");
+					throw std::invalid_argument("webserv: \e[1m\e[31merror:\e[39m is a directory: '" + _path + "'");
 			}
 			else
-				_err.append("\e[1m\e[31merror:\e[39m file not found: '" + _path + "'\n");
+				_err.append("webserv: \e[1m\e[31merror:\e[39m file not found: '" + _path + "'\n");
 		}
 		else
-			_err.append("\e[1m\e[31merror:\e[39m no input files\n");
+			_err.append("webserv: \e[1m\e[31merror:\e[39m no input files\n");
 		if (!_err.empty())
 		{
 			_err.erase(_err.size() - 1);

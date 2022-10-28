@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 14:48:53 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:41:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ public:
 	Webserv();
 	~Webserv();
 
-	void	init(int argc, const char **argv);
+	int		init(int argc, const char **argv);
 	void	run();
 	void	clean();
 };
