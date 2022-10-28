@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:09:22 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 19:15:51 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:58:44 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ Location::operator=(const Location& x)
 }
 
 Location::~Location()
-	{}
+{
+}
 
 const std::string&	Location::get_uri() const
 	{return _uri;}

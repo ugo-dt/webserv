@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:06:42 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 22:39:20 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ private:
 	std::string		_content_type;
 	std::string		_content_length;
 	std::string		_server;
+	std::string		_location; // this is the header field 'Location:', this is NOT class Location
 
 public:
 	ResponseHeaders();
@@ -41,6 +42,7 @@ public:
 	void	set_content_length(const std::string&);
 	void	set_content_length(size_t);
 	void	set_server(const std::string&);
+	void	set_location(const std::string&);
 
 	const std::string	get_status() const;
 	const std::string	get_date() const;
@@ -48,6 +50,7 @@ public:
 	const std::string&	get_content_length() const;
 	const std::string&	get_server() const;
 	const std::string	get_status_string() const;
+	const std::string&	get_location() const;
 };
 
 #endif // RESPONSE_HEADERS_HPP

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 18:43:39 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 22:06:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ RequestParser::run()
 	std::string line;
 
 	_request.set_invalid();
-	// std::cout << "Request:" << std::endl << "[" << _buffer << "]" << std::endl;
 	_parse_first_line();
 	if (_status == STATUS_BAD_REQUEST)
 		return ;
@@ -147,7 +146,6 @@ RequestParser::run()
 
 	while ((line = _get_next_line(i)) != "\r" && line != "" && line != "\r\n")
 	{
-		std::cout << line << std::endl;
 		field = _get_header_field(line);
 		value = _get_header_value(line);
 		if (field.length() && value.length())

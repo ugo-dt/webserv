@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:30:58 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 22:51:01 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,38 +113,101 @@ Response::_check_uri(const std::set<Location>& locations)
 }
 
 void
-Response::_get_body(const t_listen& listen)
+Response::_set_content_type()
+{
+	std::string	_ext;
+
+	_ext = _uri.substr(_uri.find_last_of(".") + 1);
+	if (_ext == "bmp")
+		_header.set_content_type(MIME_BMP);
+	else if (_ext == "css")
+		_header.set_content_type(MIME_CSS);
+	else if (_ext == "gif")
+		_header.set_content_type(MIME_GIF);
+	else if (_ext == "htm")
+		_header.set_content_type(MIME_HTM);
+	else if (_ext == "html")
+		_header.set_content_type(MIME_HTML);
+	else if (_ext == "ico")
+		_header.set_content_type(MIME_ICO);
+	else if (_ext == "jpg")
+		_header.set_content_type(MIME_JPG);
+	else if (_ext == "jpeg")
+		_header.set_content_type(MIME_JPEG);
+	else if (_ext == "js")
+		_header.set_content_type(MIME_JS);
+	else if (_ext == "png")
+		_header.set_content_type(MIME_PNG);
+	else if (_ext == "pdf")
+		_header.set_content_type(MIME_PDF);
+	else if (_ext == "sh")
+		_header.set_content_type(MIME_SH);
+	else
+		_header.set_content_type(MIME_PLAIN_TEXT);
+}
+
+void
+Response::_get_uri_as_string(void)
+{
+	std::ifstream	f;
+	std::string		line;
+
+	f.open(_uri, std::ifstream::out);
+	if (!f.is_open())
+	{
+		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+		_body = "501 Internal server error";
+		return ;
+	}
+	_header.set_status(STATUS_OK);
+	_set_content_type();
+	while (std::getline(f, line))
+		_body.append(line + "\n");
+	f.close();
+}
+
+void
+Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_listen& listen)
 {
 	struct stat		_stat;
-	std::string		line;
-	std::ifstream	f;
 	Autoindex		_ai;
 
-	std::cout << "body: " << _uri << std::endl;
 	if (stat(_uri.c_str(), &_stat) == 0)
 	{
 		if (S_ISREG(_stat.st_mode))
 		{
 			WS_VALUE_LOG("File found at", _uri);
-			f.open(_uri, std::ifstream::out);
-			if (!f.is_open())
-			{
-				_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-				this->_body = "Internal server error";
-				return ;
-			}
-			_header.set_status(STATUS_OK);
-			_header.set_content_type(MIME_HTML);
-			while (std::getline(f, line))
-				this->_body.append(line + "\n");
-			f.close();
+			_get_uri_as_string();
 		}
 		else if (S_ISDIR(_stat.st_mode))
 		{
 			WS_VALUE_LOG("Directory found at", _uri);
-			if (_location->is_autoindex_on())
+			if (_location)
 			{
-				this->_body = _ai.get_index(_uri, listen);
+				if (_location->is_autoindex_on())
+				{
+					_body = _ai.get_index(_uri, listen);
+					_header.set_content_type(MIME_HTML);
+				}
+				else if (_location->get_default_file().size())
+				{
+					_header.set_status(STATUS_MOVED_PERMANENTLY);
+					_header.set_location(_location->get_default_file());
+				}
+				// redirections
+				// for (std::map<std::string, std::string>::const_iterator it = _location->get_redirections().begin(); it != _location->get_redirections().end(); it++)
+				// {
+				// 	if (_uri == (*it).second)
+				// 	{
+				// 		return ;
+				// 	}
+				// }
+			}
+			else
+			{
+				_header.set_status(STATUS_FORBIDDEN);
+				_uri = error_pages.at(STATUS_FORBIDDEN);
+				_get_uri_as_string();
 			}
 		}
 	}
@@ -152,8 +215,10 @@ Response::_get_body(const t_listen& listen)
 	{
 		WS_VALUE_LOG("No such file or directory", _uri);
 		_header.set_status(STATUS_NOT_FOUND);
-		this->_body = "404 Not found";
+		_uri = error_pages.at(STATUS_NOT_FOUND);
+		_get_uri_as_string();
 	}
+	_header.set_content_length(_body.length());
 }
 
 void
@@ -161,6 +226,8 @@ Response::generate(const std::map<uint16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
 				   const t_listen& listen)
 {
+	
+
 	if (!_request->is_valid())
 	{
 		WS_INFO_LOG("Invalid request.");
@@ -172,21 +239,26 @@ Response::generate(const std::map<uint16_t, std::string>& error_pages,
 	WS_INFO_LOG("Creating response.");
 
 	_check_uri(locations);
-	_get_body(listen);
-	(void)error_pages;
+	_get_body(error_pages, listen);
 }
 
 const std::string
 Response::str()
 {
-	std::string	str;
+	std::string		str;
+	unsigned int	_status;
 
-	_header.set_content_length(_body.length());
+	_status = atoi(_header.get_status().c_str());
 	str = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
-	str += "Content-Length: " + _header.get_content_length() + CRLF;
-	str += "Content-Type: " + _header.get_content_type() + CRLF;
-	str += "Date: " + _header.get_date() + CRLF;
-	str += "Server: " + _header.get_server() + CRLF;
+	if (_status == STATUS_MOVED_PERMANENTLY)
+		str += "Location: " + _header.get_location() + CRLF;
+	else if (_status == STATUS_OK)
+	{
+		str += "Content-Length: " + _header.get_content_length() + CRLF;
+		str += "Content-Type: " + _header.get_content_type() + CRLF;
+		str += "Date: " + _header.get_date() + CRLF;
+		str += "Server: " + _header.get_server() + CRLF;
+	}
 	str += CRLF;
 	str += _body;
 	_response_length = str.length();

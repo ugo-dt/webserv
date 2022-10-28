@@ -43,7 +43,9 @@ private:
 	const Location	*_location; // matching location (set to NULL if no match)
 
 	void	_check_uri(const std::set<Location>& server_locations);
-	void	_get_body(const t_listen& listen);
+	void	_get_body(const std::map<uint16_t, std::string>& error_pages, const t_listen& listen);
+	void	_set_content_type();
+	void	_get_uri_as_string();
 
 public:
 	Response(const char *request_buffer);

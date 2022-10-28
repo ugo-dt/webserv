@@ -8,7 +8,11 @@ server
 		rewrite			/redirect.html /index.html
 		default_file	index.html
 		limit_except	GET POST DELETE
-		autoindex		off
+		autoindex		on
+	}
+
+	location /www/ {
+		autoindex		on
 	}
 }
 

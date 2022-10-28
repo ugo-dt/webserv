@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:29:18 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 21:18:34 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	test_autoindex()
 	// so it will create links such as localhost/
 	Autoindex	ai;
 	t_listen	listen = {"localhost", 7777};
-	std::string	path = "/mnt/nfs/homes/ugdaniel/sgoinfre/goinfre/ugdaniel/webserv/www";
+	std::string	path = "./www";
 	std::string	index;
 
 	index = ai.get_index(path, listen);

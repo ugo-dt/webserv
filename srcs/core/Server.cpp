@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:23:50 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 22:04:16 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,9 +129,9 @@ Server::_handle_request(int& _fd)
 void
 Server::wait_connections(void)
 {
-	int			_incoming_fd;
-	int			_poll_ret;
-	size_t		i;
+	int		_incoming_fd;
+	int		_poll_ret;
+	size_t	i;
 
 	_poll_ret = poll(_fds, _nfds, 0);
 	if (_poll_ret <= 0)

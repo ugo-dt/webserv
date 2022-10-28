@@ -71,3 +71,6 @@ Norme:
 	arg2 = value2
 
 set the first server for specific host:port as the default one (that will answer requests)
+
+is oldest folder? return same link
+redirections

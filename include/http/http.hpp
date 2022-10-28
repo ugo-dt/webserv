@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 14:58:16 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 22:24:02 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@
 # define MIME_ICO							"image/x-icon"
 # define MIME_JPG							"image/jpg"
 # define MIME_JPEG							"image/jpeg"
+# define MIME_JS							"text/javascript"
 # define MIME_PNG							"image/png"
 # define MIME_PDF							"application/pdf"
 # define MIME_SH							"application/x-sh"
