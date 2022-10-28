@@ -47,11 +47,6 @@ Norme:
 	- Status code (e.g. '200 OK')
 	- Body
 
-	class:
-		size_t						_status;
-		std::vector<std::string>	_header_fields;
-
-	
 	More info on status codes: https://httpwg.org/specs/rfc9110.html#status.codes
 
 • Headers fields (headers)

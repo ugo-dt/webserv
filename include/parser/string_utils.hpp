@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 17:02:56 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 09:55:57 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ std::string&	strip(std::string& str, char c)
 
 static inline
 std::string
-to_string(size_t n)
+to_string(ssize_t n)
 {
 	std::stringstream tmp;
 	tmp << n;

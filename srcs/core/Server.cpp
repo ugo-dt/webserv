@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 17:35:03 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 11:49:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ Server::setup(void)
 	_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_socket < 0)
 		_throw_errno("socket");
+	WS_INFO_LOG("Created new socket for " + _listen.host + ":" + to_string(_listen.port) + " (" + to_string(_socket) + ")");
 	option = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
 		_throw_errno("setsockopt");
@@ -83,14 +84,16 @@ Server::setup(void)
 void
 Server::_handle_request(int& _fd)
 {
-	size_t		_bytes;
-	Response	*_resp;
+	ssize_t	_bytes;
 
-	// This will read data without removing it from the queue.
+	// We're checking if we can actually read from the file descritor
+	// This will read data without removing it from the queue
 	_bytes = recv(_fd, _buffer, 1, MSG_PEEK);
 	if (_bytes < 0)
 	{
-		std::cout << "Could not read client (" << _fd << ") request: " << std::strerror(errno) << std::endl;
+		// This should usually not happen, as we're polling through the file descriptors
+		// Playing it safe, though
+		std::cout << "Could not read from client (" << _fd << ") request: " << std::strerror(errno) << std::endl;
 		WS_VALUE_LOG("Socket closed", _fd);
 		close(_fd);
 		_fd = -1;
@@ -100,7 +103,6 @@ Server::_handle_request(int& _fd)
 	// Read the data from the client.
 	bzero(_buffer, BUFFER_SIZE);
 	_bytes = recv(_fd, _buffer, BUFFER_SIZE, 0);
-
 	if (_bytes == 0)
 	{
 		// Connection closed by client.
@@ -112,8 +114,11 @@ Server::_handle_request(int& _fd)
 	}
 	// Create response based on request
 	_resp = new Response(_buffer);
-
+	_resp->generate();
+	if (!_resp)
+		_throw_errno("Fatal error");
 	// Send response
+	WS_INFO_LOG("Sending response.");
 	_bytes = send(_fd, _resp->str(), _resp->length(), 0);
 	if (_bytes < 0)
 	{
@@ -163,11 +168,12 @@ Server::wait_connections(void)
 		if (i == MAX_CONNECTIONS)
 		{
 			std::cout << "Refused new connection: " << "too many clients" << std::endl;
+			send(_incoming_fd, "HTTP/1.1 403 Service Unavailable" CRLF "Server: webserv" CRLF CRLF "Service unavailable\r\n", 75, 0);
 			close(_incoming_fd);
 		}
 		else
 		{
-			std::cout << "Accepted new connection" << std::endl;
+			std::cout << "Accepted new connection (" << _incoming_fd << ") on " << _listen.host << ":" << _listen.port << std::endl;
 		}
 
 		// No more readable file descriptors
@@ -197,6 +203,7 @@ Server::clean()
 	// close fds
 	if (_socket != -1)
 	{
+		WS_INFO_LOG("Closing socket (" + to_string(_socket) + ")");
 		close(_socket);
 		_socket = -1;
 	}

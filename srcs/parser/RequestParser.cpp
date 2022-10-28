@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 17:47:57 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 09:47:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ RequestParser::_parse_first_line()
 		_request.set_method(METHOD_UNKNOWN);
 
 	if ((j = line.find_first_not_of(' ', i)) == std::string::npos)
-		this->_status = STATUS_BAD_REQUEST;
+		_status = STATUS_BAD_REQUEST;
 	if ((i = line.find_first_of(' ', j)) == std::string::npos)
-		this->_status = STATUS_BAD_REQUEST;
+		_status = STATUS_BAD_REQUEST;
 	tmp.assign(line, j, i - j);
 	if (i > j)
 		_request.set_uri(tmp);
@@ -66,13 +66,17 @@ RequestParser::_parse_first_line()
 	else
 		_request.set_query_string("");
 	if ((i = line.find_first_not_of(' ', i)) == std::string::npos)
-		this->_status = STATUS_BAD_REQUEST;
+		_status = STATUS_BAD_REQUEST;
 
-	if (line[i] == 'H' && line[i + 1] == 'T' && line[i + 2] == 'T' &&
-			line[i + 3] == 'P' && line[i + 4] == '/')
+	if (line[i] == 'H' && line[i + 1] == 'T' && line[i + 2] == 'T' && line[i + 3] == 'P' && line[i + 4] == '/')
 		_request.set_http_version(std::string(line, i + 5, 3));
+	else
+	{
+		_status = STATUS_BAD_REQUEST;
+		return ;
+	}
 	if (_request.get_http_version() != "1.0" && _request.get_http_version() != "1.1")
-		this->_status = STATUS_HTTP_VERSION_NOT_SUPPORTED;
+		_status = STATUS_HTTP_VERSION_NOT_SUPPORTED;
 }
 
 const std::string

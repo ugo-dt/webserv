@@ -6,12 +6,13 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:00 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 17:48:17 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 10:26:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "RequestParser.hpp"
+#include "log.hpp"
 
 Request::Request(const char *_buffer)
 	: _method(0),
@@ -24,6 +25,7 @@ Request::Request(const char *_buffer)
 {
 	RequestParser	_parser(*this, _buffer);
 
+	WS_INFO_LOG("Parsing request.");
 	_parser.run();
 }
 

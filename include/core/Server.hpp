@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:42:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 10:43:00 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ private:
 	std::map<uint16_t, std::string>	_error_pages;
 	size_t							_client_body_buffer_size;
 	std::set<Location>				_locations;
+	Response						*_resp;
 
 	unsigned int					_state;
 
