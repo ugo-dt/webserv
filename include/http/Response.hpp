@@ -6,13 +6,14 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 22:39:09 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 11:48:08 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 14:57:06 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
+# include "Autoindex.hpp"
 # include "core.hpp"
 # include "http.hpp"
 # include "log.hpp"

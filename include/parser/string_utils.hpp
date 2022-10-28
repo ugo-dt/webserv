@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 13:53:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 14:46:55 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,23 @@
 # include <string>
 # include <sstream>
 
-static inline
-std::string&	toUpper(std::string& str)
+static inline std::string	str_to_upper(std::string& str)
 {
 	std::transform(str.begin(), str.end(),str.begin(), ::toupper);
 	return str;
 }
 
-static inline
-std::string&	toLower(std::string& str)
+static inline std::string	str_to_lower(std::string str)
 {
 	std::transform(str.begin(), str.end(),str.begin(), ::tolower);
 	return str;
 }
 
-static inline
-std::string&	capitalize(std::string& str)
+static inline std::string&	capitalize(std::string& str)
 {
 	size_t	i = 0;
 
-	toLower(str);
+	str_to_lower(str);
 	str[i] = std::toupper(str[i]);
 	while((i = str.find_first_of('-', i + 1)) != std::string::npos)
 	{
@@ -46,8 +43,7 @@ std::string&	capitalize(std::string& str)
 	return str;
 }
 
-static inline
-std::string&	strip(std::string& str, char c)
+static inline std::string&	strip(std::string& str, char c)
 {
 	size_t	i;
 
@@ -62,9 +58,7 @@ std::string&	strip(std::string& str, char c)
 	return str;
 }
 
-static inline
-std::string
-to_string(ssize_t n)
+static inline std::string	to_string(ssize_t n)
 {
 	std::stringstream tmp;
 	tmp << n;

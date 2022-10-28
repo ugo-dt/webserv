@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 10:43:00 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 14:57:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,6 @@
 // add 1 for server socket
 # define MAX_CONNECTIONS	(32 + 1) // no idea for now, this is totally random need to check later
 # define BUFFER_SIZE		2048
-
-typedef struct s_listen
-{
-	std::string	host;
-	int			port;
-}t_listen;
 
 inline bool operator==(const t_listen& x, const t_listen& y)
 	{return (x.host == y.host && x.port == y.port);}

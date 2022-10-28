@@ -6,12 +6,14 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 12:15:24 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 14:58:16 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
+
+# include <string>
 
 # define HTTP_PROTOCOL						"HTTP/1.1"
 # define DEFAULT_PORT						8080
@@ -64,5 +66,11 @@
 # define MIME_PDF							"application/pdf"
 # define MIME_SH							"application/x-sh"
 # define MIME_PLAIN_TEXT					"text/plain"
+
+typedef struct s_listen
+{
+	std::string	host;
+	int			port;
+}t_listen;
 
 #endif // HTTP_HPP

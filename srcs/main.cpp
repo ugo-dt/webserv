@@ -6,11 +6,13 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 17:36:57 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 15:03:19 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
+
+#include "Autoindex.hpp"
 
 Webserv	webserv;
 
@@ -43,6 +45,19 @@ int	test_request()
 	return (0);
 }
 
+int	test_autoindex()
+{
+	Autoindex	ai;
+	t_listen	listen = {"localhost", 80};
+	std::string	path = "/salut";
+	std::string	index;
+
+	index = ai.get_index(path, listen);
+	std::cout << index << std::endl;
+	return (0);
+}
+
+
 void	sig_handler(int signum)
 {
 	(void)signum;
@@ -53,9 +68,9 @@ void	sig_handler(int signum)
 
 int	main(int argc, const char **argv)
 {
+	return (test_autoindex());
 	try
 	{
-		// return (test_request());
 		signal(SIGINT, sig_handler);
 		webserv.init(argc, argv);
 		webserv.run();
