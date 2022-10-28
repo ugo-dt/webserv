@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 11:49:24 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 16:41:58 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ Server::_handle_request(int& _fd)
 {
 	ssize_t	_bytes;
 
-	// We're checking if we can actually read from the file descritor
+	// We're checking if we can actually read from the file descriptor
 	// This will read data without removing it from the queue
 	_bytes = recv(_fd, _buffer, 1, MSG_PEEK);
 	if (_bytes < 0)
@@ -94,37 +94,34 @@ Server::_handle_request(int& _fd)
 		// This should usually not happen, as we're polling through the file descriptors
 		// Playing it safe, though
 		std::cout << "Could not read from client (" << _fd << ") request: " << std::strerror(errno) << std::endl;
-		WS_VALUE_LOG("Socket closed", _fd);
-		close(_fd);
-		_fd = -1;
+		close_socket(_fd);
 		return ;
 	}
 
 	// Read the data from the client.
 	bzero(_buffer, BUFFER_SIZE);
 	_bytes = recv(_fd, _buffer, BUFFER_SIZE, 0);
-	if (_bytes == 0)
+
+	if (_bytes <= 0)
 	{
-		// Connection closed by client.
+		// =0: connection was closed by client
+		// <0: some error happened
 		std::cout << "Connection closed." << std::endl;
-		close(_fd);
-		WS_VALUE_LOG("Socket closed", _fd);
-		_fd = -1;
+		close_socket(_fd);
 		return ;
 	}
-	// Create response based on request
+
+	// Create and send response based on request
 	_resp = new Response(_buffer);
 	_resp->generate();
 	if (!_resp)
 		_throw_errno("Fatal error");
-	// Send response
 	WS_INFO_LOG("Sending response.");
-	_bytes = send(_fd, _resp->str(), _resp->length(), 0);
+	_bytes = send(_fd, _resp->str().c_str(), _resp->length(), 0);
 	if (_bytes < 0)
 	{
 		std::cout << "Could not send response to client (" << _fd << "): " << std::strerror(errno) << std::endl;
 		close(_fd);
-		_fd = -1;
 	}
 	delete (_resp);
 }

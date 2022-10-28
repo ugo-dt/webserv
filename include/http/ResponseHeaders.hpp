@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 11:38:38 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 16:44:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ public:
 	void	set_status(const std::string& status);
 	void	set_content_type(const std::string&);
 	void	set_content_length(const std::string&);
+	void	set_content_length(size_t);
 	void	set_server(const std::string&);
 
 	const std::string	get_status() const;

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 14:57:27 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 16:14:53 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,14 @@ public:
 };
 
 std::ostream&	operator<<(std::ostream &o, const Server& s);
+
+static inline
+void
+close_socket(int& fd)
+{
+	WS_VALUE_LOG("Socket closed", fd);
+	close(fd);
+	fd = -1;
+}
 
 #endif // SERVER_HPP

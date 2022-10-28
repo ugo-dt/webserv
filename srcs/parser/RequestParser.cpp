@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 15:35:09 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 16:05:15 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,12 @@ RequestParser::_parse_first_line()
 		_request.set_method(METHOD_DELETE);
 	else
 		_request.set_method(METHOD_UNKNOWN);
-
 	if ((j = line.find_first_not_of(' ', i)) == std::string::npos)
 		_status = STATUS_BAD_REQUEST;
 	if ((i = line.find_first_of(' ', j)) == std::string::npos)
 		_status = STATUS_BAD_REQUEST;
+	if (_status == STATUS_BAD_REQUEST)
+		return ;
 	tmp.assign(line, j, i - j);
 	if (i > j)
 		_request.set_uri(tmp);
@@ -143,6 +144,7 @@ RequestParser::run()
 		i++;
 	while (i < _buffer.length() && (_buffer[i] == LF || _buffer[i] == LF))
 		i++;
+
 	while ((line = _get_next_line(i)) != "\r" && line != "" && line != "\r\n")
 	{
 		std::cout << line << std::endl;

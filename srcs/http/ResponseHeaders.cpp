@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:10 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 11:44:14 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 16:44:10 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ void	ResponseHeaders::set_content_type(const std::string& type)
 	{_content_type = type;}
 void	ResponseHeaders::set_content_length(const std::string& length)
 	{_content_length = length;}
+void	ResponseHeaders::set_content_length(size_t length)
+	{_content_length = to_string(length);}
 void	ResponseHeaders::set_server(const std::string& server)
 	{_server = server;}
 
