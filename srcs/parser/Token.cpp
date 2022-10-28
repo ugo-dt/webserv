@@ -6,26 +6,24 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:57:55 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 13:54:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 13:57:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Token.hpp"
 
 ConfigToken::ConfigToken(void)
-	: _row(0),
+	: Token(token_none, ""),
+	  _row(0),
 	  _col(0)
 {
-	_type = token_none;
-	_word = "";
 }
 
 ConfigToken::ConfigToken(t_token type, const std::string &word, unsigned int row, unsigned int col)
-	: _row(row),
+	: Token(type, word),
+	  _row(row),
 	  _col(col + 1)
 {
-	_type = type;
-	_word = word;
 }
 
 ConfigToken::ConfigToken(const ConfigToken &x)
