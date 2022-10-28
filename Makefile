@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/28 15:34:45 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/28 19:17:25 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 debug:
-	$(CC) $(INCLUDE) -DDEBUG $(SRCS) -o debug
+	$(CC) $(INCLUDE) -DDEBUG $(SRCS) -o debug && ./debug
 
 clean:
 	rm -rf $(OBJS)

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:41:58 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:23:50 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ Server::_handle_request(int& _fd)
 
 	// Create and send response based on request
 	_resp = new Response(_buffer);
-	_resp->generate();
+	_resp->generate(_error_pages, _locations, _listen);
 	if (!_resp)
 		_throw_errno("Fatal error");
 	WS_INFO_LOG("Sending response.");

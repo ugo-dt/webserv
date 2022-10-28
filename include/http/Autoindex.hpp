@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 12:11:55 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 14:59:20 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 18:20:00 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,7 @@ private:
 	std::string							_result;
 	std::map<std::string, std::string>	_links; // link name, link
 
-	void		_create_link_and_sort(const t_listen& host_port, struct dirent *entity, std::string path);
-	std::string	_to_string(size_t n);
-	std::string	_to_lower(std::string str);
+	void	_create_link_and_sort(const t_listen& host_port, struct dirent *entity, std::string path);
 	
 public:
 	Autoindex();

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:08:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:51:50 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 19:16:01 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class Location
 {
 private:
 	std::string							_uri;
-	// bool								_is_directory;
+	bool								_is_directory;
 	unsigned int						_methods;
 	std::string							_root;
 	std::map<std::string, std::string>	_redirections;
@@ -38,6 +38,7 @@ public:
 	~Location();
 
 	const std::string&							get_uri() const;
+	bool										is_directory() const;
 	const unsigned int&							get_methods() const;
 	const std::string&							get_root() const;
 	const std::map<std::string, std::string>&	get_redirections() const;
@@ -47,6 +48,7 @@ public:
 	const std::string&							get_upload_path() const;
 
 	void	set_uri(const std::string&);
+	void	set_as_directory(bool d);
 	void	set_methods(const unsigned int&);
 	void	set_root(const std::string&);
 	void	set_redirections(const std::map<std::string, std::string>&);

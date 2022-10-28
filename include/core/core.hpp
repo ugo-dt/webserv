@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:02:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 13:52:36 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 18:19:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 # define CORE_HPP
 
 # include "log.hpp"
+
 # include <cerrno>
 # include <cstring>
-# include <iostream>
-# include <stdexcept>
 # include <string>
 # include <sys/types.h>
 

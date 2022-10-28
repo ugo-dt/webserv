@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 17:11:14 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:30:58 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ Response::Response(const char *request_buffer)
 		_request = new Request(request_buffer);
 		if (!_request)
 			_throw_errno("Fatal error");
+		_uri = _request->get_uri();
 	}
 }
 
@@ -37,9 +38,6 @@ Response::~Response()
 		delete (_request);
 }
 
-void
-Response::_check_for_location()
-{
 /*
 	file or directory?
 	if directory found then
@@ -64,10 +62,104 @@ Response::_check_for_location()
 	redirections
 	autoindex if directory?
 */
+void
+Response::_check_uri(const std::set<Location>& locations)
+{
+	std::string	_dir;
+	size_t		_slash;
+
+	_slash = _uri.find_last_of('/');
+	if (_slash != std::string::npos)
+		_dir.assign(_uri, 0, _uri.find_last_of('/') + 1);
+	else
+		_dir = "/";
+	WS_VALUE_LOG("Path", _uri);
+	WS_VALUE_LOG("Dir ", _dir);
+
+	// Check if route exists for this specific file ...
+	for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
+	{
+		if (_uri == (*l).get_uri())
+		{
+			WS_VALUE_LOG("Found matching location (file): ",  (*l).get_uri());
+			_location = &(*l);
+			break ;
+		}
+
+	}
+	// ... or check if route exists for the directory
+	if (!_location)
+	{
+		for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
+		{
+			if (_dir == (*l).get_uri())
+			{
+				WS_VALUE_LOG("Found matching location (directory): ", (*l).get_uri());
+				_location = &(*l);
+				break ;
+			}
+		}
+	}
+	if (_location)
+	{
+		WS_VALUE_LOG("Location root", _location->get_root());
+		if (_location->get_root().size())
+			_uri.insert(0, _location->get_root());
+		else
+			_uri.insert(0, ".");
+	}
+	else
+		_uri.insert(0, ".");
 }
 
 void
-Response::generate()
+Response::_get_body(const t_listen& listen)
+{
+	struct stat		_stat;
+	std::string		line;
+	std::ifstream	f;
+	Autoindex		_ai;
+
+	std::cout << "body: " << _uri << std::endl;
+	if (stat(_uri.c_str(), &_stat) == 0)
+	{
+		if (S_ISREG(_stat.st_mode))
+		{
+			WS_VALUE_LOG("File found at", _uri);
+			f.open(_uri, std::ifstream::out);
+			if (!f.is_open())
+			{
+				_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+				this->_body = "Internal server error";
+				return ;
+			}
+			_header.set_status(STATUS_OK);
+			_header.set_content_type(MIME_HTML);
+			while (std::getline(f, line))
+				this->_body.append(line + "\n");
+			f.close();
+		}
+		else if (S_ISDIR(_stat.st_mode))
+		{
+			WS_VALUE_LOG("Directory found at", _uri);
+			if (_location->is_autoindex_on())
+			{
+				this->_body = _ai.get_index(_uri, listen);
+			}
+		}
+	}
+	else
+	{
+		WS_VALUE_LOG("No such file or directory", _uri);
+		_header.set_status(STATUS_NOT_FOUND);
+		this->_body = "404 Not found";
+	}
+}
+
+void
+Response::generate(const std::map<uint16_t, std::string>& error_pages,
+                   const std::set<Location>& locations,
+				   const t_listen& listen)
 {
 	if (!_request->is_valid())
 	{
@@ -79,14 +171,9 @@ Response::generate()
 	WS_INFO_LOG("Valid request.");
 	WS_INFO_LOG("Creating response.");
 
-	_check_for_location();
-	_check_
-	_body = "this is the body\n";
-
-	// _response = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
-	// _response += "Content-Length: " + to_string(_body.length()) + CRLF;
-	// _response += CRLF; // separates header fields and body
-	// _response += _body + CRLF;
+	_check_uri(locations);
+	_get_body(listen);
+	(void)error_pages;
 }
 
 const std::string

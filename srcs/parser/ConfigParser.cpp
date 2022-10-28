@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 15:51:36 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 19:48:57 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,8 +310,6 @@ ConfigParser::_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& c
 	std::list<ConfigToken>::const_iterator	_end;
 
 	_end = _token_list.end();
-	if (l.get_state() & state_http_redirection)
-		show_repeat_warning(_path, (*cur));
 	cur++;
 	if (get_type(cur) == token_newline)
 		throw_token_error(_path, (*cur), "rewrite: too few parameters");
@@ -362,7 +360,12 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 		l.set_autoindex(true);
 	}
 	else
+	{
+		// Make sure location is a folder
+		if (l.get_uri().at(l.get_uri().length() - 1) != '/')
+			show_token_warning(_path, (*cur), "autoindex: not a folder ('" + l.get_uri() + "')");
 		l.set_autoindex(false);
+	}
 	cur++;
 	if (!is_line_break(get_type(cur)))
 		throw_token_error(_path, (*cur), "autoindex: unexpected parameter ('" + get_word(cur) + "')");
@@ -420,6 +423,7 @@ ConfigParser::_parse_location_block(std::list<ConfigToken>::const_iterator& cur,
 	Location								l;
 	int										_braces;
 	std::list<ConfigToken>::const_iterator	_end;
+	std::string								_uri;
 
 	_end = _token_list.end();
 	cur++;
@@ -427,7 +431,10 @@ ConfigParser::_parse_location_block(std::list<ConfigToken>::const_iterator& cur,
 	// uri
 	if (cur == _end || get_type(cur) != token_word)
 		throw_token_error(_path, (*cur), "location: expected uri");
-	l.set_uri(get_word(cur));
+	_uri = get_word(cur);
+	l.set_uri(_uri);
+	if (_uri[_uri.length() - 1] == '/')
+		l.set_as_directory(true);
 	cur++;
 
 	// block

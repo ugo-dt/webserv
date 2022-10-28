@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:05:15 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 18:43:39 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ RequestParser::_parse_first_line()
 		return ;
 	tmp.assign(line, j, i - j);
 	if (i > j)
-		_request.set_uri(tmp);
+		_request.set_uri(std::string(tmp, 0, tmp.find_first_of('?'))); // remove query string
 	else
 		_request.set_uri("");
 	j = tmp.find_first_of('?');

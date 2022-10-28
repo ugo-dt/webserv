@@ -10,10 +10,6 @@ server
 		limit_except	GET POST DELETE
 		autoindex		off
 	}
-
-	location /www/ {
-		autoindex	off
-	}
 }
 
 server{

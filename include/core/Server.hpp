@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:14:53 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:14:19 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 # include "core.hpp"
 # include "http.hpp"
 # include "log.hpp"
+
 # include "Location.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
+
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <poll.h>

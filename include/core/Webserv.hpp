@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 15:41:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:14:38 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 
 # include "core.hpp"
 # include "http.hpp"
+
 # include "ConfigParser.hpp"
 # include "RequestParser.hpp"
 # include "Server.hpp"
+
 # include <csignal>
 # include <cstdlib>
 # include <map>
@@ -41,6 +43,8 @@ public:
 	int		init(int argc, const char **argv);
 	void	run();
 	void	clean();
+
+	const std::vector<Server>&	get_servers() {return _servers;}
 };
 
 #endif // WEBSERV_HPP

@@ -6,13 +6,11 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:40:44 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 20:29:18 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-
-#include "Autoindex.hpp"
 
 Webserv	webserv;
 
@@ -65,21 +63,22 @@ int	test_autoindex()
 
 int	test_response()
 {
+	const Server&	s = webserv.get_servers()[0];
 	Response	*resp;
 	const char* buffer = "GET /index.html?arg1=value1&arg2=value2 HTTP/1.1\r\n"
-						"Host: webserv\r\n"
-						"content-field: webserv\r\n"
+						"Host: localhost\r\n"
+						"content-length: 10\r\n"
 						"Test: webserv\r\n"
 						"Field: webserv\r\n"
-						"Header: webserv\r\n"
 						"\r\n"
 						"<html>\n"
 						"</html>\n"
 	;
-	// const char* bad = "GET ";
-	resp = new Response(buffer);
 
-	resp->generate();
+	resp = new Response(buffer);
+	t_listen	l = {s.get_host(), s.get_port()};
+
+	resp->generate(s.get_error_pages(), s.get_locations(), l);
 
 	std::cout << "[Response]" << std::endl;
 	std::cout << resp->str().c_str() << std::endl;
@@ -98,10 +97,10 @@ void	sig_handler(int signum)
 
 int	main(int argc, const char **argv)
 {
-	return (test_response());
 	signal(SIGINT, sig_handler);
 	if (webserv.init(argc, argv) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
+	//return (test_response());
 	webserv.run();
 	webserv.clean();
 	return (EXIT_SUCCESS);
