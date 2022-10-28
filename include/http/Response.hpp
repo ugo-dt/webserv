@@ -37,6 +37,8 @@ private:
 	size_t			_response_length;
 	const Location	*_location;
 
+	void	_check_for_location();
+
 public:
 	Response(const char *request_buffer);
 	~Response(void);

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 16:44:32 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/28 17:11:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,35 @@ Response::~Response()
 }
 
 void
+Response::_check_for_location()
+{
+/*
+	file or directory?
+	if directory found then
+		if path matches location
+			check method
+			if default file then
+				redirect to default file
+			else if autoindex
+				get_index() as body
+	else if file found then
+		get directory path
+		if directory matches location
+			check method
+	else
+		not found
+
+	path matches?
+	or directory matches?
+
+	method ok?
+	root
+	redirections
+	autoindex if directory?
+*/
+}
+
+void
 Response::generate()
 {
 	if (!_request->is_valid())
@@ -50,10 +79,8 @@ Response::generate()
 	WS_INFO_LOG("Valid request.");
 	WS_INFO_LOG("Creating response.");
 
-	// _check_for_location()
-	// Path
-	// location
-	// Get body
+	_check_for_location();
+	_check_
 	_body = "this is the body\n";
 
 	// _response = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
