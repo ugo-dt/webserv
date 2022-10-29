@@ -4,14 +4,15 @@ server
 	server_name		webserv test	
 
 	location / {
-		root	www
+		autoindex		on
+#		root			www
 		limit_except	DELETE
 	}
 
 	location /www/
 	{
-		autoindex on
 		default_file index.html
+		autoindex on
 	}
 
 	location /include/ {

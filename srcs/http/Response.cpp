@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 14:39:54 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 16:37:58 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,15 @@ Response::Response(const char *request_buffer)
 		_uri = _request->get_uri();
 		if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
 			_uri.append(1, '/');
+
+#ifdef DEBUG
+		if (_request->get_method() == 2)
+			WS_VALUE_LOG("Request method: ", "GET");
+		else if (_request->get_method() == 4)
+			WS_VALUE_LOG("Request method: ", "POST");
+		else if (_request->get_method() == 8)
+			WS_VALUE_LOG("Request method: ", "DELETE");
+#endif
 	}
 }
 

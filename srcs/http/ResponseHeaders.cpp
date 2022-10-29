@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:10 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:45:39 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 16:32:50 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,30 +66,32 @@ const std::string	ResponseHeaders::get_date() const
 const std::string
 ResponseHeaders::get_status_string(void) const
 {
-	if (_status == 301)
-		return ("Moved Permanently");
-	if (_status == 201)
+	if (_status == STATUS_CREATED)
 		return ("Created");
-	if (_status == 202)
+	if (_status == STATUS_ACCEPTED)
 		return ("Accepted");
-	if (_status == 204)
+	if (_status == STATUS_NO_CONTENT)
 		return ("No content");
-	if (_status == 400)
+	if (_status == STATUS_MOVED_PERMANENTLY)
+		return ("Moved Permanently");
+	if (_status == STATUS_FOUND)
+		return ("Found");
+	if (_status == STATUS_BAD_REQUEST)
 		return ("Bad Request");
-	if (_status == 403)
+	if (_status == STATUS_FORBIDDEN)
 		return ("Forbidden");
-	if (_status == 404)
+	if (_status == STATUS_NOT_FOUND)
 		return ("Not found");
-	if (_status == 405)
+	if (_status == STATUS_METHOD_NOT_ALLOWED)
 		return ("Method not allowed");
-	if (_status == 413)
+	if (_status == STATUS_PAYLOAD_TOO_LARGE)
 		return ("Paylod too large");
-	if (_status == 500)
+	if (_status == STATUS_INTERNAL_SERVER_ERROR)
 		return ("Internal server error");
-	if (_status == 501)
+	if (_status == STATUS_NOT_IMPLEMENTED)
 		return ("Not implemented");
-	if (_status == 505)
+	if (_status == STATUS_HTTP_VERSION_NOT_SUPPORTED)
 		return ("HTTP version not supported");
-	// if (_status == 200)
+	// or _status == STATUS_OK
 	return ("OK");
 }

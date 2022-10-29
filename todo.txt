@@ -74,3 +74,6 @@ set the first server for specific host:port as the default one (that will answer
 
 make sure method allowed in response
 redirections
+
+post:
+	use 201 (created) and location header at the same time.

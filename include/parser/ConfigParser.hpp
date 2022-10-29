@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 12:09:52 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 16:23:10 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ private:
 private:
 	std::list<ConfigToken>					_token_list;
 	std::list<ConfigToken>::const_iterator	_end;
-	std::string								_path;
+	std::string								_config_path;
 	std::ifstream							_file;
 	size_t									_errors;
 
