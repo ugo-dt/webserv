@@ -5,13 +5,13 @@ server
 
 	location / {
 		autoindex		on
-#		root			www
+		root			www
 		limit_except	DELETE
 	}
 
 	location /www/
 	{
-		default_file index.html
+		upload_path		upload
 		autoindex on
 	}
 

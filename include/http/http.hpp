@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 12:25:05 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 18:10:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,20 @@
 # define MIME_PDF							"application/pdf"
 # define MIME_SH							"application/x-sh"
 # define MIME_PLAIN_TEXT					"text/plain"
+
+# define EXTENSION_BMP						".bmp"
+# define EXTENSION_CSS						".css"
+# define EXTENSION_GIF						".gif"
+# define EXTENSION_HTM						".htm"
+# define EXTENSION_HTML						".html"
+# define EXTENSION_ICO						".ico"
+# define EXTENSION_JPG						".jpg"
+# define EXTENSION_JPEG						".jpeg"
+# define EXTENSION_JS						".js"
+# define EXTENSION_PNG						".png"
+# define EXTENSION_PDF						".pdf"
+# define EXTENSION_SH						".sh"
+# define EXTENSION_PLAIN_TEXT				""
 
 typedef struct s_listen
 {

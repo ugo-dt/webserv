@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 16:37:58 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 20:16:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ Response::_check_uri(const std::set<Location>& locations)
 		_dir.assign(_uri, 0, _uri.find_last_of('/') + 1);
 	else
 		_dir = "/";
+		
 	WS_VALUE_LOG("Path", _uri);
 	WS_VALUE_LOG("Dir ", _dir);
 
@@ -124,30 +125,35 @@ Response::_set_content_type()
 {
 	std::string	_ext;
 
-	_ext = _uri.substr(_uri.find_last_of(".") + 1);
-	if (_ext == "bmp")
+	if (_uri.find('.') == std::string::npos)
+	{
+		_header.set_content_type(MIME_PLAIN_TEXT);
+		return ;
+	}
+	_ext = _uri.substr(_uri.find_last_of("."));
+	if (_ext == EXTENSION_BMP)
 		_header.set_content_type(MIME_BMP);
-	else if (_ext == "css")
+	else if (_ext == EXTENSION_CSS)
 		_header.set_content_type(MIME_CSS);
-	else if (_ext == "gif")
+	else if (_ext == EXTENSION_GIF)
 		_header.set_content_type(MIME_GIF);
-	else if (_ext == "htm")
+	else if (_ext == EXTENSION_HTM)
 		_header.set_content_type(MIME_HTM);
-	else if (_ext == "html")
+	else if (_ext == EXTENSION_HTML)
 		_header.set_content_type(MIME_HTML);
-	else if (_ext == "ico")
+	else if (_ext == EXTENSION_ICO)
 		_header.set_content_type(MIME_ICO);
-	else if (_ext == "jpg")
+	else if (_ext == EXTENSION_JPG)
 		_header.set_content_type(MIME_JPG);
-	else if (_ext == "jpeg")
+	else if (_ext == EXTENSION_JPEG)
 		_header.set_content_type(MIME_JPEG);
-	else if (_ext == "js")
+	else if (_ext == EXTENSION_JS)
 		_header.set_content_type(MIME_JS);
-	else if (_ext == "png")
+	else if (_ext == EXTENSION_PNG)
 		_header.set_content_type(MIME_PNG);
-	else if (_ext == "pdf")
+	else if (_ext == EXTENSION_PDF)
 		_header.set_content_type(MIME_PDF);
-	else if (_ext == "sh")
+	else if (_ext == EXTENSION_SH)
 		_header.set_content_type(MIME_SH);
 	else
 		_header.set_content_type(MIME_PLAIN_TEXT);
@@ -242,6 +248,53 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 }
 
 void
+Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
+{
+	std::ofstream	file;
+	std::string		_dir;
+
+	// check method
+
+	WS_VALUE_LOG("Post request to", _uri);
+	if (_location)
+	{
+		if (_location->get_upload_path().size())
+		{
+			WS_VALUE_LOG("Upload path for this location", _location->get_upload_path());
+			_dir = _location->get_upload_path();
+			if (_dir[0] == '/')
+				_dir.insert(0, 1, '.');
+		}
+	}
+	else
+	{
+		_dir = _request->get_uri();
+	}
+
+	WS_VALUE_LOG("Dir", _dir);
+	if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
+	{
+		// error
+		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_get_body_from_uri();
+		return ;
+	}
+	file.open(_uri.c_str());
+	if (!file.is_open())
+	{
+		// error
+		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_get_body_from_uri();
+		return ;
+	}
+	file << _request->get_body();
+	file.close();
+	_header.set_status(STATUS_CREATED);
+}
+
+void
 Response::generate(const std::map<u_int16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
 				   const t_listen& listen)
@@ -276,9 +329,13 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			if (_location->get_root().size())
 				_uri.insert(0, _location->get_root());
 		}
+		WS_INFO_LOG("Searching for new location...");
 	}
-	_uri.insert(0, ".");
-	_get_body(error_pages, listen);
+	_uri.insert(0, 1, '.');
+	if (_request->get_method() == METHOD_GET)
+		_get_body(error_pages, listen);
+	else if (_request->get_method() == METHOD_POST)
+		_handle_post(error_pages);
 }
 
 const std::string
@@ -302,12 +359,5 @@ Response::str()
 	str += "Server: " + _header.get_server() + CRLF;
 	str += CRLF;
 	str += _body;
-	_response_length = str.length();
 	return (str);
-}
-
-size_t
-Response::length()
-{
-	return (_response_length);
 }

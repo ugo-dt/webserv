@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:00 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 10:26:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 18:45:12 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ Request::Request(const char *_buffer)
 	RequestParser	_parser(*this, _buffer);
 
 	WS_INFO_LOG("Parsing request.");
+	std::cout << "this is the request: " << _buffer << std::endl;
 	_parser.run();
 }
 

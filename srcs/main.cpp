@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 11:47:17 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 18:14:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ int	test_autoindex()
 	std::cout << index << std::endl;
 	return (0);
 }
-
 int	test_response()
 {
 	const Server&	s = webserv.get_servers()[0];
@@ -100,7 +99,6 @@ int	main(int argc, const char **argv)
 	signal(SIGINT, sig_handler);
 	if (webserv.init(argc, argv) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
-	//return (test_response());
 	webserv.run();
 	webserv.clean();
 	return (EXIT_SUCCESS);

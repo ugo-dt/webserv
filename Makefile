@@ -6,13 +6,14 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/29 13:48:23 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/29 18:59:14 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =	webserv
 
 SRCS =	srcs/main.cpp \
+		srcs/core/mkdir_p.cpp \
 		srcs/core/Location.cpp \
 		srcs/core/Server.cpp \
 		srcs/core/Webserv.cpp \
