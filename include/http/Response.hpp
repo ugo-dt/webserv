@@ -42,7 +42,7 @@ private:
 	const Location	*_location; // matching location (NULL if no match)
 
 	void	_check_uri(const std::set<Location>& server_locations);
-	void	_handle_post(const std::map<u_int16_t, std::string>& error_pages);
+	void	_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void	_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void	_set_content_type();
 	void	_get_body_from_uri();

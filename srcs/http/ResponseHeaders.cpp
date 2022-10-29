@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:10 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 16:32:50 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 21:30:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ ResponseHeaders::get_status_string(void) const
 		return ("Moved Permanently");
 	if (_status == STATUS_FOUND)
 		return ("Found");
+	if (_status == STATUS_FOUND)
+		return ("See other");
 	if (_status == STATUS_BAD_REQUEST)
 		return ("Bad Request");
 	if (_status == STATUS_FORBIDDEN)

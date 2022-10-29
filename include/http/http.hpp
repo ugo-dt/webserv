@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 18:10:31 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 21:29:30 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # define STATUS_NO_CONTENT					204
 # define STATUS_MOVED_PERMANENTLY			301
 # define STATUS_FOUND						302
+# define STATUS_SEE_OTHER					303
 # define STATUS_BAD_REQUEST					400
 # define STATUS_FORBIDDEN					403
 # define STATUS_NOT_FOUND					404

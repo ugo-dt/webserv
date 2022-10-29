@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 20:16:24 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 21:44:56 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,6 @@ Response::_check_uri(const std::set<Location>& locations)
 		_dir.assign(_uri, 0, _uri.find_last_of('/') + 1);
 	else
 		_dir = "/";
-		
-	WS_VALUE_LOG("Path", _uri);
-	WS_VALUE_LOG("Dir ", _dir);
-
 	_location = NULL;
 	// Check if route exists for this specific file ...
 	if (_uri != "/" && _uri[_uri.length() - 1] != '/')
@@ -117,7 +113,6 @@ Response::_check_uri(const std::set<Location>& locations)
 			}
 		}
 	}
-	// if (_request->get_method() & _location->get_methods())
 }
 
 void
@@ -188,26 +183,18 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	if (stat(_uri.c_str(), &_stat) == 0)
 	{
 		if (S_ISREG(_stat.st_mode))
-		{
-			WS_VALUE_LOG("File found at", _uri);
 			_get_body_from_uri();
-		}
 		else if (S_ISDIR(_stat.st_mode))
 		{
-			WS_VALUE_LOG("Directory found at", _uri);
 			if (_location)
 			{
-				WS_VALUE_LOG("Location autoindex", _location->is_autoindex_on());
-				WS_VALUE_LOG("Location default file", _location->get_default_file());
 				if (_location->is_autoindex_on())
 				{
-					WS_INFO_LOG("Sending index of " + _uri);
 					_body = _ai.get_index(_uri, listen);
 					_header.set_content_type(MIME_HTML);
 				}
 				else if (_location->get_default_file().size())
 				{
-					WS_INFO_LOG("Sending default file of location " + _location->get_uri() + " (" + _location->get_default_file() + ")");
 					_header.set_status(STATUS_FOUND);
 					_header.set_location(_location->get_default_file());
 					_header.set_content_length("0");
@@ -215,7 +202,6 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 				}
 				else
 				{
-					WS_INFO_LOG("403 Forbidden");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
 					_get_body_from_uri();
@@ -248,50 +234,72 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 }
 
 void
-Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
+Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
 	std::ofstream	file;
+	std::string		file_path;
 	std::string		_dir;
 
-	// check method
+	// WS_VALUE_LOG("Post request to", _uri);
+	// if (_location)
+	// {
+	// 	std::cout << "location: " << _location->get_uri() << std::endl;
+	// 	if (!(_location->get_methods() & METHOD_POST))
+	// 	{
+	// 		std::cout << "Not Allowed" << std::endl;
+	// 		// error
+	// 		_header.set_status(STATUS_METHOD_NOT_ALLOWED);
+	// 		_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
+	// 		_get_body_from_uri();
+	// 		return ;
+	// 	}
+	// 	if (_location->get_upload_path().size())
+	// 	{
+	// 		std::cout << "Upload path: " << _location->get_upload_path() << std::endl;
+	// 		_dir = _location->get_upload_path();
+	// 	}
+	// }
+	// else
+	// {
+	// 	_dir = _request->get_uri();
+	// }
 
-	WS_VALUE_LOG("Post request to", _uri);
-	if (_location)
-	{
-		if (_location->get_upload_path().size())
-		{
-			WS_VALUE_LOG("Upload path for this location", _location->get_upload_path());
-			_dir = _location->get_upload_path();
-			if (_dir[0] == '/')
-				_dir.insert(0, 1, '.');
-		}
-	}
-	else
-	{
-		_dir = _request->get_uri();
-	}
+	// if (_dir[0] == '/')
+	// 	_dir.insert(0, 1, '.');
 
-	WS_VALUE_LOG("Dir", _dir);
-	if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
-	{
-		// error
-		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-		_uri = error_pages.at(STATUS_BAD_REQUEST);
-		_get_body_from_uri();
-		return ;
-	}
-	file.open(_uri.c_str());
+	// std::cout << "post dir:" << _dir << std::endl;
+	// if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
+	// {
+		// std::cout << "cant create dir (" << _dir << ")" << std::endl;
+	// 	// error
+	// 	_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+	// 	_uri = error_pages.at(STATUS_BAD_REQUEST);
+	// 	_get_body_from_uri();
+	// 	return ;
+	// }
+
+	// file_path = "postfile";
+
+	// file_path.insert(0, 1, '/');
+	// file_path.insert(0, _dir);
+	// std::cout << "post file path:" << file_path << std::endl;
+
+	file.open(file_path.c_str());
 	if (!file.is_open())
 	{
 		// error
+		std::cout << "cant open file (" << file_path << ")" << std::endl;
 		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_uri = error_pages.at(STATUS_INTERNAL_SERVER_ERROR);
 		_get_body_from_uri();
 		return ;
 	}
 	file << _request->get_body();
 	file.close();
-	_header.set_status(STATUS_CREATED);
+	_header.set_status(STATUS_SEE_OTHER);
+	_uri = "http://" + listen.host + ":" + to_string(listen.port) + _request->get_uri();
+	_header.set_location(_uri);
+	std::cout << "file ok" << std::endl;
 }
 
 void
@@ -303,15 +311,11 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 
 	if (!_request->is_valid())
 	{
-		WS_INFO_LOG("Invalid request.");
 		_header.set_status(STATUS_BAD_REQUEST);
 		_uri = error_pages.at(STATUS_BAD_REQUEST);
 		_get_body(error_pages, listen);
 		return ;
 	}
-	WS_INFO_LOG("Valid request.");
-	WS_INFO_LOG("Creating response.");
-
 	for (int i = 0; i < 10; i++)
 	{
 		_old_loc = _location;
@@ -325,7 +329,6 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			break ;
 		if (_location)
 		{
-			WS_VALUE_LOG("Location root", _location->get_root());
 			if (_location->get_root().size())
 				_uri.insert(0, _location->get_root());
 		}
@@ -335,7 +338,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 	if (_request->get_method() == METHOD_GET)
 		_get_body(error_pages, listen);
 	else if (_request->get_method() == METHOD_POST)
-		_handle_post(error_pages);
+		_handle_post(error_pages, listen);
 }
 
 const std::string
@@ -348,7 +351,7 @@ Response::str()
 	str = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
 
 	// 3xx status codes are redirections
-	if (_status / 100 == 3)
+	if (_status / 100 == 3 || _status == STATUS_SEE_OTHER)
 		str += "Location: " + _header.get_location() + CRLF;
 	else if (_status == STATUS_OK)
 	{

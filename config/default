@@ -11,8 +11,9 @@ server
 
 	location /www/
 	{
-		upload_path		upload
+		upload_path		/www/upload/
 		autoindex on
+		limit_except	GET
 	}
 
 	location /include/ {
