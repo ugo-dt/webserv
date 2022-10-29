@@ -45,7 +45,7 @@ private:
 	void	_check_uri(const std::set<Location>& server_locations);
 	void	_get_body(const std::map<uint16_t, std::string>& error_pages, const t_listen& listen);
 	void	_set_content_type();
-	void	_get_uri_as_string();
+	void	_get_body_from_uri();
 
 public:
 	Response(const char *request_buffer);
@@ -55,5 +55,13 @@ public:
 	const std::string	str();
 	size_t				length();
 };
+
+static inline
+bool
+is_directory(const std::string& path)
+{
+	struct stat	_stat;
+	return (stat(path.c_str(), &_stat) == 0 && S_ISDIR(_stat.st_mode));
+}
 
 #endif // RESPONSE_HPP

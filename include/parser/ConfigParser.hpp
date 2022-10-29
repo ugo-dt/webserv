@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/27 14:52:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 12:09:52 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <vector>
 
 # define DEFAULT_CONFIG_PATH				"config/default"
+
+# define MAX_ERRORS							20
 
 # define DIRECTIVE_LISTEN					"listen"
 # define DIRECTIVE_SERVER_NAME				"server_name"
@@ -48,7 +50,8 @@ typedef enum e_state
 	state_client_body_buffer_size = 0x80,
 	state_default_file            = 0x100,
 	state_cgi_extension           = 0x200,
-	state_upload_path            = 0x400
+	state_upload_path             = 0x400,
+	state_limit_except            = 0x800
 }t_state;
 
 class ConfigParser
@@ -57,15 +60,19 @@ private:
 	typedef enum e_context {http, server, location} Context;
 
 private:
-	std::list<ConfigToken>	_token_list;
-	std::string			_path;
-	std::ifstream		_file;
+	std::list<ConfigToken>					_token_list;
+	std::list<ConfigToken>::const_iterator	_end;
+	std::string								_path;
+	std::ifstream							_file;
+	size_t									_errors;
 
 	void			_open_file();
 	void			_close_file();
 	void			_tokenize();
 	void			_check_order();
 	void			_parse();
+	void			_print_error(const std::string& path, const ConfigToken& t, const std::string& msg);
+	void			_throw_token_error(const std::string& path, const ConfigToken& t, const std::string& msg);
 
 	const Server	_parse_server_block(std::list<ConfigToken>::const_iterator& cur);
 	void			_parse_directive_listen(std::list<ConfigToken>::const_iterator& cur, Server& s);
@@ -90,6 +97,15 @@ public:
 	void	run(std::vector<Server>& servers);
 };
 
+inline bool	operator==(const std::list<ConfigToken>::const_iterator& it, const t_token& t)
+	{return (get_type(it) == t);}
+inline bool	operator!=(const std::list<ConfigToken>::const_iterator& it, const t_token& t)
+	{return (get_type(it) != t);}
+inline bool	operator==(const std::list<ConfigToken>::const_iterator& it, const std::string& s)
+	{return (get_word(it) == s);}
+inline bool	operator!=(const std::list<ConfigToken>::const_iterator& it, const std::string& s)
+	{return (get_word(it) != s);}
+
 void print_server_info_debug(const Server &s);
 
 static inline
@@ -104,25 +120,26 @@ str_is_numeric(const char *s)
 	return (true);
 }
 
-static inline
-bool
-str_is_numeric(const std::string& s)
-{
-	return (str_is_numeric(s.c_str()));
-}
+static inline bool	str_is_numeric(const std::string& s)
+	{return (str_is_numeric(s.c_str()));}
+
+static inline bool	is_line_break(const t_token& t)
+	{return (t == token_newline || t == token_close_brace || t == token_semicolon);}
+static inline bool	is_line_break(const ConfigToken& t)
+	{return (is_line_break(t.type()));}
+static inline bool	is_line_break(const std::list<ConfigToken>::const_iterator& it)
+	{return (is_line_break(*it));}
+static inline bool	is_separator(const char& c)
+	{return (c == '{' || c == '}' || c == ';' || c == '#');}
 
 static inline
-bool
-is_line_break(const t_token& t)
+const std::string
+get_n_spaces(size_t n)
 {
-	return (t == token_newline || t == token_close_brace || t == token_semicolon);
-}
-
-static inline
-bool
-is_separator(const char& c)
-{
-	return (c == '{' || c == '}' || c == ';' || c == '#');
+	std::string	s;
+	for (; n > 0; n--)
+		s.append(" ");
+	return (s);
 }
 
 #endif // CONFIG_PARSER_HPP

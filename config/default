@@ -1,18 +1,20 @@
 server
 {
 	listen			localhost
-	server_name		webserv test
+	server_name		webserv test	
 
 	location / {
-		root			www
-		rewrite			/redirect.html /index.html
-		default_file	index.html
-		limit_except	GET POST DELETE
-		autoindex		on
+		root	www
+		limit_except	DELETE
 	}
 
-	location /www/ {
-		autoindex		on
+	location /www/
+	{
+		default_file index.html
+	}
+
+	location /include/ {
+		autoindex on
 	}
 }
 

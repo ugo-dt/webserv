@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:24:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 12:25:05 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@
 # define CRLF								"\r\n"
 
 // Methods
-# define METHOD_UNKNOWN						0x1
-# define METHOD_GET							0x2
-# define METHOD_POST						0x4
-# define METHOD_DELETE						0x8
+# define METHOD_UNKNOWN						0b0001
+# define METHOD_GET							0b0010
+# define METHOD_POST						0b0100
+# define METHOD_DELETE						0b1000
+# define ALL_METHODS						0b1110
 
 // Status codes
 # define STATUS_OK							200
@@ -34,6 +35,7 @@
 # define STATUS_ACCEPTED					202
 # define STATUS_NO_CONTENT					204
 # define STATUS_MOVED_PERMANENTLY			301
+# define STATUS_FOUND						302
 # define STATUS_BAD_REQUEST					400
 # define STATUS_FORBIDDEN					403
 # define STATUS_NOT_FOUND					404

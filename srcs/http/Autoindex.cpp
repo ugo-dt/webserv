@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 14:23:54 by madaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:52:15 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 10:16:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,22 +34,23 @@ Autoindex::_create_link_and_sort(const t_listen& host_port, struct dirent *entit
 		if (strcmp(entity->d_name, "..") == 0)
 		{
 			line += "class=\"icon up\" draggable=\"true\" href=\"http://" + host_port.host + ":" + to_string(host_port.port) +
-				path + "/" + entity->d_name + "/" + "\">" + "[parent directory]" + "</a></p>\n";
+				"/" + path + entity->d_name + "/" + "\">" + "[parent directory]" + "</a></p>\n";
 		}
 		else
 			line += "class=\"icon dir\" draggable=\"true\" href=\"http://" + host_port.host + ":" + to_string(host_port.port) +
-				path + "/" + entity->d_name + "/" + "\">" + entity->d_name + "</a></p>\n";
+				"/" + path + entity->d_name + "/" + "\">" + entity->d_name + "</a></p>\n";
 	}
 	else if (entity->d_type == DT_REG)
 	{
 		line += "class=\"icon file\" draggable=\"true\" href=\"http://" + host_port.host + ":" + to_string(host_port.port) +
-			path + "/" + entity->d_name + "\">" + entity->d_name + "</a></p>\n";
+			"/" + path + entity->d_name + "\">" + entity->d_name + "</a></p>\n";
 	}
 	else
 	{
 		line += "class=\"icon def\" draggable=\"true\" href=\"http://" + host_port.host + ":" + to_string(host_port.port) +
-			path + "/" + entity->d_name + "\">" + entity->d_name + "</a></p>\n";
+			"/" + path + entity->d_name + "\">" + entity->d_name + "</a></p>\n";
 	}
+	WS_VALUE_LOG("link", line);
 	_links.insert(std::pair<std::string, std::string>(str_to_lower(entity->d_name), line));
 }
 
@@ -65,7 +66,7 @@ Autoindex::get_index(std::string path, const t_listen& host_port)
 
 	if (!path.length())
 		path = "/";
-	else
+	else if (path != "./")
 		while (path.compare(0, 2, "./") == 0)
 			path.erase(0, 2);
 	if ((dir = opendir(path.c_str())) == NULL)
@@ -134,7 +135,7 @@ Autoindex::get_index(std::string path, const t_listen& host_port)
 
 	_result +=
 		"\t</body>\n"
-	"</html>";
+	"</html>\n";
 	closedir(dir);
 	return (_result);
 }

@@ -6,12 +6,14 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:08:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 19:16:01 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 12:08:44 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
+
+# include "http.hpp"
 
 # include <string>
 # include <map>

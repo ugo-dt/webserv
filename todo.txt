@@ -72,5 +72,5 @@ Norme:
 
 set the first server for specific host:port as the default one (that will answer requests)
 
-is oldest folder? return same link
+make sure method allowed in response
 redirections

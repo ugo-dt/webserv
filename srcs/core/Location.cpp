@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:09:22 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:58:44 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 12:22:29 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 Location::Location()
 	: _uri(""),
 	  _is_directory(false),
-	  _methods(0),
+	  _methods(ALL_METHODS),
 	  _root(""),
 	  _redirections(),
-	  _autoindex(true),
+	  _autoindex(false),
 	  _default_file(),
 	  _cgi_extension(),
 	  _upload_path("/upload"),

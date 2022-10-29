@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:51:01 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 12:19:32 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ Response::_check_uri(const std::set<Location>& locations)
 	std::string	_dir;
 	size_t		_slash;
 
+	if (_uri[0] != '/')
+		_uri.insert(0, "/");
 	_slash = _uri.find_last_of('/');
 	if (_slash != std::string::npos)
 		_dir.assign(_uri, 0, _uri.find_last_of('/') + 1);
@@ -76,20 +78,23 @@ Response::_check_uri(const std::set<Location>& locations)
 	WS_VALUE_LOG("Path", _uri);
 	WS_VALUE_LOG("Dir ", _dir);
 
+	_location = NULL;
 	// Check if route exists for this specific file ...
-	for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
+	if (_uri != "/" && _uri[_uri.length() - 1] != '/')
 	{
-		if (_uri == (*l).get_uri())
+		for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
 		{
-			WS_VALUE_LOG("Found matching location (file): ",  (*l).get_uri());
-			_location = &(*l);
-			break ;
+			if (_uri == (*l).get_uri())
+			{
+				WS_VALUE_LOG("Found matching location (file): ",  (*l).get_uri());
+				_location = &(*l);
+				break ;
+			}
 		}
-
 	}
-	// ... or check if route exists for the directory
 	if (!_location)
 	{
+		// ... or check if route exists for the directory
 		for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
 		{
 			if (_dir == (*l).get_uri())
@@ -100,16 +105,7 @@ Response::_check_uri(const std::set<Location>& locations)
 			}
 		}
 	}
-	if (_location)
-	{
-		WS_VALUE_LOG("Location root", _location->get_root());
-		if (_location->get_root().size())
-			_uri.insert(0, _location->get_root());
-		else
-			_uri.insert(0, ".");
-	}
-	else
-		_uri.insert(0, ".");
+	// if (_request->get_method() & _location->get_methods())
 }
 
 void
@@ -147,7 +143,7 @@ Response::_set_content_type()
 }
 
 void
-Response::_get_uri_as_string(void)
+Response::_get_body_from_uri(void)
 {
 	std::ifstream	f;
 	std::string		line;
@@ -177,13 +173,15 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 		if (S_ISREG(_stat.st_mode))
 		{
 			WS_VALUE_LOG("File found at", _uri);
-			_get_uri_as_string();
+			_get_body_from_uri();
 		}
 		else if (S_ISDIR(_stat.st_mode))
 		{
 			WS_VALUE_LOG("Directory found at", _uri);
 			if (_location)
 			{
+				WS_VALUE_LOG("Location autoindex", _location->is_autoindex_on());
+				WS_VALUE_LOG("Location default file", _location->get_default_file());
 				if (_location->is_autoindex_on())
 				{
 					_body = _ai.get_index(_uri, listen);
@@ -191,8 +189,14 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 				}
 				else if (_location->get_default_file().size())
 				{
-					_header.set_status(STATUS_MOVED_PERMANENTLY);
+					_header.set_status(STATUS_FOUND);
 					_header.set_location(_location->get_default_file());
+				}
+				else
+				{
+					_header.set_status(STATUS_FORBIDDEN);
+					_uri = error_pages.at(STATUS_FORBIDDEN);
+					_get_body_from_uri();
 				}
 				// redirections
 				// for (std::map<std::string, std::string>::const_iterator it = _location->get_redirections().begin(); it != _location->get_redirections().end(); it++)
@@ -207,7 +211,7 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 			{
 				_header.set_status(STATUS_FORBIDDEN);
 				_uri = error_pages.at(STATUS_FORBIDDEN);
-				_get_uri_as_string();
+				_get_body_from_uri();
 			}
 		}
 	}
@@ -216,7 +220,7 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 		WS_VALUE_LOG("No such file or directory", _uri);
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
-		_get_uri_as_string();
+		_get_body_from_uri();
 	}
 	_header.set_content_length(_body.length());
 }
@@ -226,19 +230,38 @@ Response::generate(const std::map<uint16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
 				   const t_listen& listen)
 {
-	
+	const Location	*_old_loc;
 
 	if (!_request->is_valid())
 	{
 		WS_INFO_LOG("Invalid request.");
 		_header.set_status(STATUS_BAD_REQUEST);
-		_body = "400 Bad request";
+		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_get_body(error_pages, listen);
 		return ;
 	}
 	WS_INFO_LOG("Valid request.");
 	WS_INFO_LOG("Creating response.");
 
-	_check_uri(locations);
+	for (int i = 0; i < 10; i++)
+	{
+		_old_loc = _location;
+		_check_uri(locations);
+		if (!_location)
+		{
+			_location = _old_loc;
+			break ;
+		}
+		if (!_location->get_root().size())
+			break ;
+		if (_location)
+		{
+			WS_VALUE_LOG("Location root", _location->get_root());
+			if (_location->get_root().size())
+				_uri.insert(0, _location->get_root());
+		}
+	}
+	_uri.insert(0, ".");
 	_get_body(error_pages, listen);
 }
 
@@ -250,15 +273,17 @@ Response::str()
 
 	_status = atoi(_header.get_status().c_str());
 	str = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
-	if (_status == STATUS_MOVED_PERMANENTLY)
+
+	// 3xx status codes are redirections
+	if (_status / 100 == 3)
 		str += "Location: " + _header.get_location() + CRLF;
 	else if (_status == STATUS_OK)
 	{
 		str += "Content-Length: " + _header.get_content_length() + CRLF;
 		str += "Content-Type: " + _header.get_content_type() + CRLF;
-		str += "Date: " + _header.get_date() + CRLF;
-		str += "Server: " + _header.get_server() + CRLF;
 	}
+	str += "Date: " + _header.get_date() + CRLF;
+	str += "Server: " + _header.get_server() + CRLF;
 	str += CRLF;
 	str += _body;
 	_response_length = str.length();
