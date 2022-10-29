@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 12:19:32 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 14:39:54 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ Response::Response(const char *request_buffer)
 		if (!_request)
 			_throw_errno("Fatal error");
 		_uri = _request->get_uri();
+		if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
+			_uri.append(1, '/');
 	}
 }
 
@@ -148,7 +150,7 @@ Response::_get_body_from_uri(void)
 	std::ifstream	f;
 	std::string		line;
 
-	f.open(_uri, std::ifstream::out);
+	f.open(_uri.c_str(), std::ifstream::out);
 	if (!f.is_open())
 	{
 		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
@@ -163,7 +165,7 @@ Response::_get_body_from_uri(void)
 }
 
 void
-Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_listen& listen)
+Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
 	struct stat		_stat;
 	Autoindex		_ai;
@@ -184,16 +186,21 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 				WS_VALUE_LOG("Location default file", _location->get_default_file());
 				if (_location->is_autoindex_on())
 				{
+					WS_INFO_LOG("Sending index of " + _uri);
 					_body = _ai.get_index(_uri, listen);
 					_header.set_content_type(MIME_HTML);
 				}
 				else if (_location->get_default_file().size())
 				{
+					WS_INFO_LOG("Sending default file of location " + _location->get_uri() + " (" + _location->get_default_file() + ")");
 					_header.set_status(STATUS_FOUND);
 					_header.set_location(_location->get_default_file());
+					_header.set_content_length("0");
+					_body.clear();
 				}
 				else
 				{
+					WS_INFO_LOG("403 Forbidden");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
 					_get_body_from_uri();
@@ -226,7 +233,7 @@ Response::_get_body(const std::map<uint16_t, std::string>& error_pages, const t_
 }
 
 void
-Response::generate(const std::map<uint16_t, std::string>& error_pages,
+Response::generate(const std::map<u_int16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
 				   const t_listen& listen)
 {

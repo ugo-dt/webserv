@@ -10,6 +10,7 @@ server
 
 	location /www/
 	{
+		autoindex on
 		default_file index.html
 	}
 

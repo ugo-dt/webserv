@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:04:16 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 14:22:00 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ Server::_handle_request(int& _fd)
 	if (!_resp)
 		_throw_errno("Fatal error");
 	WS_INFO_LOG("Sending response.");
-	_bytes = send(_fd, _resp->str().c_str(), _resp->length(), 0);
+	_bytes = send(_fd, _resp->str().c_str(), strlen(_resp->str().c_str()), 0);
 	if (_bytes < 0)
 	{
 		std::cout << "Could not send response to client (" << _fd << "): " << std::strerror(errno) << std::endl;
@@ -216,7 +216,7 @@ struct sockaddr_in& Server::get_sockaddr()
 	{return _sockaddr;}
 const std::set<std::string>& Server::get_server_names() const
 	{return _server_names;}
-const std::map<uint16_t, std::string>& Server::get_error_pages() const
+const std::map<u_int16_t, std::string>& Server::get_error_pages() const
 	{return _error_pages;}
 const size_t& Server::get_client_body_buffer_size() const
 	{return _client_body_buffer_size;}
@@ -231,7 +231,7 @@ void Server::set_port(const int& port)
 	{_listen.port = port;}
 void Server::set_server_names(const std::set<std::string> server_names)
 	{_server_names = server_names;}
-void Server::set_error_pages(const std::map<uint16_t, std::string>& error_pages)
+void Server::set_error_pages(const std::map<u_int16_t, std::string>& error_pages)
 	{_error_pages = error_pages;}
 void Server::set_client_body_buffer_size(const size_t& size)
 	{_client_body_buffer_size = size;}
@@ -239,7 +239,7 @@ void Server::set_locations(const std::set<Location>& locations)
 	{_locations = locations;}
 void Server::add_server_name(const std::string& name)
 	{_server_names.insert(name);}
-void Server::set_error_page(uint16_t code, const std::string& path)
+void Server::set_error_page(u_int16_t code, const std::string& path)
 	{_error_pages[code] = path;}
 void Server::add_location(const Location& l)
 	{_locations.insert(l);}
@@ -257,7 +257,7 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 		for (std::set<std::string>::const_iterator i = s.get_server_names().begin(); i != s.get_server_names().end(); i++)
 			o << "\t" << (*i) << std::endl;
 		o << "Error pages: " << std::endl;
-		for (std::map<uint16_t, std::string>::const_iterator i = s.get_error_pages().begin(); i != s.get_error_pages().end(); i++)
+		for (std::map<u_int16_t, std::string>::const_iterator i = s.get_error_pages().begin(); i != s.get_error_pages().end(); i++)
 			o << "\t" << (*i).first << ":" << (*i).second << std::endl;
 		o << "buffer size: " << s.get_client_body_buffer_size() << std::endl;
 		for (std::set<Location>::const_iterator it = s.get_locations().begin(); it != s.get_locations().end(); it++)

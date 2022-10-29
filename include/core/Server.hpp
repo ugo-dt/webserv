@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:14:19 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/29 13:49:21 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ private:
 	struct sockaddr_in				_sockaddr;
 	size_t							_sockaddr_len;
 	std::set<std::string>			_server_names;
-	std::map<uint16_t, std::string>	_error_pages;
+	std::map<u_int16_t, std::string>	_error_pages;
 	size_t							_client_body_buffer_size;
 	std::set<Location>				_locations;
 	Response						*_resp;
@@ -74,7 +74,7 @@ public:
 	const int&								get_port() const;
 	struct sockaddr_in&						get_sockaddr();
 	const std::set<std::string>&			get_server_names() const;
-	const std::map<uint16_t, std::string>&	get_error_pages() const;
+	const std::map<u_int16_t, std::string>&	get_error_pages() const;
 	const size_t&							get_client_body_buffer_size() const;
 	const std::set<Location>&				get_locations() const;
 
@@ -83,12 +83,12 @@ public:
 	void									set_host(const std::string& host);
 	void									set_port(const int& port);
 	void									set_server_names(const std::set<std::string> server_names);
-	void									set_error_pages(const std::map<uint16_t, std::string>& error_pages);
+	void									set_error_pages(const std::map<u_int16_t, std::string>& error_pages);
 	void									set_client_body_buffer_size(const size_t& size);
 	void									set_locations(const std::set<Location>& locations);
 
 	void									add_server_name(const std::string& name);
-	void									set_error_page(uint16_t code, const std::string& path);
+	void									set_error_page(u_int16_t code, const std::string& path);
 	void									add_location(const Location& l);
 
 	// parser

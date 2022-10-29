@@ -40,10 +40,10 @@ private:
 	ResponseHeaders	_header;
 	std::string		_body;
 	size_t			_response_length;
-	const Location	*_location; // matching location (set to NULL if no match)
+	const Location	*_location; // matching location (NULL if no match)
 
 	void	_check_uri(const std::set<Location>& server_locations);
-	void	_get_body(const std::map<uint16_t, std::string>& error_pages, const t_listen& listen);
+	void	_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void	_set_content_type();
 	void	_get_body_from_uri();
 
@@ -51,7 +51,7 @@ public:
 	Response(const char *request_buffer);
 	~Response(void);
 
-	void				generate(const std::map<uint16_t, std::string>& error_pages, const std::set<Location>& locations, const t_listen& listen);
+	void				generate(const std::map<u_int16_t, std::string>& error_pages, const std::set<Location>& locations, const t_listen& listen);
 	const std::string	str();
 	size_t				length();
 };
