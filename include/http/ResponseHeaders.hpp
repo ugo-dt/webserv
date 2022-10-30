@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:39:20 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:14:17 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ public:
 	const std::string&	get_content_type() const;
 	const std::string&	get_content_length() const;
 	const std::string&	get_server() const;
-	const std::string	get_status_string() const;
 	const std::string&	get_location() const;
 };
 

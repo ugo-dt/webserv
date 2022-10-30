@@ -1,35 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   string_utils.hpp                                   :+:      :+:    :+:   */
+/*   string_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 14:46:55 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/30 14:56:32 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/30 14:59:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STRING_UTILS_HPP
-# define STRING_UTILS_HPP
+#include "string_utils.hpp"
 
-# include <algorithm>
-# include <string>
-# include <sstream>
-
-static inline std::string	str_to_upper(std::string& str)
+std::string	str_to_upper(std::string str)
 {
 	std::transform(str.begin(), str.end(),str.begin(), ::toupper);
 	return str;
 }
 
-static inline std::string	str_to_lower(std::string str)
+std::string	str_to_lower(std::string str)
 {
 	std::transform(str.begin(), str.end(),str.begin(), ::tolower);
 	return str;
 }
 
-static inline std::string&	capitalize(std::string& str)
+std::string&	capitalize(std::string& str)
 {
 	size_t	i = 0;
 
@@ -43,7 +38,7 @@ static inline std::string&	capitalize(std::string& str)
 	return str;
 }
 
-static inline std::string&	strip(std::string& str, char c)
+std::string&	strip(std::string& str, char c)
 {
 	size_t	i;
 
@@ -58,11 +53,9 @@ static inline std::string&	strip(std::string& str, char c)
 	return str;
 }
 
-static inline std::string	to_string(ssize_t n)
+std::string	to_string(ssize_t n)
 {
 	std::stringstream tmp;
 	tmp << n;
 	return tmp.str();
 }
-
-#endif // STRING_UTILS_HPP

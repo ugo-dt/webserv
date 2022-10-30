@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 13:28:55 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:08:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ int	main(int argc, const char **argv)
 		return (EXIT_FAILURE);
 	try
 	{
-		return (test_response());
 		webserv.run();
 		webserv.clean();
 	}

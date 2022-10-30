@@ -6,13 +6,11 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 18:55:26 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 19:04:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:01:38 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "core.hpp"
-#include <cstdlib>
-#include <sys/stat.h>
+#include "mkdir_p.hpp"
 
 /* Make a directory; already existing dir okay */
 static int maybe_mkdir(const char* path, mode_t mode)

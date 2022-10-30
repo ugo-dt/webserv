@@ -16,6 +16,8 @@
 # include "core.hpp"
 # include "http.hpp"
 # include "log.hpp"
+# include "mkdir_p.hpp"
+# include "raw.hpp"
 # include "string_utils.hpp"
 
 # include "Autoindex.hpp"

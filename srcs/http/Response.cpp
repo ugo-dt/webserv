@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 12:55:32 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:29:39 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ Response::_get_body_from_uri(void)
 	std::ifstream	f;
 	std::string		line;
 
-	f.open(_uri.c_str(), std::ifstream::out);
+	f.open(_uri.c_str());
 	if (!f.is_open())
 	{
 		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
@@ -169,9 +169,7 @@ Response::_get_body_from_uri(void)
 	}
 	_header.set_status(STATUS_OK);
 	_set_content_type();
-	while (std::getline(f, line))
-		_body.append(line + "\n");
-	f.close();
+	_body = get_body_from_uri(_uri);
 }
 
 void
@@ -366,7 +364,7 @@ Response::str()
 	unsigned int	_status;
 
 	_status = atoi(_header.get_status().c_str());
-	str = "HTTP/1.1 " + _header.get_status() + " " + _header.get_status_string() + CRLF;
+	str = "HTTP/1.1 " + _header.get_status() + " " + get_status_string(_status) + CRLF;
 
 	// 3xx status codes are redirections
 	if (_status / 100 == 3 || _status == STATUS_SEE_OTHER)

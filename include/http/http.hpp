@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 12:03:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:18:04 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@
 # define STATUS_PAYLOAD_TOO_LARGE			413
 # define STATUS_INTERNAL_SERVER_ERROR		500
 # define STATUS_NOT_IMPLEMENTED				501
+# define STATUS_SERVICE_UNAVAILABLE			503
 # define STATUS_HTTP_VERSION_NOT_SUPPORTED	505
 
 // Header fields

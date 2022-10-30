@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 13:16:25 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:49:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ Server::Server()
 	_error_pages[STATUS_PAYLOAD_TOO_LARGE] = "www/413.html";
 	_error_pages[STATUS_INTERNAL_SERVER_ERROR] = "www/500.html";
 	_error_pages[STATUS_NOT_IMPLEMENTED] = "www/501.html";
+	_error_pages[STATUS_SERVICE_UNAVAILABLE] = "www/503.html";
 	_error_pages[STATUS_HTTP_VERSION_NOT_SUPPORTED] = "www/505.html";
 }
 
@@ -120,8 +121,10 @@ Server::_handle_request(int& _fd)
 void
 Server::handle_connections(struct pollfd *_fds)
 {
-	int		_incoming_fd;
-	size_t	i;
+	int			_incoming_fd;
+	std::string	_str;
+	std::string	_page;
+	size_t		i;
 
 	// Check new connection
 	if (_fds[0].revents & POLLIN)
@@ -151,7 +154,17 @@ Server::handle_connections(struct pollfd *_fds)
 		if (i == MAX_CONNECTIONS)
 		{
 			std::cout << "Refused new connection: " << "too many clients" << std::endl;
-			send(_incoming_fd, "HTTP/1.1 403 Service Unavailable" CRLF "Server: webserv" CRLF CRLF "Service unavailable\r\n", 75, 0);
+			if (_error_pages.count(STATUS_SERVICE_UNAVAILABLE))
+				_page = get_body_from_uri(_error_pages.at(STATUS_SERVICE_UNAVAILABLE));
+			else
+				_page = get_raw_page(STATUS_SERVICE_UNAVAILABLE);
+			_str = "HTTP/1.1 503 Service Unavailable" CRLF;
+			_str += "Server: webserv" CRLF;
+			_str += "Content-Length: " + to_string(_page.length()) + CRLF;
+			_str += "Content-Type: text/html" CRLF;
+			_str += CRLF;
+			_str += _page + CRLF;
+			send(_incoming_fd, _str.c_str(), _str.length(), 0);
 			close(_incoming_fd);
 		}
 		else

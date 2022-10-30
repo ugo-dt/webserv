@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   core.hpp                                           :+:      :+:    :+:   */
+/*   string_utils.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/25 22:02:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:01:30 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/30 14:59:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CORE_HPP
-# define CORE_HPP
+#ifndef STRING_UTILS_HPP
+# define STRING_UTILS_HPP
 
-# include "log.hpp"
-
-# include <cerrno>
-# include <cstring>
+# include <algorithm>
 # include <string>
-# include <sys/types.h>
+# include <sstream>
 
-// throws an exception with msg followed by the error string correspondig to errno
-static inline void _throw_errno(const std::string& msg)
-	{throw std::runtime_error(msg + ": " + strerror(errno));}
+std::string		str_to_upper(std::string str);
+std::string		str_to_lower(std::string str);
+std::string&	capitalize(std::string& str);
+std::string&	strip(std::string& str, char c);
+std::string		to_string(ssize_t n);
 
-#endif // CORE_HPP
+#endif // STRING_UTILS_HPP

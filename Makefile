@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/10/29 18:59:14 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/10/30 15:12:04 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,10 +14,12 @@ NAME =	webserv
 
 SRCS =	srcs/main.cpp \
 		srcs/core/mkdir_p.cpp \
+		srcs/core/string_utils.cpp \
 		srcs/core/Location.cpp \
 		srcs/core/Server.cpp \
 		srcs/core/Webserv.cpp \
 		srcs/http/Autoindex.cpp \
+		srcs/http/raw.cpp \
 		srcs/http/Request.cpp \
 		srcs/http/Response.cpp \
 		srcs/http/ResponseHeaders.cpp \

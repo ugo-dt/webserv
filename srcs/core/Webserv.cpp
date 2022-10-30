@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 12:31:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 15:17:54 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Webserv::Webserv(void)
 	_default_error_pages[STATUS_PAYLOAD_TOO_LARGE] = "www/413.html";
 	_default_error_pages[STATUS_INTERNAL_SERVER_ERROR] = "www/500.html";
 	_default_error_pages[STATUS_NOT_IMPLEMENTED] = "www/501.html";
+	_default_error_pages[STATUS_SERVICE_UNAVAILABLE] = "www/503.html";
 	_default_error_pages[STATUS_HTTP_VERSION_NOT_SUPPORTED] = "www/505.html";
 }
 

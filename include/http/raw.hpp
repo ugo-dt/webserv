@@ -1,27 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   core.hpp                                           :+:      :+:    :+:   */
+/*   raw.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/25 22:02:45 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:01:30 by ugdaniel         ###   ########.fr       */
+/*   Created: 2022/10/30 15:13:23 by ugdaniel          #+#    #+#             */
+/*   Updated: 2022/10/30 15:29:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CORE_HPP
-# define CORE_HPP
+#ifndef RAW_HPP
+# define RAW_HPP
 
-# include "log.hpp"
+# include "http.hpp"
+# include "string_utils.hpp"
 
-# include <cerrno>
-# include <cstring>
 # include <string>
-# include <sys/types.h>
+# include <fstream>
 
-// throws an exception with msg followed by the error string correspondig to errno
-static inline void _throw_errno(const std::string& msg)
-	{throw std::runtime_error(msg + ": " + strerror(errno));}
+const std::string	get_body_from_uri(const std::string& uri);
+const std::string	get_status_string(unsigned int code);
+const std::string	get_raw_page(unsigned int code, const char *msg);
+const std::string	get_raw_page(unsigned int code);
 
-#endif // CORE_HPP
+#endif // RAW_HPP
