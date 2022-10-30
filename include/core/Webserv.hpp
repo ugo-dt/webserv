@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:14:38 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 11:58:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ private:
 	std::vector<Server>				_servers;
 	int								*_sockets; // This is an array.
 	size_t							_nsockets;
+	struct pollfd					*_poll_fds; // This is an array with all connections to each server, in a row
 	bool							_running;
 	std::map<uint32_t, std::string>	_default_error_pages;
 

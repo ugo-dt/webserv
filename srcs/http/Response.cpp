@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 21:44:56 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 11:59:32 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -332,6 +332,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			if (_location->get_root().size())
 				_uri.insert(0, _location->get_root());
 		}
+		WS_INFO_LOG("Root is '" + _location->get_root() "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
 	_uri.insert(0, 1, '.');

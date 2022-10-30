@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 21:16:26 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 12:04:47 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Server::Server()
 	: _socket(-1),
-	  _fds(),
 	  _nfds(MAX_CONNECTIONS),
 	  _buffer(),
 	  _listen(),
@@ -72,13 +71,6 @@ Server::setup(void)
 
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		_throw_errno("listen");
-	_fds[0].fd = _socket;
-	_fds[0].events = POLLIN;
-	for (size_t i = 1; i < MAX_CONNECTIONS; i++)
-	{
-		_fds[i].fd = -1;
-		_fds[i].events = POLLIN; 
-	}
 }
 
 void
@@ -127,15 +119,10 @@ Server::_handle_request(int& _fd)
 }
 
 void
-Server::wait_connections(void)
+Server::handle_connections(struct pollfd *_fds)
 {
 	int		_incoming_fd;
-	int		_poll_ret;
 	size_t	i;
-
-	_poll_ret = poll(_fds, _nfds, 0);
-	if (_poll_ret <= 0)
-		return ;
 
 	// Check new connection
 	if (_fds[0].revents & POLLIN)
@@ -169,13 +156,7 @@ Server::wait_connections(void)
 			close(_incoming_fd);
 		}
 		else
-		{
 			std::cout << "Accepted new connection (" << _incoming_fd << ") on " << _listen.host << ":" << _listen.port << std::endl;
-		}
-
-		// No more readable file descriptors
-		if (--_poll_ret <= 0)
-			return ;
 	}
 
 	// Check all clients to read data
@@ -186,11 +167,7 @@ Server::wait_connections(void)
 
 		// If the client is readable or errors occur
 		if (_fds[i].revents & (POLLIN | POLLERR))
-		{
 			_handle_request(_fds[i].fd);
-			if (--_poll_ret <= 0)
-				break;
-		}
 	}
 }
 

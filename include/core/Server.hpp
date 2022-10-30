@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 13:49:21 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 11:50:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,20 @@ inline bool operator==(const t_listen& x, const t_listen& y)
 class Server
 {
 private:
-	int								_socket; // previously _serverFd
-	struct pollfd					_fds[MAX_CONNECTIONS];
-	nfds_t							_nfds;
-	char							_buffer[BUFFER_SIZE];
-	t_listen						_listen; // host:port
-	struct sockaddr_in				_sockaddr;
-	size_t							_sockaddr_len;
-	std::set<std::string>			_server_names;
+	int									_socket; // previously _serverFd
+	// struct pollfd						_fds[MAX_CONNECTIONS];
+	nfds_t								_nfds;
+	char								_buffer[BUFFER_SIZE];
+	t_listen							_listen; // host:port
+	struct sockaddr_in					_sockaddr;
+	size_t								_sockaddr_len;
+	std::set<std::string>				_server_names;
 	std::map<u_int16_t, std::string>	_error_pages;
-	size_t							_client_body_buffer_size;
-	std::set<Location>				_locations;
-	Response						*_resp;
+	size_t								_client_body_buffer_size;
+	std::set<Location>					_locations;
+	Response							*_resp;
 
-	unsigned int					_state;
+	unsigned int						_state;
 
 	void	_handle_request(int& _fd);
 
@@ -66,7 +66,7 @@ public:
 
 	void									setup();
 	void									clean();
-	void									wait_connections();
+	void									handle_connections(struct pollfd *_fds);
 
 	const int&								get_socket() const;
 	const int&								get_client() const;

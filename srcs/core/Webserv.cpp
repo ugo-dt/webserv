@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 20:14:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 11:57:35 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ Webserv::init(int argc, const char **argv)
 	{
 		_sockets = (int *)malloc(sizeof(int) * _nsockets);
 		if (!_sockets)
-			_throw_errno("malloc");
+			_throw_errno("init: malloc");
 		for (size_t i = 0; i < _nsockets; i++)
 		{
 			std::cout << _servers[i];
@@ -76,17 +76,52 @@ Webserv::init(int argc, const char **argv)
 	return (EXIT_SUCCESS);
 }
 
+inline void	copy_fds(struct pollfd *to, const struct pollfd *from)
+{
+	for (size_t i = 0; i < MAX_CONNECTIONS; i++)
+	{
+		to[i].fd = from[i].fd;
+		to[i].events = POLLIN;
+	}
+}
+
 void
 Webserv::run(void)
 {
+	int		_poll_ret;
+	nfds_t	_nfds;
+
+	_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * MAX_CONNECTIONS * _nsockets);
+	if (_poll_fds == NULL)
+		_throw_errno("init: malloc");
+	for (size_t i = 0; i < _nsockets; i++)
+	{
+		_poll_fds[i * MAX_CONNECTIONS].fd = _sockets[i];
+		_poll_fds[i * MAX_CONNECTIONS].events = POLLIN;
+		for (size_t j = 1; j < MAX_CONNECTIONS; j++)
+		{
+			_poll_fds[i * MAX_CONNECTIONS + j].fd = -1;
+			_poll_fds[i * MAX_CONNECTIONS + j].events = POLLIN;
+		}
+	}
+	_nfds = _nsockets * MAX_CONNECTIONS;
 	while (_running)
-		for (size_t i = 0; i < _nsockets; i++)
-			_servers[i].wait_connections();
+	{
+		_poll_ret = poll(_poll_fds, _nfds, 0);
+		if (_poll_ret > 0)
+			for (size_t i = 0; i < _nsockets; i++)
+				_servers[i].handle_connections(&_poll_fds[i * MAX_CONNECTIONS]);
+	}
 }
 
 void
 Webserv::clean(void)
 {
+	if (_poll_fds)
+	{
+		free(_poll_fds);
+		_poll_fds = NULL;
+	}
 	for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); it++)
 		(*it).clean();
 	if (_sockets)
