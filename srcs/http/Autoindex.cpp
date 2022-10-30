@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 14:23:54 by madaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 16:36:08 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 12:37:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ Autoindex::get_index(std::string path, const t_listen& host_port)
 	DIR									*dir;
 	struct dirent						*entity;
 	std::string::reverse_iterator		rit = path.rbegin();
+	std::string							tmp;
 
 	if (!path.length())
 		path = "/";
@@ -73,6 +74,14 @@ Autoindex::get_index(std::string path, const t_listen& host_port)
 		return (_result);
 	if (*rit != '/')
 		path += "/";
+	
+	// path displayed should be absolute from the server pov (e.g. "./" should be "/")
+	if (path == "./")
+		tmp = "/";
+	else
+		tmp = path;
+	if (tmp[0] != '/')
+		tmp.insert(0, 1, '/');
 	_result =
 	"<!DOCTYPE html>\n"
 	"<html>\n"
@@ -113,10 +122,10 @@ Autoindex::get_index(std::string path, const t_listen& host_port)
   		"\t\t}\n"
 		"\t</style>\n"
 		"\t<head>\n"
-			"\t\t<title id=\"title\"> Index of " + path + "</title>\n"
+			"\t\t<title id=\"title\"> Index of " + tmp + "</title>\n"
 		"\t</head>\n"
 		"\t<body>\n"
-			"\t\t<h1>Index of " + path + "</h1>\n";
+			"\t\t<h1>Index of " + tmp + "</h1>\n";
 
 	for (entity = readdir(dir); entity; entity = readdir(dir))
 	{

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 11:59:32 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 12:55:32 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,24 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 }
 
 void
+Response::_parse_post_body()
+{
+	std::stringstream	sstream(_body);
+	std::string			line;
+	std::string			file_path;
+	std::string			_dir;
+
+	std::cout << "body[" << _request->get_body() << "]" << std::endl;
+	while (std::getline(sstream, line))
+	{
+		std::cout << "line: " << line << std::endl;
+	}
+
+	std::cout << "post dir:" << _dir << std::endl;
+	std::cout << "post file path:" << file_path << std::endl;
+}
+
+void
 Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
 	std::ofstream	file;
@@ -263,32 +281,32 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	// {
 	// 	_dir = _request->get_uri();
 	// }
+	_parse_post_body();
+	return ;
 
-	// if (_dir[0] == '/')
-	// 	_dir.insert(0, 1, '.');
+	_dir = "/www/upload";
 
-	// std::cout << "post dir:" << _dir << std::endl;
-	// if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
-	// {
-		// std::cout << "cant create dir (" << _dir << ")" << std::endl;
-	// 	// error
-	// 	_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-	// 	_uri = error_pages.at(STATUS_BAD_REQUEST);
-	// 	_get_body_from_uri();
-	// 	return ;
-	// }
+	if (_dir[0] == '/')
+		_dir.insert(0, 1, '.');
+	if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
+	{
+		std::cout << "cant create dir (" << _dir << ")" << std::endl;
+		// error
+		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_get_body_from_uri();
+		return ;
+	}
 
-	// file_path = "postfile";
-
-	// file_path.insert(0, 1, '/');
-	// file_path.insert(0, _dir);
-	// std::cout << "post file path:" << file_path << std::endl;
+	file_path = "postfile";
+	file_path.insert(0, 1, '/');
+	file_path.insert(0, _dir);
 
 	file.open(file_path.c_str());
 	if (!file.is_open())
 	{
 		// error
-		std::cout << "cant open file (" << file_path << ")" << std::endl;
+		std::cerr << "Cannot open file (" << file_path << ")" << std::endl;
 		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
 		_uri = error_pages.at(STATUS_INTERNAL_SERVER_ERROR);
 		_get_body_from_uri();
@@ -299,7 +317,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	_header.set_status(STATUS_SEE_OTHER);
 	_uri = "http://" + listen.host + ":" + to_string(listen.port) + _request->get_uri();
 	_header.set_location(_uri);
-	std::cout << "file ok" << std::endl;
 }
 
 void

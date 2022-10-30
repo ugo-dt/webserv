@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 11:50:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 12:30:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ class Server
 {
 private:
 	int									_socket; // previously _serverFd
-	// struct pollfd						_fds[MAX_CONNECTIONS];
-	nfds_t								_nfds;
 	char								_buffer[BUFFER_SIZE];
 	t_listen							_listen; // host:port
 	struct sockaddr_in					_sockaddr;
@@ -70,6 +68,7 @@ public:
 
 	const int&								get_socket() const;
 	const int&								get_client() const;
+	const t_listen&							get_listen() const;
 	const std::string&						get_host() const;
 	const int&								get_port() const;
 	struct sockaddr_in&						get_sockaddr();

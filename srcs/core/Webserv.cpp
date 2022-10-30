@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 11:57:35 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 12:31:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,15 @@ Webserv::~Webserv(void)
 	clean();
 }
 
+bool
+Webserv::_host_port_already_used(size_t max, const t_listen& l)
+{
+	for (size_t i = 0; i < max && i < _servers.size(); i++)
+		if (_servers[i].get_listen() == l)
+			return (true);
+	return (false);
+}
+
 int
 Webserv::init(int argc, const char **argv)
 {
@@ -48,8 +57,7 @@ Webserv::init(int argc, const char **argv)
 		std::cout << e.what() << "\e[0m" << std::endl;
 		return (EXIT_FAILURE);
 	}
-	_nsockets = _servers.size();
-	if (!_nsockets)
+	if (!_servers.size())
 	{
 		std::cout << "webserv: no servers found." << std::endl;
 		exit(EXIT_SUCCESS);
@@ -59,13 +67,16 @@ Webserv::init(int argc, const char **argv)
 		_sockets = (int *)malloc(sizeof(int) * _nsockets);
 		if (!_sockets)
 			_throw_errno("init: malloc");
-		for (size_t i = 0; i < _nsockets; i++)
+		for (size_t i = 0; i < _servers.size(); i++)
 		{
+			if (_host_port_already_used(i, _servers[i].get_listen()))
+				continue ;
 			std::cout << _servers[i];
 			_servers[i].setup();
 			memset(&_sockets[i], 0, sizeof(struct pollfd));
 			_sockets[i] = _servers[i].get_socket();
 			WS_VALUE_LOG("Socket", _sockets[i]);
+			_nsockets++;
 		}
 	}
 	catch (std::runtime_error& e)

@@ -5,7 +5,7 @@ server
 
 	location / {
 		autoindex		on
-		root			www
+		#root			www
 		limit_except	DELETE
 	}
 
@@ -13,7 +13,7 @@ server
 	{
 		upload_path		/www/upload/
 		autoindex on
-		limit_except	GET
+		limit_except	GET POST
 	}
 
 	location /include/ {

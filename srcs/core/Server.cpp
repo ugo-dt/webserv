@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 12:04:47 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/30 13:16:25 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Server::Server()
 	: _socket(-1),
-	  _nfds(MAX_CONNECTIONS),
 	  _buffer(),
 	  _listen(),
 	  _sockaddr(),
@@ -85,7 +84,7 @@ Server::_handle_request(int& _fd)
 	{
 		// This should usually not happen, as we're polling through the file descriptors
 		// Playing it safe, though
-		std::cout << "Could not read from client (" << _fd << ") request: " << std::strerror(errno) << std::endl;
+		std::cout << "Connection closed (" << _fd << ")" << std::endl;
 		close_socket(_fd);
 		return ;
 	}
@@ -98,7 +97,7 @@ Server::_handle_request(int& _fd)
 	{
 		// =0: connection was closed by client
 		// <0: some error happened
-		std::cout << "Connection closed." << std::endl;
+		std::cout << "Connection closed (" << _fd << ")" << std::endl;
 		close_socket(_fd);
 		return ;
 	}
@@ -160,7 +159,7 @@ Server::handle_connections(struct pollfd *_fds)
 	}
 
 	// Check all clients to read data
-	for (i = 1; i < _nfds; i++)
+	for (i = 1; i < MAX_CONNECTIONS; i++)
 	{
 		if (_fds[i].fd < 0)
 			continue;
@@ -184,6 +183,8 @@ Server::clean()
 
 const int& Server::get_socket() const
 	{return _socket;}
+const t_listen&	Server::get_listen() const
+	{return _listen;}
 const std::string& Server::get_host() const
 	{return _listen.host;}
 const int& Server::get_port() const
