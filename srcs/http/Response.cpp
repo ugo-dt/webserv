@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:21:36 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 18:43:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,12 +217,11 @@ Response::_parse_post_body()
 	std::string			file_path;
 	std::string			_dir;
 
-	std::cout << "body[" << _request.get_body() << "]" << std::endl;
+	return ;
 	while (std::getline(sstream, line))
 	{
 		std::cout << "line: " << line << std::endl;
 	}
-
 	std::cout << "post dir:" << _dir << std::endl;
 	std::cout << "post file path:" << file_path << std::endl;
 }
@@ -234,64 +233,9 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	std::string		file_path;
 	std::string		_dir;
 
-	// WS_VALUE_LOG("Post request to", _uri);
-	// if (_location)
-	// {
-	// 	std::cout << "location: " << _location->get_uri() << std::endl;
-	// 	if (!(_location->get_methods() & METHOD_POST))
-	// 	{
-	// 		std::cout << "Not Allowed" << std::endl;
-	// 		// error
-	// 		_header.set_status(STATUS_METHOD_NOT_ALLOWED);
-	// 		_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
-	// 		_get_body_from_uri();
-	// 		return ;
-	// 	}
-	// 	if (_location->get_upload_path().size())
-	// 	{
-	// 		std::cout << "Upload path: " << _location->get_upload_path() << std::endl;
-	// 		_dir = _location->get_upload_path();
-	// 	}
-	// }
-	// else
-	// {
-	// 	_dir = _request.get_uri();
-	// }
-	_parse_post_body();
-	return ;
-
-	_dir = "/www/upload";
-
-	if (_dir[0] == '/')
-		_dir.insert(0, 1, '.');
-	if (mkdir_p(_dir.c_str()) != EXIT_SUCCESS)
-	{
-		std::cout << "cant create dir (" << _dir << ")" << std::endl;
-		// error
-		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-		_uri = error_pages.at(STATUS_BAD_REQUEST);
-		_get_body_from_uri();
-		return ;
-	}
-
-	file_path = "postfile";
-	file_path.insert(0, 1, '/');
-	file_path.insert(0, _dir);
-
-	file.open(file_path.c_str());
-	if (!file.is_open())
-	{
-		// error
-		std::cerr << "Cannot open file (" << file_path << ")" << std::endl;
-		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-		_uri = error_pages.at(STATUS_INTERNAL_SERVER_ERROR);
-		_get_body_from_uri();
-		return ;
-	}
-	file << _request.get_body();
-	_header.set_status(STATUS_SEE_OTHER);
-	_uri = "http://" + listen.host + ":" + to_string(listen.port) + _request.get_uri();
-	_header.set_location(_uri);
+	(void)error_pages;
+	(void)listen;
+	std::cout << _request.get_body() << std::endl;
 }
 
 void
@@ -327,11 +271,15 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		WS_INFO_LOG("Root is '" + _location->get_root() + "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
+	// for (std::map<std::string, std::string>::const_iterator it = _request.get_header_fields().begin(); it != _request.get_header_fields().end(); it++)
+	// 	std::cout << (*it).first << ", " << (*it).second << std::endl;
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() == METHOD_GET)
 		_get_body(error_pages, listen);
 	else if (_request.get_method() == METHOD_POST)
+	{
 		_handle_post(error_pages, listen);
+	}
 }
 
 const std::string
