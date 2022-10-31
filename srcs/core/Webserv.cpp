@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:28:39 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 21:02:58 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ int
 Webserv::init(int argc, const char **argv)
 {
 	ConfigParser	parser;
+	size_t			i;
+	size_t			j;
 
 	try
 	{
@@ -66,19 +68,29 @@ Webserv::init(int argc, const char **argv)
 	}
 	try
 	{
-		_sockets = (int *)malloc(sizeof(int) * _nsockets);
-		if (!_sockets)
-			_throw_errno("init: malloc");
-		for (size_t i = 0; i < _servers.size(); i++)
+		for (i = 0; i < _servers.size(); i++)
 		{
 			if (_host_port_already_used(i, _servers[i].get_listen()))
 				continue ;
-			std::cout << _servers[i]; // debug
-			_servers[i].setup();
-			memset(&_sockets[i], 0, sizeof(struct pollfd));
-			_sockets[i] = _servers[i].get_socket();
-			WS_VALUE_LOG("Socket", _sockets[i]);
 			_nsockets++;
+		}
+		_sockets = (int *)malloc(sizeof(int) * _nsockets);
+		if (!_sockets)
+			_throw_errno("init: malloc");
+		i = 0;
+		j = 0;
+		while (i < _nsockets && j < _servers.size())
+		{
+			if (_host_port_already_used(i, _servers[j].get_listen()))
+			{
+				j++;
+				continue ;
+			}
+			std::cout << _servers[j]; // debug
+			_servers[j].setup();
+			_sockets[i] = _servers[j].get_socket();
+			i++;
+			j++;
 		}
 	}
 	catch (std::runtime_error& e)
@@ -162,15 +174,15 @@ Webserv::_handle_request(t_client& client)
 
 	// We're checking if we can actually read from the file descriptor
 	// This will read data without removing it from the queue
-	_bytes = recv(client.fd, _buffer, 1, MSG_PEEK);
-	if (_bytes <= 0)
-	{
-		// This should usually not happen, as we're polling through the file descriptors
-		// Playing it safe, though
-		std::cout << "Connection closed (" << client.fd << ")" << std::endl;
-		close_fd(client.fd);
-		return ;
-	}
+	// _bytes = recv(client.fd, _buffer, 1, MSG_PEEK);
+	// if (_bytes < 0)
+	// {
+	// 	// This should usually not happen, as we're polling through the file descriptors
+	// 	// Playing it safe, though
+	// 	std::cout << "Connection closed (" << client.fd << ")" << std::endl;
+	// 	close_fd(client.fd);
+	// 	return ;
+	// }
 
 	// Read the data from the client.
 	memset(_buffer, 0, BUFFER_SIZE + 1);
@@ -179,7 +191,7 @@ Webserv::_handle_request(t_client& client)
 	{
 		// =0: connection was closed by client
 		// <0: some error happened
-		std::cout << "Connection closed (" << client.fd << ")" << std::endl;
+		std::cout << "Connection closed by client (" << client.fd << ")" << std::endl;
 		close_fd(client.fd);
 		return ;
 	}
@@ -249,7 +261,7 @@ Webserv::run(void)
 	int			_poll_ret;
 	nfds_t		_nfds;
 
-	_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * MAX_CONNECTIONS * _nsockets);
+	_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * MAX_CONNECTIONS + _nsockets);
 	if (_poll_fds == NULL)
 		_throw_errno("init: malloc");
 	for (size_t i = 0; i < _nsockets; i++)
