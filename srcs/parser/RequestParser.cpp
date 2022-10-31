@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/28 22:06:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 11:17:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ RequestParser::_get_next_line(size_t &i)
 	ret = _buffer.substr(i, j - i);
 	if (ret[ret.size() - 1] == '\r')
 	{
-		if (ret.size())
+		if (!ret.empty())
 			ret.resize(ret.size() - 1);
 	}
 	i = (j == std::string::npos ? j : j + 1);
@@ -126,6 +126,9 @@ RequestParser::_get_header_value(const std::string& line)
 	return (strip(ret, ' '));
 }
 
+/*
+GET /index.html?arg1=value1&arg2=value2 HTTP/1.1\r\nHost: webserv\r\ncontent-field: webserv\r\nTest: webserv\r\nField: webserv\r\nHeader: webserv\r\n\r\n<html>\n</html>\n
+*/
 void
 RequestParser::run()
 {
@@ -139,11 +142,10 @@ RequestParser::run()
 	if (_status == STATUS_BAD_REQUEST)
 		return ;
 	i = 0;
-	while (i < _buffer.length() && _buffer[i] != LF && _buffer[i] != LF)
+	while (i < _buffer.length() && _buffer[i] != CR && _buffer[i] != LF)
 		i++;
-	while (i < _buffer.length() && (_buffer[i] == LF || _buffer[i] == LF))
+	while (i < _buffer.length() && (_buffer[i] == CR || _buffer[i] == LF))
 		i++;
-
 	while ((line = _get_next_line(i)) != "\r" && line != "" && line != "\r\n")
 	{
 		field = _get_header_field(line);

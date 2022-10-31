@@ -1,23 +1,32 @@
 server
 {
 	listen			localhost
-	server_name		webserv test	
+	server_name		webserv.com test
 
 	location / {
-		autoindex		on
-		#root			www
-		limit_except	DELETE
+		root			www
 	}
 
 	location /www/
 	{
 		upload_path		/www/upload/
-		autoindex on
+		autoindex		off
+		default_file	index.html
 		limit_except	GET POST
 	}
 
 	location /include/ {
 		autoindex on
+	}
+}
+
+server
+{
+	listen			localhost
+	server_name		listing.com
+
+	location / {
+		autoindex		on
 	}
 }
 

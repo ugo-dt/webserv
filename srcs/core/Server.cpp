@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:49:37 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 12:01:34 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Server::Server()
 	: _socket(-1),
-	  _buffer(),
 	  _listen(),
 	  _sockaddr(),
 	  _sockaddr_len(0),
@@ -56,7 +55,7 @@ Server::setup(void)
 		_throw_errno("setsockopt");
 	
 	_sockaddr_len = sizeof(_sockaddr);
-	bzero((char *)&_sockaddr, _sockaddr_len); 
+	memset((void *)&_sockaddr, 0, _sockaddr_len); 
 	_sockaddr.sin_family = AF_INET; 
 	if (_listen.host == "localhost")
 		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
@@ -74,37 +73,12 @@ Server::setup(void)
 }
 
 void
-Server::_handle_request(int& _fd)
+Server::generate_response(int& _fd, const Request *_req)
 {
 	ssize_t	_bytes;
 
-	// We're checking if we can actually read from the file descriptor
-	// This will read data without removing it from the queue
-	_bytes = recv(_fd, _buffer, 1, MSG_PEEK);
-	if (_bytes < 0)
-	{
-		// This should usually not happen, as we're polling through the file descriptors
-		// Playing it safe, though
-		std::cout << "Connection closed (" << _fd << ")" << std::endl;
-		close_socket(_fd);
-		return ;
-	}
-
-	// Read the data from the client.
-	bzero(_buffer, BUFFER_SIZE);
-	_bytes = recv(_fd, _buffer, BUFFER_SIZE, 0);
-
-	if (_bytes <= 0)
-	{
-		// =0: connection was closed by client
-		// <0: some error happened
-		std::cout << "Connection closed (" << _fd << ")" << std::endl;
-		close_socket(_fd);
-		return ;
-	}
-
 	// Create and send response based on request
-	_resp = new Response(_buffer);
+	_resp = new Response(_req);
 	_resp->generate(_error_pages, _locations, _listen);
 	if (!_resp)
 		_throw_errno("Fatal error");
@@ -116,71 +90,6 @@ Server::_handle_request(int& _fd)
 		close(_fd);
 	}
 	delete (_resp);
-}
-
-void
-Server::handle_connections(struct pollfd *_fds)
-{
-	int			_incoming_fd;
-	std::string	_str;
-	std::string	_page;
-	size_t		i;
-
-	// Check new connection
-	if (_fds[0].revents & POLLIN)
-	{
-		_incoming_fd = accept(_socket, (struct sockaddr *)&_sockaddr, (socklen_t *)&_sockaddr_len);
-		if (_incoming_fd < 0)
-		{
-			std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
-			return ;
-		}
-		// WS_INFO_LOG("New incoming connection");
-		// WS_VALUE_LOG("Socket", _incoming_fd);
-		// WS_VALUE_LOG("Address", inet_ntoa(_sockaddr.sin_addr));
-		// WS_VALUE_LOG("Port", _listen.port);
-
-		// Save client socket into _fds array
-		i = 0;
-		while (i < MAX_CONNECTIONS)
-		{
-			if (_fds[i].fd < 0)
-			{
-				_fds[i].fd = _incoming_fd;
-				break;
-			}
-			i++;
-		}
-		if (i == MAX_CONNECTIONS)
-		{
-			std::cout << "Refused new connection: " << "too many clients" << std::endl;
-			if (_error_pages.count(STATUS_SERVICE_UNAVAILABLE))
-				_page = get_body_from_uri(_error_pages.at(STATUS_SERVICE_UNAVAILABLE));
-			else
-				_page = get_raw_page(STATUS_SERVICE_UNAVAILABLE);
-			_str = "HTTP/1.1 503 Service Unavailable" CRLF;
-			_str += "Server: webserv" CRLF;
-			_str += "Content-Length: " + to_string(_page.length()) + CRLF;
-			_str += "Content-Type: text/html" CRLF;
-			_str += CRLF;
-			_str += _page + CRLF;
-			send(_incoming_fd, _str.c_str(), _str.length(), 0);
-			close(_incoming_fd);
-		}
-		else
-			std::cout << "Accepted new connection (" << _incoming_fd << ") on " << _listen.host << ":" << _listen.port << std::endl;
-	}
-
-	// Check all clients to read data
-	for (i = 1; i < MAX_CONNECTIONS; i++)
-	{
-		if (_fds[i].fd < 0)
-			continue;
-
-		// If the client is readable or errors occur
-		if (_fds[i].revents & (POLLIN | POLLERR))
-			_handle_request(_fds[i].fd);
-	}
 }
 
 void

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 14:56:32 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 14:59:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 11:17:46 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ std::string&	strip(std::string& str, char c)
 {
 	size_t	i;
 
-	if (!str.size())
+	if (str.empty())
 		return str;
 	i = str.size();
 	while (i && str[i - 1] == c)

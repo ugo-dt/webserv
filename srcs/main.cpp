@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:08:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 11:56:23 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Webserv	webserv;
 
+#ifdef DEBUG
 int	test_request()
 {
 	Request	*req;
@@ -27,6 +28,7 @@ int	test_request()
 						"<html>\n"
 						"</html>\n"
 	;
+	std::cout << buffer << std::endl;
 	req = new Request(buffer);
 
 	std::cout << "----------" << std::endl;
@@ -63,6 +65,7 @@ int	test_autoindex()
 int	test_response()
 {
 	const Server&	s = webserv.get_servers()[0];
+	Request	*requ;
 	Response	*resp;
 	const char* buffer = "POST /www/upload/ HTTP/1.1\r\n"
 						"Host: localhost:8080\r\n"
@@ -80,7 +83,8 @@ int	test_response()
 						"\r\n"
 						"------WebKitFormBoundaryXm1GxPkiB4DspXig--\r\n"
 	;
-	resp = new Response(buffer);
+	requ = new Request(buffer);
+	resp = new Response(requ);
 	t_listen	l = {s.get_host(), s.get_port()};
 
 	resp->generate(s.get_error_pages(), s.get_locations(), l);
@@ -88,9 +92,11 @@ int	test_response()
 	std::cout << "[Response]" << std::endl;
 	std::cout << resp->str().c_str() << std::endl;
 	
+	delete (requ);
 	delete (resp);
 	return (0);
 }
+#endif
 
 void	sig_handler(int signum)
 {

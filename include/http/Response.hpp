@@ -38,7 +38,7 @@
 class Response
 {
 private:
-	Request			*_request;
+	const Request	*_request;
 	std::string		_uri;
 	ResponseHeaders	_header;
 	std::string		_body;
@@ -52,7 +52,7 @@ private:
 	void	_parse_post_body();
 
 public:
-	Response(const char *request_buffer);
+	Response(const Request *request);
 	~Response(void);
 
 	void				generate(const std::map<u_int16_t, std::string>& error_pages, const std::set<Location>& locations, const t_listen& listen);

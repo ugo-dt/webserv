@@ -6,28 +6,26 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:29:39 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 11:33:09 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(const char *request_buffer)
+Response::Response(const Request *request)
 	: _request(0),
 	  _header(),
 	  _body(),
 	  _location(0)
 {
-	if (!request_buffer)
+	if (!request)
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
 		_body = "400 Bad request";
 	}
 	else
 	{
-		_request = new Request(request_buffer);
-		if (!_request)
-			_throw_errno("Fatal error");
+		_request = request;
 		_uri = _request->get_uri();
 		if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
 			_uri.append(1, '/');
@@ -45,8 +43,6 @@ Response::Response(const char *request_buffer)
 
 Response::~Response()
 {
-	if (_request)
-		delete (_request);
 }
 
 /*
@@ -340,14 +336,14 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			_location = _old_loc;
 			break ;
 		}
-		if (!_location->get_root().size())
+		if (_location->get_root().empty())
 			break ;
 		if (_location)
 		{
-			if (_location->get_root().size())
+			if (!_location->get_root().empty())
 				_uri.insert(0, _location->get_root());
 		}
-		WS_INFO_LOG("Root is '" + _location->get_root() "'");
+		WS_INFO_LOG("Root is '" + _location->get_root() + "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
 	_uri.insert(0, 1, '.');
@@ -378,5 +374,6 @@ Response::str()
 	str += "Server: " + _header.get_server() + CRLF;
 	str += CRLF;
 	str += _body;
+	// std::cout << str << std::endl;
 	return (str);
 }

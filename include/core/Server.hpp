@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:15:19 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 12:02:06 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@
 # include <vector>
 
 // add 1 for server socket
-# define MAX_CONNECTIONS	(1 + 1) // no idea for now, this is totally random need to check later
-# define BUFFER_SIZE		2048
+# define MAX_CONNECTIONS	(32 + 1) // no idea for now, this is totally random need to check later
+# define BUFFER_SIZE		8192
 
 inline bool operator==(const t_listen& x, const t_listen& y)
 	{return (x.host == y.host && x.port == y.port);}
@@ -45,7 +45,6 @@ class Server
 {
 private:
 	int									_socket; // previously _serverFd
-	char								_buffer[BUFFER_SIZE];
 	t_listen							_listen; // host:port
 	struct sockaddr_in					_sockaddr;
 	size_t								_sockaddr_len;
@@ -57,15 +56,12 @@ private:
 
 	unsigned int						_state;
 
-	void	_handle_request(int& _fd);
-
 public:
 	Server();
 	~Server();
 
 	void									setup();
 	void									clean();
-	void									handle_connections(struct pollfd *_fds);
 
 	const int&								get_socket() const;
 	const int&								get_client() const;
@@ -91,6 +87,8 @@ public:
 	void									set_error_page(u_int16_t code, const std::string& path);
 	void									add_location(const Location& l);
 
+	void									generate_response(int& _fd, const Request *_req);
+
 	// parser
 	void			set_state(unsigned int x);
 	unsigned int	get_state() const;
@@ -101,9 +99,9 @@ std::ostream&	operator<<(std::ostream &o, const Server& s);
 
 static inline
 void
-close_socket(int& fd)
+close_fd(int& fd)
 {
-	WS_VALUE_LOG("Socket closed", fd);
+	WS_VALUE_LOG("File descriptor closed", fd);
 	close(fd);
 	fd = -1;
 }
