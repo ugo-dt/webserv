@@ -38,11 +38,11 @@
 class Response
 {
 private:
-	const Request	*_request;
+	const Request&	_request;
 	std::string		_uri;
 	ResponseHeaders	_header;
 	std::string		_body;
-	const Location	*_location; // matching location (NULL if no match)
+	const Location*	_location; // matching location (NULL if no match)
 
 	void	_check_uri(const std::set<Location>& server_locations);
 	void	_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
@@ -52,7 +52,7 @@ private:
 	void	_parse_post_body();
 
 public:
-	Response(const Request *request);
+	Response(const Request& request);
 	~Response(void);
 
 	void				generate(const std::map<u_int16_t, std::string>& error_pages, const std::set<Location>& locations, const t_listen& listen);

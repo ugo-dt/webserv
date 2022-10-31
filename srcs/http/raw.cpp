@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 11:56:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:45:55 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:21:29 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ const std::string	get_body_from_uri(const std::string& uri)
 		return ("");
 	while (std::getline(f, line))
 		result.append(line + "\n");
-	f.close();
 	return (result);
 }
 

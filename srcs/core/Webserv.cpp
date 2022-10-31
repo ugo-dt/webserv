@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 12:12:31 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:28:39 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ Webserv::init(int argc, const char **argv)
 	}
 	catch (std::invalid_argument& e)
 	{
-		std::cout << e.what() << "\e[0m" << std::endl;
+		std::cout << e.what() << "\033[0m" << std::endl;
 		return (EXIT_FAILURE);
 	}
 	if (!_servers.size())
@@ -90,24 +90,31 @@ Webserv::init(int argc, const char **argv)
 }
 
 void
-Webserv::_route_request_to_server(t_client& client, Request *_req)
+Webserv::_route_request_to_server(t_client& client, const char *_buffer)
 {
 	std::string	_host = "";
 	std::string	_port = "";
 	Server		*_server = NULL;
+	Request		_req(_buffer);
 
-	if (_req->get_header_fields().count("Host"))
+	if (!_req.is_valid())
 	{
-		_host.assign(_req->get_header_fields().at("Host"), 0, _req->get_header_fields().at("Host").find_first_of(':'));
-		if (_req->get_header_fields().at("Host").find(':') != std::string::npos)
-			_port.assign(_req->get_header_fields().at("Host"), _req->get_header_fields().at("Host").find_last_of(':') + 1);
+		send(client.fd, "Invalid request\n", 17, 0);
+		return ;
 	}
-	WS_INFO_LOG("client sockaddr: " + inet_ntoa(client.sockaddr.sin_addr) + ", " + htons(client.sockaddr.sin_port));
-	WS_INFO_LOG("Request Host: " + _host);
-	WS_INFO_LOG("Request Port: " + _port);
+	if (_req.get_header_fields().count("Host"))
+	{
+		_host.assign(_req.get_header_fields().at("Host"), 0, _req.get_header_fields().at("Host").find_first_of(':'));
+		if (_req.get_header_fields().at("Host").find(':') != std::string::npos)
+			_port.assign(_req.get_header_fields().at("Host"), _req.get_header_fields().at("Host").find_last_of(':') + 1);
+	}
+	WS_VALUE_LOG("Client address", inet_ntoa(client.sockaddr.sin_addr));
+	WS_VALUE_LOG("Client port", htons(client.sockaddr.sin_port));
+	WS_VALUE_LOG("Request host", _host);
+	WS_VALUE_LOG("Request port", _port);
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
-		WS_INFO_LOG("Names (" + i + "):");
+		WS_VALUE_LOG("Names", i);
 		for (std::set<std::string>::const_iterator it = _servers[i].get_server_names().begin(); it != _servers[i].get_server_names().end(); it++)
 			WS_INFO_LOG("\t" + (*it));
 		if (!_host.empty())
@@ -151,8 +158,7 @@ void
 Webserv::_handle_request(t_client& client)
 {
 	ssize_t		_bytes;
-	char		_buffer[BUFFER_SIZE];
-	Request		*_req;
+	char		_buffer[BUFFER_SIZE + 1];
 
 	// We're checking if we can actually read from the file descriptor
 	// This will read data without removing it from the queue
@@ -167,7 +173,7 @@ Webserv::_handle_request(t_client& client)
 	}
 
 	// Read the data from the client.
-	memset(_buffer, 0, BUFFER_SIZE);
+	memset(_buffer, 0, BUFFER_SIZE + 1);
 	_bytes = recv(client.fd, _buffer, BUFFER_SIZE, 0);
 	if (_bytes <= 0)
 	{
@@ -177,16 +183,7 @@ Webserv::_handle_request(t_client& client)
 		close_fd(client.fd);
 		return ;
 	}
-	_req = new Request(_buffer);
-	if (!_req)
-		std::cerr << "Could not allocate memory" << std::endl;
-	if (!_req->is_valid())
-	{
-		send(client.fd, "Invalid request\n", 17, 0);
-		return ;
-	}
-	_route_request_to_server(client, _req);
-	delete (_req);
+	_route_request_to_server(client, _buffer);
 	//send(client.fd, "Response\n", 10, 0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 11:54:25 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:12:34 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ private:
 	void		_accept_connection(int& sock_fd, struct pollfd *_fds, const size_t &max);
 	void		_handle_request(t_client& client);
 	t_client*	_get_client_with_fd(const int& fd);
-	void		_route_request_to_server(t_client& client, Request *_req);
+	void		_route_request_to_server(t_client& client, const char *_buffer);
 
 public:
 	Webserv();

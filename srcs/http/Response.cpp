@@ -6,39 +6,21 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 12:14:46 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:21:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(const Request *request)
-	: _request(0),
+Response::Response(const Request& request)
+	: _request(request),
 	  _header(),
 	  _body(),
 	  _location(0)
 {
-	if (!request)
-	{
-		_header.set_status(STATUS_BAD_REQUEST);
-		_body = "400 Bad request";
-	}
-	else
-	{
-		_request = request;
-		_uri = _request->get_uri();
-		if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
-			_uri.append(1, '/');
-
-#ifdef DEBUG
-		if (_request->get_method() == 2)
-			WS_VALUE_LOG("Request method: ", "GET");
-		else if (_request->get_method() == 4)
-			WS_VALUE_LOG("Request method: ", "POST");
-		else if (_request->get_method() == 8)
-			WS_VALUE_LOG("Request method: ", "DELETE");
-#endif
-	}
+	_uri = _request.get_uri();
+	if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
+		_uri.append(1, '/');
 }
 
 Response::~Response()
@@ -235,7 +217,7 @@ Response::_parse_post_body()
 	std::string			file_path;
 	std::string			_dir;
 
-	std::cout << "body[" << _request->get_body() << "]" << std::endl;
+	std::cout << "body[" << _request.get_body() << "]" << std::endl;
 	while (std::getline(sstream, line))
 	{
 		std::cout << "line: " << line << std::endl;
@@ -273,7 +255,7 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	// }
 	// else
 	// {
-	// 	_dir = _request->get_uri();
+	// 	_dir = _request.get_uri();
 	// }
 	_parse_post_body();
 	return ;
@@ -306,10 +288,9 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 		_get_body_from_uri();
 		return ;
 	}
-	file << _request->get_body();
-	file.close();
+	file << _request.get_body();
 	_header.set_status(STATUS_SEE_OTHER);
-	_uri = "http://" + listen.host + ":" + to_string(listen.port) + _request->get_uri();
+	_uri = "http://" + listen.host + ":" + to_string(listen.port) + _request.get_uri();
 	_header.set_location(_uri);
 }
 
@@ -320,7 +301,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 {
 	const Location	*_old_loc;
 
-	if (!_request->is_valid())
+	if (!_request.is_valid())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
 		_uri = error_pages.at(STATUS_BAD_REQUEST);
@@ -347,9 +328,9 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		WS_INFO_LOG("Searching for new location...");
 	}
 	_uri.insert(0, 1, '.');
-	if (_request->get_method() == METHOD_GET)
+	if (_request.get_method() == METHOD_GET)
 		_get_body(error_pages, listen);
-	else if (_request->get_method() == METHOD_POST)
+	else if (_request.get_method() == METHOD_POST)
 		_handle_post(error_pages, listen);
 }
 

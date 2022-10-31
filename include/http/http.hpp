@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:18:04 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:26:01 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 # define CRLF								"\r\n"
 
 // Methods
-# define METHOD_UNKNOWN						0b0001
-# define METHOD_GET							0b0010
-# define METHOD_POST						0b0100
-# define METHOD_DELETE						0b1000
-# define ALL_METHODS						0b1110
+# define METHOD_UNKNOWN						0x1
+# define METHOD_GET							0x2
+# define METHOD_POST						0x4
+# define METHOD_DELETE						0x8
+# define ALL_METHODS						0x10
 
 // Status codes
 # define STATUS_OK							200

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 16:28:24 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:24:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ ConfigParser::_print_error(const std::string& path, const ConfigToken& t, const 
 	_errors++;
 	if (_errors > MAX_ERRORS)
 	{
-		std::cerr << "\e[1m\e[31mfatal error:\e[39m too many errors emitted, stopping now" << std::endl;
-		throw std::invalid_argument("\e[0m" + to_string(_errors) + " errors generated.");
+		std::cerr << "\033[1m\033[31mfatal error:\033[39m too many errors emitted, stopping now" << std::endl;
+		throw std::invalid_argument("\033[0m" + to_string(_errors) + " errors generated.");
 	}
 }
 
@@ -40,12 +40,12 @@ ConfigParser::_throw_token_error(const std::string& path, const ConfigToken& t, 
 	_errors++;
 	if (_errors > MAX_ERRORS)
 	{
-		std::cerr << "\e[1m\e[31mfatal error:\e[39m too many errors emitted, stopping now" << std::endl;
+		std::cerr << "\033[1m\033[31mfatal error:\033[39m too many errors emitted, stopping now" << std::endl;
 	}
 	if (_errors > 1)
-		throw std::invalid_argument("\e[0m" + to_string(_errors) + " errors generated.");
+		throw std::invalid_argument("\033[0m" + to_string(_errors) + " errors generated.");
 	else if (_errors == 1)
-		throw std::invalid_argument("\e[0m" + to_string(_errors) + " error generated.");
+		throw std::invalid_argument("\033[0m" + to_string(_errors) + " error generated.");
 }
 
 void
@@ -56,7 +56,7 @@ ConfigParser::init(int argc, const char **argv)
 
 	// Use default file if none is provided
 	if (argc > 2)
-		throw std::invalid_argument("webserv: \e[1m\e[31merror:\e[39m too many arguments");
+		throw std::invalid_argument("webserv: \033[1m\033[31merror:\033[39m too many arguments");
 	if (argc < 2)
 	{
 		_config_path = DEFAULT_CONFIG_PATH;
@@ -69,13 +69,13 @@ ConfigParser::init(int argc, const char **argv)
 			if (stat(_config_path.c_str(), &_stat) == 0)
 			{
 				if (S_ISDIR(_stat.st_mode))
-					throw std::invalid_argument("webserv: \e[1m\e[31merror:\e[39m is a directory: '" + _config_path + "'");
+					throw std::invalid_argument("webserv: \033[1m\033[31merror:\033[39m is a directory: '" + _config_path + "'");
 			}
 			else
-				_err.append("webserv: \e[1m\e[31merror:\e[39m file not found: '" + _config_path + "'\n");
+				_err.append("webserv: \033[1m\033[31merror:\033[39m file not found: '" + _config_path + "'\n");
 		}
 		else
-			_err.append("webserv: \e[1m\e[31merror:\e[39m no input files\n");
+			_err.append("webserv: \033[1m\033[31merror:\033[39m no input files\n");
 		if (!_err.empty())
 		{
 			_err.erase(_err.size() - 1);
@@ -93,7 +93,7 @@ ConfigParser::_open_file(void)
 {
 	_file.open(_config_path.c_str(), std::ifstream::out);
 	if (!_file.is_open())
-		throw std::invalid_argument("webserv: \e[1m\e[31merror:\e[39m could not open file: " + _config_path + "");
+		throw std::invalid_argument("webserv: \033[1m\033[31merror:\033[39m could not open file: " + _config_path + "");
 }
 
 void
@@ -315,8 +315,8 @@ ConfigParser:: _parse_directive_limit_except(std::list<ConfigToken>::const_itera
 		l.set_methods(0);
 	cur++;
 	if (cur == token_newline)
-		_print_error(_config_path, (*cur), "limit_except: expected method\n\e[0m"
-					"        limit_except \e[32m\n"
+		_print_error(_config_path, (*cur), "limit_except: expected method\n\033[0m"
+					"        limit_except \033[32m\n"
 					"                     ^\n"
 					"                     method");
 	while (cur != _end && cur == token_word)
@@ -343,15 +343,15 @@ ConfigParser::_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& c
 
 	cur++;
 	if (cur == token_newline)
-		_throw_token_error(_config_path, (*cur), "rewrite: expected path\n\e[0m"
-						"          rewrite \e[32m\n"
+		_throw_token_error(_config_path, (*cur), "rewrite: expected path\n\033[0m"
+						"          rewrite \033[32m\n"
 						"                  ^\n"
 					    "                  path");
 	path = get_word(cur);
 	cur++;
 	if (cur == _end || cur != token_word)
-		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\e[0m"
-						"          rewrite path \e[32m\n"
+		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\033[0m"
+						"          rewrite path \033[32m\n"
 						"                       ^\n"
 					    "                       redirection");
 	l.add_redirection(path, get_word(cur));
@@ -394,10 +394,10 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 	if (_uri.at(_uri.length() - 1) != '/')
 	{
 		_print_error(_config_path, (*cur),
-					"autoindex: not a folder ('" + _uri + "')\e[0m\n"
-					"        location " + _uri + "\e[0m\e[32m\n\e[21m"
+					"autoindex: not a folder ('" + _uri + "')\033[0m\n"
+					"        location " + _uri + "\033[0m\033[32m\n\033[21m"
 					"                 " + get_n_spaces(_uri.length()) + "^\n"
-					"                 " + get_n_spaces(_uri.length()) + "/\e[0m");
+					"                 " + get_n_spaces(_uri.length()) + "/\033[0m");
 	}
 	if (_ai == "on")
 		l.set_autoindex(true);

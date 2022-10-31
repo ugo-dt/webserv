@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 12:02:06 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:10:28 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ public:
 	void									set_error_page(u_int16_t code, const std::string& path);
 	void									add_location(const Location& l);
 
-	void									generate_response(int& _fd, const Request *_req);
+	void									generate_response(int& _fd, const Request& _req);
 
 	// parser
 	void			set_state(unsigned int x);

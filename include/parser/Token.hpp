@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:46:44 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 13:08:46 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:24:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ _get_error_string(const std::string &path, const ConfigToken &t, const std::stri
 
 	std::snprintf(col, 5, "%u", t.col());
 	std::snprintf(row, 5, "%u", t.row());
-	return (std::string("\e[1m" + path + ":"
+	return (std::string("\033[1m" + path + ":"
 	         + row + ":" + col
-	         + ": \e[31merror:\e[39m "
+	         + ": \033[31merror:\033[39m "
 			 + msg
-			 + "\e[0m"));
+			 + "\033[0m"));
 }
 
 static inline
@@ -88,11 +88,11 @@ _get_warning_string(const std::string &path, const ConfigToken &t, const std::st
 
 	std::snprintf(col, 5, "%u", t.col());
 	std::snprintf(row, 5, "%u", t.row());
-	return (std::string("\e[1m" + path + ":"
+	return (std::string("\033[1m" + path + ":"
 	         + row + ":" + col
-	         + ": \e[95mwarning:\e[39m "
+	         + ": \033[95mwarning:\033[39m "
 			 + msg
-			 + "\e[0m"));
+			 + "\033[0m"));
 }
 
 static inline void show_repeat_warning(const std::string& path, const ConfigToken& t)

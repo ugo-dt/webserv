@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 12:01:34 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 17:24:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,23 +73,20 @@ Server::setup(void)
 }
 
 void
-Server::generate_response(int& _fd, const Request *_req)
+Server::generate_response(int& _fd, const Request& _req)
 {
-	ssize_t	_bytes;
-
 	// Create and send response based on request
-	_resp = new Response(_req);
-	_resp->generate(_error_pages, _locations, _listen);
-	if (!_resp)
-		_throw_errno("Fatal error");
+	ssize_t		_bytes;
+	Response	_resp(_req);
+
+	_resp.generate(_error_pages, _locations, _listen);
 	// WS_INFO_LOG("Sending response.");
-	_bytes = send(_fd, _resp->str().c_str(), strlen(_resp->str().c_str()), 0);
+	_bytes = send(_fd, _resp.str().c_str(), strlen(_resp.str().c_str()), 0);
 	if (_bytes < 0)
 	{
 		std::cout << "Could not send response to client (" << _fd << "): " << std::strerror(errno) << std::endl;
 		close(_fd);
 	}
-	delete (_resp);
 }
 
 void
@@ -151,7 +148,7 @@ unsigned int Server::get_state(void) const
 std::ostream&	operator<<(std::ostream &o, const Server& s)
 {
 #ifdef DEBUG
-	o << "\e[93m[Server]" << std::endl << "Host: " << s.get_host() << std::endl
+	o << "\033[93m[Server]" << std::endl << "Host: " << s.get_host() << std::endl
 			<< "Port: " << s.get_port() << std::endl << "Names: " << std::endl;
 		for (std::set<std::string>::const_iterator i = s.get_server_names().begin(); i != s.get_server_names().end(); i++)
 			o << "\t" << (*i) << std::endl;
@@ -161,8 +158,8 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 		o << "buffer size: " << s.get_client_body_buffer_size() << std::endl;
 		for (std::set<Location>::const_iterator it = s.get_locations().begin(); it != s.get_locations().end(); it++)
 		{
-			o << "\e[91m[Location]: " << (*it).get_uri() << std::endl
-				<< "\e[93mAllowed methods: ";
+			o << "\033[91m[Location]: " << (*it).get_uri() << std::endl
+				<< "\033[93mAllowed methods: ";
 			if ((*it).get_methods() & METHOD_GET)
 				o << "GET ";
 			if ((*it).get_methods() & METHOD_POST)
@@ -178,7 +175,7 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 				<< "CGI extension: " << (*it).get_cgi_extension() << std::endl
 				<< "Upload path: " << (*it).get_upload_path() << std::endl;
 		}
-		o << "--------\e[0m" << std::endl;
+		o << "--------\033[0m" << std::endl;
 #else
 	(void)s;
 #endif
