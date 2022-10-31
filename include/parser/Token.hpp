@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:46:44 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 11:43:57 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 13:08:46 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ _get_warning_string(const std::string &path, const ConfigToken &t, const std::st
 }
 
 static inline void show_repeat_warning(const std::string& path, const ConfigToken& t)
-	{std::cerr << _get_warning_string(path, t, "repeated directive ('" + t.word() + "')") << std::endl;}
+	{std::cerr << _get_warning_string(path, t, "repeated directive ('" + t.word() + "')\n");}
 static inline const std::string& get_word(const std::list<ConfigToken>::const_iterator& x)
 	{return ((*x).word());}
 static inline const t_token& get_type(const std::list<ConfigToken>::const_iterator& x)

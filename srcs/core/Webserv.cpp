@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 12:02:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 12:12:31 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,15 +87,6 @@ Webserv::init(int argc, const char **argv)
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
-}
-
-inline void	copy_fds(struct pollfd *to, const struct pollfd *from)
-{
-	for (size_t i = 0; i < MAX_CONNECTIONS; i++)
-	{
-		to[i].fd = from[i].fd;
-		to[i].events = POLLIN;
-	}
 }
 
 void

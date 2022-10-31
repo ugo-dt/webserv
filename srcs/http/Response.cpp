@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 11:33:09 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/10/31 12:14:46 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,7 +364,10 @@ Response::str()
 
 	// 3xx status codes are redirections
 	if (_status / 100 == 3 || _status == STATUS_SEE_OTHER)
+	{
 		str += "Location: " + _header.get_location() + CRLF;
+		str += "Content-Length: 0" CRLF;
+	}
 	else if (_status == STATUS_OK)
 	{
 		str += "Content-Length: " + _header.get_content_length() + CRLF;
