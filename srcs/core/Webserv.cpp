@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 20:15:55 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 21:06:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,10 +98,10 @@ Webserv::_find_matching_server(const std::string& _host, const std::string& _por
 {
 	Server	*_server;
 
-	WS_VALUE_LOG("Client address", inet_ntoa(client.sockaddr.sin_addr));
-	WS_VALUE_LOG("Client port", htons(client.sockaddr.sin_port));
-	WS_VALUE_LOG("Request host", _host);
-	WS_VALUE_LOG("Request port", _port);
+	// WS_VALUE_LOG("Client address", inet_ntoa(client.sockaddr.sin_addr));
+	// WS_VALUE_LOG("Client port", htons(client.sockaddr.sin_port));
+	// WS_VALUE_LOG("Request host", _host);
+	// WS_VALUE_LOG("Request port", _port);
 	_server = NULL;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{

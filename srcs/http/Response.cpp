@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 18:25:06 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:29:00 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ Response::_check_uri(const std::set<Location>& locations)
 			}
 		}
 	}
-	if (!_location)
+	while (!_location && !_dir.empty())
 	{
 		// ... or check if route exists for the directory
 		for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
@@ -91,6 +91,8 @@ Response::_check_uri(const std::set<Location>& locations)
 				break ;
 			}
 		}
+		_dir.assign(_dir, 0, _dir.length() - 1);
+		_dir.assign(_dir, 0, _dir.find_last_of('/') + 1);
 	}
 }
 
@@ -262,6 +264,7 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 	}
 	file_path.insert(0, _dir);
 	file.open(file_path);
+	std::cout << "path: " << file_path << std::endl;
 	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
 		file << (*it);
 	_header.set_status(STATUS_CREATED);
@@ -270,12 +273,10 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 }
 
 void
-Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
+Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 {
 	std::string	_dir;
 
-	(void)listen;
-	std::cout << "POST: " << _request.get_body() << std::endl;
 	if (_request.get_post_boundary().empty())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
@@ -285,6 +286,8 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	}
 	if (_location)
 	{
+		std::cout << "uri: " << _location->get_uri() << std::endl;
+		std::cout << "loca: " << _location->get_upload_path() << std::endl;
 		if (!_location->get_upload_path().empty())
 			_dir = _location->get_upload_path();
 	}
@@ -300,16 +303,36 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, cons
 	_body.clear();
 }
 
+
+// file exists
+// return ok
+//
+// file doesnt exist
+// return no content
 void
 Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
-	std::ofstream	file;
-	std::string		file_path;
-	std::string		_dir;
-
-	(void)error_pages;
-	(void)listen;
-	std::cout << _request.get_body() << std::endl;
+	std::cout << "uri: " << _uri << std::endl;
+	if (std::remove(_uri.c_str()) != 0)
+	{
+		if (errno == EACCES)
+		{
+			_header.set_status(STATUS_FORBIDDEN);
+			_uri = error_pages.at(STATUS_FORBIDDEN);
+			_get_body(error_pages, listen);
+			return ;
+		}
+		if (errno == ENOENT)
+		{
+			_header.set_status(STATUS_NO_CONTENT);
+			_header.set_content_length("0");
+			_body.clear();
+			return ;
+		}
+	}
+	_header.set_status(STATUS_OK);
+	_header.set_content_length("0");
+	_body.clear();
 }
 
 void
@@ -345,11 +368,18 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		WS_INFO_LOG("Root is '" + _location->get_root() + "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
+	if (_location && !(_request.get_method() & _location->get_methods()))
+	{
+		_header.set_status(STATUS_METHOD_NOT_ALLOWED);
+		_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
+		_get_body(error_pages, listen);
+		return ;
+	}
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))
 		_get_body(error_pages, listen);
 	else if (_request.get_method() & METHOD_POST)
-		_handle_post(error_pages, listen);
+		_handle_post(error_pages);
 	else if (_request.get_method() & METHOD_DELETE)
 		_handle_delete(error_pages, listen);
 }
@@ -376,7 +406,8 @@ Response::str()
 	else if (_status == STATUS_OK)
 	{
 		str += "Content-Length: " + _header.get_content_length() + CRLF;
-		str += "Content-Type: " + _header.get_content_type() + CRLF;
+		if (!_header.get_content_length().empty())
+			str += "Content-Type: " + _header.get_content_type() + CRLF;
 	}
 	str += "Date: " + _header.get_date() + CRLF;
 	str += "Server: " + _header.get_server() + CRLF;

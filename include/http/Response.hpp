@@ -25,6 +25,7 @@
 # include "Request.hpp"
 # include "ResponseHeaders.hpp"
 
+# include <cstdio>
 # include <fstream>
 # include <map>
 # include <sstream>
@@ -50,7 +51,7 @@ private:
 	void				_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void				_set_content_type();
 	void				_get_body_from_uri();
-	void				_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void				_handle_post(const std::map<u_int16_t, std::string>& error_pages);
 	void				_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void				_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir);
 
