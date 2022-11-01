@@ -25,7 +25,7 @@ server
 
 server
 {
-	listen			localhost
+	listen			localhost:3000
 	server_name		listing.com
 
 	location / {
@@ -34,7 +34,7 @@ server
 }
 
 server{
-	listen					127.0.0.1
+	listen					127.0.0.1:1234
 	server_name				second_server lol thisiswebserv
 	client_body_buffer_size	4200
 	error_page				404	/error-404.html

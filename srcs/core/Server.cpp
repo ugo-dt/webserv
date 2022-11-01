@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 19:59:52 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:52:30 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ Server::setup(void)
 	_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_socket < 0)
 		_throw_errno("socket");
-	// WS_INFO_LOG("Created new socket for " + _listen.host + ":" + to_string(_listen.port) + " (" + to_string(_socket) + ")");
+	WS_INFO_LOG("Created new socket for " + _listen.host + ":" + to_string(_listen.port) + " (" + to_string(_socket) + ")");
 	option = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
 		_throw_errno("setsockopt");
@@ -72,7 +72,7 @@ Server::setup(void)
 		_throw_errno("listen");
 }
 
-void
+int
 Server::generate_response(int& _fd, const Request& _req)
 {
 	// Create and send response based on request
@@ -80,13 +80,15 @@ Server::generate_response(int& _fd, const Request& _req)
 	Response	_resp(_req);
 
 	_resp.generate(_error_pages, _locations, _listen);
-	// WS_INFO_LOG("Sending response.");
+	WS_INFO_LOG("Sending response.");
 	_bytes = send(_fd, _resp.str().c_str(), strlen(_resp.str().c_str()), 0);
 	if (_bytes < 0)
 	{
-		std::cout << "Could not send response to client (" << _fd << "): " << std::strerror(errno) << std::endl;
+		WS_ERROR_LOG("Could not send response to client (" + to_string(_fd) + "): " + std::strerror(errno));
 		close(_fd);
+		return (EXIT_FAILURE);
 	}
+	return (EXIT_SUCCESS);
 }
 
 void

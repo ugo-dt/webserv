@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:00 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:10:08 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:49:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ Request::parse(const char *_buffer)
 	RequestParser	_parser(*this, _buffer);
 
 	_parser.run();
+#if defined(DEBUG)
+	std::cout << "[" << _buffer << "]" << std::endl;
+#endif
 }
 
 Request::~Request()

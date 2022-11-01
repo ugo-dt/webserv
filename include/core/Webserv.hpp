@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 19:24:05 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:58:06 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ private:
 	nfds_t							_nfds;
 	bool							_running;
 	std::map<uint32_t, std::string>	_default_error_pages;
+	bool							_verbose;
 
 	Server*	_find_matching_server(const std::string& _host, const std::string& _port, t_client& client);
 	int		_unchunked_the_request(Request& _req, t_client& client, const char *_buffer);
@@ -68,7 +69,7 @@ public:
 	void	run();
 	void	clean();
 
-	const std::vector<Server>&	get_servers() {return _servers;}
+	void	set_verbose(void);
 };
 
 static inline

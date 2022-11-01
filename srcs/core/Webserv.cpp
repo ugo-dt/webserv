@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 21:06:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:59:16 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ Webserv::init(int argc, const char **argv)
 	}
 	if (!_servers.size())
 	{
-		std::cout << "webserv: no servers found." << std::endl;
+		WS_WARN_LOG("Could not find any server configuration.");
+		std::cout << "webserv: no servers found, stopping." << std::endl;
 		exit(EXIT_SUCCESS);
 	}
 	try
@@ -84,6 +85,10 @@ Webserv::init(int argc, const char **argv)
 			j++;
 		}
 		_nfds = MAX_CONNECTIONS * _nsockets + _nsockets;
+		_clients.reserve(_nfds);
+		_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * _nfds);
+		if (_poll_fds == NULL)
+			_throw_errno("init: malloc");
 	}
 	catch (std::runtime_error& e)
 	{
@@ -198,7 +203,10 @@ Webserv::_route_request_to_server(t_client& client, const char *_buffer)
 		_host = "127.0.0.1";
 	_server = _find_matching_server(_host, _port, client);
 	if (_server)
-		_server->generate_response(client.fd, _req);
+	{
+		if (_server->generate_response(client.fd, _req) != EXIT_SUCCESS)
+			_remove_client(client);
+	}	
 	else
 	{
 		_send_bad_request(client.fd);
@@ -218,7 +226,8 @@ Webserv::_handle_request(t_client& client)
 	{
 		// This should usually not happen, as we're polling through the file descriptors
 		// Playing it safe, though
-		std::cout << "Connection closed (" << client.fd << ")" << std::endl;
+		// std::cout << "Connection closed (" << client.fd << ")" << std::endl;
+		WS_ERROR_LOG("Could not read from client.");
 		_remove_client(client);
 		return ;
 	}
@@ -230,7 +239,8 @@ Webserv::_handle_request(t_client& client)
 	{
 		// =0: connection was closed by client
 		// <0: some error happened
-		std::cout << "Connection closed by client (" << client.fd << ")" << std::endl;
+		// std::cout << "Connection closed by client (" << client.fd << ")" << std::endl;
+		WS_WARN_LOG("Could not read from client, closing connection.");
 		_remove_client(client);
 		return ;
 	}
@@ -272,7 +282,8 @@ Webserv::_accept_connection(int& sock_fd)
 	}
 	if (i == _nfds || _clients.size() == _nfds)
 	{
-		std::cout << "Refused new connection: " << "too many clients" << std::endl;
+		// std::cout << "Refused new connection: " << "too many clients" << std::endl;
+		WS_WARN_LOG("Refused connection: too many clients");
 		if (_default_error_pages.count(STATUS_SERVICE_UNAVAILABLE))
 			_page = get_body_from_uri(_default_error_pages.at(STATUS_SERVICE_UNAVAILABLE));
 		else
@@ -289,7 +300,8 @@ Webserv::_accept_connection(int& sock_fd)
 	}
 	else
 	{
-		std::cout << "Accepted new connection (" << client.fd << ")" << std::endl;
+		// std::cout << "Accepted new connection (" << client.fd << ")" << std::endl;
+		WS_INFO_LOG("Accepted new connection.");
 		_clients.push_back(client);
 	}
 }
@@ -300,10 +312,6 @@ Webserv::run(void)
 	int	client;
 	int	_poll_ret;
 
-	_clients.reserve(_nfds);
-	_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * _nfds);
-	if (_poll_fds == NULL)
-		_throw_errno("init: malloc");
 	for (size_t i = 0; i < _nsockets; i++)
 	{
 		_poll_fds[i].fd = _sockets[i];
@@ -319,10 +327,7 @@ Webserv::run(void)
 		client = 0;
 		_poll_ret = poll(_poll_fds, _nfds, 0);
 		if (_poll_ret == -1)
-		{
-			std::cout << "poll error: " << strerror(errno) << std::endl;
-			_running = false;
-		}
+			_throw_errno("poll");
 		else if (_poll_ret > 0)
 		{
 			for (size_t i = 0; i < _nsockets; i++)
@@ -335,7 +340,7 @@ Webserv::run(void)
 				client = _get_client_with_fd(_poll_fds[i].fd);
 				if (_poll_fds[i].revents & (POLLNVAL | POLLHUP))
 				{
-					std::cout << "Connection closed (" << _poll_fds[i].fd << ")" << std::endl;
+					// std::cout << "Connection closed (" << _poll_fds[i].fd << ")" << std::endl;
 					_remove_client(_clients[client]);
 					_poll_fds[i].revents = 0;
 					continue ;
@@ -410,6 +415,9 @@ Webserv::_remove_client(t_client& client)
 void
 Webserv::clean(void)
 {
+	for (std::vector<t_client>::iterator it = _clients.begin(); it != _clients.end(); it++)
+		close((*it).fd);
+	_clients.clear();
 	if (_poll_fds)
 	{
 		free(_poll_fds);

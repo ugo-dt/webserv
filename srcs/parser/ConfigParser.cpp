@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 18:24:03 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:40:46 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ ConfigParser::init(int argc, const char **argv)
 	struct stat	_stat;
 
 	// Use default file if none is provided
-	if (argc > 2)
-		throw std::invalid_argument("webserv: \033[1m\033[31merror:\033[39m too many arguments");
+	// if (argc > 2)
+	// 	throw std::invalid_argument("webserv: \033[1m\033[31merror:\033[39m too many arguments");
 	if (argc < 2)
 	{
 		_config_path = DEFAULT_CONFIG_PATH;

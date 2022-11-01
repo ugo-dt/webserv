@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:29:00 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 22:48:11 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,6 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 	}
 	file_path.insert(0, _dir);
 	file.open(file_path);
-	std::cout << "path: " << file_path << std::endl;
 	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
 		file << (*it);
 	_header.set_status(STATUS_CREATED);
@@ -286,8 +285,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 	}
 	if (_location)
 	{
-		std::cout << "uri: " << _location->get_uri() << std::endl;
-		std::cout << "loca: " << _location->get_upload_path() << std::endl;
 		if (!_location->get_upload_path().empty())
 			_dir = _location->get_upload_path();
 	}
@@ -295,7 +292,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 		_dir = _request.get_uri();
 	if (_dir[0] == '/')
 		_dir.insert(0, 1, '.');
-	std::cout << "dir: " << _dir << std::endl;
 	_parse_post_body(error_pages, _dir);
 	_header.set_status(STATUS_FOUND);
 	_header.set_location("/");
@@ -312,7 +308,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 void
 Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
-	std::cout << "uri: " << _uri << std::endl;
 	if (std::remove(_uri.c_str()) != 0)
 	{
 		if (errno == EACCES)
