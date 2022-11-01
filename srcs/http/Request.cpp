@@ -6,13 +6,25 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:00 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 10:21:35 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:10:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "RequestParser.hpp"
 #include "log.hpp"
+
+Request::Request()
+	: _method(0),
+	  _uri(""),
+	  _http_version(""),
+	  _query_string(""),
+	  _header_fields(),
+	  _body(),
+	  _valid(false),
+	  _post_boundary("")
+{
+}
 
 Request::Request(const char *_buffer)
 	: _method(0),
@@ -21,7 +33,14 @@ Request::Request(const char *_buffer)
 	  _query_string(""),
 	  _header_fields(),
 	  _body(),
-	  _valid(false)
+	  _valid(false),
+	  _post_boundary("")
+{
+	parse(_buffer);
+}
+
+void
+Request::parse(const char *_buffer)
 {
 	RequestParser	_parser(*this, _buffer);
 
@@ -45,9 +64,13 @@ const std::map<std::string, std::string>&	Request::get_header_fields() const
 	{return _header_fields;}
 bool	Request::is_valid() const
 	{return _valid;}
+const std::string&	Request::get_post_boundary() const
+	{return _post_boundary;}
 
 void	Request::add_header_field(const std::string& field, const std::string& value)
 	{_header_fields.count(field) == 0 ? _header_fields[field] = value : _header_fields[field].append(", ").append(value);}
+void	Request::append_to_body(const std::string& body)
+	{_body.append(body);}
 
 void	Request::set_method(const unsigned int& m)
 	{_method = m;}
@@ -65,3 +88,5 @@ void	Request::set_valid()
 	{_valid = true;}
 void	Request::set_invalid()
 	{_valid = false;}
+void	Request::set_post_boundary(const std::string& boundary)
+	{_post_boundary = boundary;}

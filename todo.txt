@@ -70,8 +70,6 @@ Norme:
 	arg1 = value1;
 	arg2 = value2
 
-set the first server for specific host:port as the default one (that will answer requests)
-
 make sure method allowed in response
 redirections
 

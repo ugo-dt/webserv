@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:26:31 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 10:08:35 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	sig_handler(int signum)
 int	main(int argc, const char **argv)
 {
 	signal(SIGINT, sig_handler);
+	signal(SIGPIPE, SIG_IGN);
 	if (webserv.init(argc, argv) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
 	try

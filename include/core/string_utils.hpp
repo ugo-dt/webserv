@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 14:59:49 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:10:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,13 @@
 # include <string>
 # include <sstream>
 
-std::string		str_to_upper(std::string str);
-std::string		str_to_lower(std::string str);
-std::string&	capitalize(std::string& str);
-std::string&	strip(std::string& str, char c);
-std::string		to_string(ssize_t n);
+const std::string	get_post_header_value(const std::string& header, const std::string& arg);
+const std::string	get_header_field(const std::string& line);
+const std::string	get_header_value(const std::string& line);
+std::string			str_to_upper(std::string str);
+std::string			str_to_lower(std::string str);
+std::string&		capitalize(std::string& str);
+std::string&		strip(std::string& str, char c);
+std::string			to_string(ssize_t n);
 
 #endif // STRING_UTILS_HPP

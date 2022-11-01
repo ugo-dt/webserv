@@ -26,10 +26,12 @@
 # include "ResponseHeaders.hpp"
 
 # include <fstream>
+# include <map>
 # include <sstream>
 # include <set>
 # include <string>
 # include <sys/stat.h>
+# include <vector>
 
 // HTTP/1.1 CODE
 // Headers
@@ -39,17 +41,18 @@ class Response
 {
 private:
 	const Request&	_request;
-	std::string		_uri;
 	ResponseHeaders	_header;
+	std::string		_uri;
 	std::string		_body;
 	const Location*	_location; // matching location (NULL if no match)
 
-	void	_check_uri(const std::set<Location>& server_locations);
-	void	_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
-	void	_set_content_type();
-	void	_get_body_from_uri();
-	void	_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
-	void	_parse_post_body();
+	void				_check_uri(const std::set<Location>& server_locations);
+	void				_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void				_set_content_type();
+	void				_get_body_from_uri();
+	void				_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void				_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void				_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir);
 
 public:
 	Response(const Request& request);

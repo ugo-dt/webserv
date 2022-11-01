@@ -6,11 +6,53 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 14:56:32 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 11:17:46 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:10:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "string_utils.hpp"
+
+const std::string	get_post_header_value(const std::string& header, const std::string& arg)
+{
+	std::string			result;
+	std::istringstream	_iss(header);
+	std::string			_token;
+
+	while (std::getline(_iss, _token, ';'))
+	{
+		if (_token.compare(0, arg.length(), arg) == 0)
+		{
+			result.assign(_token, arg.length(), _token.length() - arg.length());
+			break ;
+		}
+	}
+	return (result);
+}
+
+const std::string	get_header_field(const std::string& line)
+{
+	std::string	ret;
+
+	size_t	i = line.find_first_of(':');
+	if (i != std::string::npos)
+		ret.append(line, 0 , i);
+	else
+		return ("");
+	capitalize(ret);
+	return (strip(ret, ' '));
+}
+
+const std::string	get_header_value(const std::string& line)
+{
+	size_t i;
+	std::string	ret;
+
+	i = line.find_first_of(':');
+	i = line.find_first_not_of(' ', i + 1);
+	if (i != std::string::npos)
+		ret.append(line, i, std::string::npos);
+	return (strip(ret, ' '));
+}
 
 std::string	str_to_upper(std::string str)
 {

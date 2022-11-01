@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:12:34 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 12:19:57 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,15 @@ private:
 	bool							_running;
 	std::map<uint32_t, std::string>	_default_error_pages;
 
-	bool		_host_port_already_used(size_t max, const t_listen& l);
-	void		_accept_connection(int& sock_fd, struct pollfd *_fds, const size_t &max);
-	void		_handle_request(t_client& client);
-	t_client*	_get_client_with_fd(const int& fd);
+	Server*		_find_matching_server(const std::string& _host, const std::string& _port, t_client& client);
+	int			_unchunked_the_request(Request& _req, t_client& client, const char *_buffer);
 	void		_route_request_to_server(t_client& client, const char *_buffer);
+	void		_handle_request(t_client& client);
+	void		_accept_connection(int& sock_fd, const nfds_t &_nfds);
+
+	bool		_host_port_already_used(size_t max, const t_listen& l);
+	void		_send_bad_request(int& fd);
+	t_client*	_get_client_with_fd(const int& fd);
 
 public:
 	Webserv();

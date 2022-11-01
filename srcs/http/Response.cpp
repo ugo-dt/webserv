@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 18:43:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:36:35 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Response::Response(const Request& request)
 	: _request(request),
 	  _header(),
+	  _uri(""),
 	  _body(),
 	  _location(0)
 {
@@ -209,25 +210,103 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	_header.set_content_length(_body.length());
 }
 
-void
-Response::_parse_post_body()
-{
-	std::stringstream	sstream(_body);
-	std::string			line;
-	std::string			file_path;
-	std::string			_dir;
+/*
+POST:
 
-	return ;
-	while (std::getline(sstream, line))
+------WebKitFormBoundaryIzDpxmymu1HqNgOf
+Content-Disposition: form-data; name="myFile"; filename="postfile"
+Content-Type: application/octet-stream
+
+this is the file
+
+------WebKitFormBoundaryIzDpxmymu1HqNgOf--
+*/
+void
+Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir)
+{
+	std::ofstream						file;
+	std::istringstream					_iss(_request.get_body());
+	std::string							_line;
+	std::string							file_path;
+	const std::string					_boundary_end = "--" + _request.get_post_boundary() + "--\r\n";
+	std::map<std::string, std::string>	_headers;
+	std::vector<std::string>			_file_content;
+	std::string							field;
+	std::string							value;
+
+	std::getline(_iss, _line); // first boundary
+	while (std::getline(_iss, _line) && _line != "" && _line != "\r" && _line != "\n" && _line != CRLF)
 	{
-		std::cout << "line: " << line << std::endl;
+		std::cout << "line: " << std::endl;
+		field = get_header_field(_line);
+		value = get_header_value(_line);
+		std::cout << "field: " <<field << std::endl;
+		std::cout << "value: " <<value<< std::endl;
+		_headers.insert(std::make_pair(field, value));
 	}
-	std::cout << "post dir:" << _dir << std::endl;
-	std::cout << "post file path:" << file_path << std::endl;
+	while (std::getline(_iss, _line))
+	{
+		_line.append(1, '\n');
+		if (_line == _boundary_end)
+			break ;
+		std::cout << "line: " << _line;
+		_file_content.push_back(_line);
+	}
+	if (!_file_content.empty())
+		_file_content.pop_back();
+	file_path = get_post_header_value(_headers.at("Content-Disposition"), " filename=");
+	file_path.assign(file_path, 1, file_path.find_last_of('"') - 1);
+
+	if (mkdir_p(_dir.c_str()) == EXIT_FAILURE)
+	{
+		_header.set_status(STATUS_FORBIDDEN);
+		_uri = error_pages.at(STATUS_FORBIDDEN);
+		_get_body_from_uri();
+		return ;
+	}
+	file_path.insert(0, _dir);
+	std::cout << "file_path end: " << file_path << std::endl;
+	file.open(file_path);
+	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
+		file << (*it);
+	_header.set_status(STATUS_CREATED);
+	_header.set_location(file_path);
+	_header.set_content_length(0);
 }
 
 void
 Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
+{
+	std::string	_dir;
+
+	(void)listen;
+	std::cout << "POST: " << _request.get_body() << std::endl;
+	if (_request.get_post_boundary().empty())
+	{
+		_header.set_status(STATUS_BAD_REQUEST);
+		_uri = error_pages.at(STATUS_BAD_REQUEST);
+		_get_body_from_uri();
+		return ;
+	}
+	if (_location)
+	{
+		if (!_location->get_upload_path().empty())
+			_dir = _location->get_upload_path();
+	}
+	if (_dir.empty())
+		_dir = _request.get_uri();
+	if (_dir[0] == '/')
+		_dir.insert(0, 1, '.');
+	std::cout << "dir: " << _dir << std::endl;
+	_parse_post_body(error_pages, _dir);
+	_header.set_status(STATUS_FOUND);
+	_header.set_location("/");
+	_header.set_content_length("0");
+	_body.clear();
+}
+
+void
+Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
 	std::ofstream	file;
 	std::string		file_path;
@@ -271,15 +350,13 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		WS_INFO_LOG("Root is '" + _location->get_root() + "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
-	// for (std::map<std::string, std::string>::const_iterator it = _request.get_header_fields().begin(); it != _request.get_header_fields().end(); it++)
-	// 	std::cout << (*it).first << ", " << (*it).second << std::endl;
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() == METHOD_GET)
 		_get_body(error_pages, listen);
 	else if (_request.get_method() == METHOD_POST)
-	{
 		_handle_post(error_pages, listen);
-	}
+	else if (_request.get_method() == METHOD_DELETE)
+		_handle_delete(error_pages, listen);
 }
 
 const std::string
@@ -292,7 +369,7 @@ Response::str()
 	str = "HTTP/1.1 " + _header.get_status() + " " + get_status_string(_status) + CRLF;
 
 	// 3xx status codes are redirections
-	if (_status / 100 == 3 || _status == STATUS_SEE_OTHER)
+	if (_status / 100 == 3 || _status == STATUS_CREATED)
 	{
 		str += "Location: " + _header.get_location() + CRLF;
 		str += "Content-Length: 0" CRLF;

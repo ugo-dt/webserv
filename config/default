@@ -2,6 +2,7 @@ server
 {
 	listen			localhost
 	server_name		webserv.com test
+	client_body_buffer_size	1000
 
 	location / {
 		root			www
@@ -15,8 +16,9 @@ server
 		limit_except	GET POST
 	}
 
-	location /include/ {
+	location /www/upload/ {
 		autoindex on
+		limit_except	GET POST DELETE
 	}
 }
 

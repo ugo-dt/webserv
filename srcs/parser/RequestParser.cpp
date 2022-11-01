@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 11:17:33 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:09:43 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,36 +99,6 @@ RequestParser::_get_next_line(size_t &i)
 	return ret;
 }
 
-const std::string
-RequestParser::_get_header_field(const std::string& line)
-{
-	std::string	ret;
-
-	size_t	i = line.find_first_of(':');
-	if (i != std::string::npos)
-		ret.append(line, 0 , i);
-	else
-		return ("");
-	capitalize(ret);
-	return (strip(ret, ' '));
-}
-
-const std::string
-RequestParser::_get_header_value(const std::string& line)
-{
-	size_t i;
-	std::string	ret;
-
-	i = line.find_first_of(':');
-	i = line.find_first_not_of(' ', i + 1);
-	if (i != std::string::npos)
-		ret.append(line, i, std::string::npos);
-	return (strip(ret, ' '));
-}
-
-/*
-GET /index.html?arg1=value1&arg2=value2 HTTP/1.1\r\nHost: webserv\r\ncontent-field: webserv\r\nTest: webserv\r\nField: webserv\r\nHeader: webserv\r\n\r\n<html>\n</html>\n
-*/
 void
 RequestParser::run()
 {
@@ -148,8 +118,8 @@ RequestParser::run()
 		i++;
 	while ((line = _get_next_line(i)) != "\r" && line != "" && line != "\r\n")
 	{
-		field = _get_header_field(line);
-		value = _get_header_value(line);
+		field = get_header_field(line);
+		value = get_header_value(line);
 		if (field.length() && value.length())
 			_request.add_header_field(field, value);
 	}
