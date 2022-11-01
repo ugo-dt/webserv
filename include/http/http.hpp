@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:39:59 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:26:01 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 18:16:49 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@
 // Methods
 # define METHOD_UNKNOWN						0x1
 # define METHOD_GET							0x2
-# define METHOD_POST						0x4
-# define METHOD_DELETE						0x8
-# define ALL_METHODS						0x10
+# define METHOD_HEAD						0x4
+# define METHOD_POST						0x8
+# define METHOD_DELETE						0x10
+# define ALL_METHODS						0x20
 
 // Status codes
 # define STATUS_OK							200

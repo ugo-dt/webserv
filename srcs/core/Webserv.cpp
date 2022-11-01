@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:43:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 20:15:55 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ Webserv::init(int argc, const char **argv)
 			i++;
 			j++;
 		}
+		_nfds = MAX_CONNECTIONS * _nsockets + _nsockets;
 	}
 	catch (std::runtime_error& e)
 	{
@@ -145,7 +146,6 @@ Webserv::_unchunked_the_request(Request& _req, t_client& client, const char *_bu
 		_req.parse(_buffer);
 		if (!_req.is_valid())
 		{
-			std::cout << "NOT VALID" << std::endl;
 			_send_bad_request(client.fd);
 			return (1);
 		}
@@ -153,7 +153,6 @@ Webserv::_unchunked_the_request(Request& _req, t_client& client, const char *_bu
 		{
 			if (_req.get_header_fields().count("Content-Length") == 0)
 			{
-				std::cout << "NO CONTENT LENGTH" << std::endl;
 				_send_bad_request(client.fd);
 				return (1);
 			}
@@ -184,23 +183,24 @@ Webserv::_route_request_to_server(t_client& client, const char *_buffer)
 	Server			*_server = NULL;
 	static Request	_req;
 
-	std::cout << "\033[95mreading" << std::endl;
-	std::cout << _buffer << "\033[0m" << std::endl;
+	// std::cout << "\033[95mreading" << std::endl;
+	// std::cout << _buffer << "\033[0m" << std::endl;
 	if (_unchunked_the_request(_req, client, _buffer) == 1)
 		return ;
-	std::cout << "\033[31munchunked\033[0m" << std::endl;
+	// std::cout << "\033[31munchunked\033[0m" << std::endl;
 	if (_req.get_header_fields().count("Host"))
 	{
 		_host.assign(_req.get_header_fields().at("Host"), 0, _req.get_header_fields().at("Host").find_first_of(':'));
 		if (_req.get_header_fields().at("Host").find(':') != std::string::npos)
 			_port.assign(_req.get_header_fields().at("Host"), _req.get_header_fields().at("Host").find_last_of(':') + 1);
 	}
+	if (_host == "localhost" || _host == "0.0.0.0")
+		_host = "127.0.0.1";
 	_server = _find_matching_server(_host, _port, client);
 	if (_server)
 		_server->generate_response(client.fd, _req);
 	else
 	{
-		std::cout << "NO SERVER" << std::endl;
 		_send_bad_request(client.fd);
 	}
 }
@@ -219,7 +219,7 @@ Webserv::_handle_request(t_client& client)
 		// This should usually not happen, as we're polling through the file descriptors
 		// Playing it safe, though
 		std::cout << "Connection closed (" << client.fd << ")" << std::endl;
-		close_fd(client.fd);
+		_remove_client(client);
 		return ;
 	}
 
@@ -231,15 +231,14 @@ Webserv::_handle_request(t_client& client)
 		// =0: connection was closed by client
 		// <0: some error happened
 		std::cout << "Connection closed by client (" << client.fd << ")" << std::endl;
-		close_fd(client.fd);
+		_remove_client(client);
 		return ;
 	}
 	_route_request_to_server(client, _buffer);
-	//send(client.fd, "Response\n", 10, 0);
 }
 
 void
-Webserv::_accept_connection(int& sock_fd, const nfds_t &_nfds)
+Webserv::_accept_connection(int& sock_fd)
 {
 	size_t			i;
 	t_client		client;
@@ -249,12 +248,13 @@ Webserv::_accept_connection(int& sock_fd, const nfds_t &_nfds)
 	memset((void *)&client.sockaddr, 0, sizeof(sockaddr));
 	client.sockaddr_len = sizeof(client.sockaddr);
 	client.fd = accept(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len);
-	if (client.fd < 0)
+	if (client.fd == -1)
 	{
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
 		return ;
 	}
-	if (getsockname(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len))
+	WS_VALUE_LOG("client.fd", client.fd);
+	if (getsockname(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len) == -1)
 	{
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
 		close(client.fd);
@@ -270,21 +270,22 @@ Webserv::_accept_connection(int& sock_fd, const nfds_t &_nfds)
 		}
 		i++;
 	}
-	if (i == _nfds)
+	if (i == _nfds || _clients.size() == _nfds)
 	{
 		std::cout << "Refused new connection: " << "too many clients" << std::endl;
-			if (_default_error_pages.count(STATUS_SERVICE_UNAVAILABLE))
-				_page = get_body_from_uri(_default_error_pages.at(STATUS_SERVICE_UNAVAILABLE));
-			else
-				_page = get_raw_page(STATUS_SERVICE_UNAVAILABLE);
-			_str = "HTTP/1.1 503 Service Unavailable" CRLF;
-			_str += "Server: webserv" CRLF;
-			_str += "Content-Length: " + to_string(_page.length()) + CRLF;
-			_str += "Content-Type: text/html" CRLF;
-			_str += CRLF;
-			_str += _page + CRLF;
-			send(client.fd, _str.c_str(), _str.length(), 0);
-			close(client.fd);
+		if (_default_error_pages.count(STATUS_SERVICE_UNAVAILABLE))
+			_page = get_body_from_uri(_default_error_pages.at(STATUS_SERVICE_UNAVAILABLE));
+		else
+			_page = get_raw_page(STATUS_SERVICE_UNAVAILABLE);
+		_str = "HTTP/1.1 503 Service Unavailable" CRLF;
+		_str += "Server: webserv" CRLF;
+		_str += "Content-Length: " + to_string(_page.length()) + CRLF;
+		_str += "Content-Type: text/html" CRLF;
+		_str += CRLF;
+		_str += _page + CRLF;
+		send(client.fd, _str.c_str(), _str.length(), 0);
+		close(client.fd);
+		return ;
 	}
 	else
 	{
@@ -296,11 +297,10 @@ Webserv::_accept_connection(int& sock_fd, const nfds_t &_nfds)
 void
 Webserv::run(void)
 {
-	t_client	*client;
-	int			_poll_ret;
-	nfds_t		_nfds;
+	int	client;
+	int	_poll_ret;
 
-	_nfds = _nsockets + MAX_CONNECTIONS;
+	_clients.reserve(_nfds);
 	_poll_fds = (struct pollfd *)std::malloc(sizeof(struct pollfd) * _nfds);
 	if (_poll_fds == NULL)
 		_throw_errno("init: malloc");
@@ -314,31 +314,36 @@ Webserv::run(void)
 		_poll_fds[i].fd = -1;
 		_poll_fds[i].events = POLLIN;
 	}
-	client = NULL;
 	while (_running)
 	{
+		client = 0;
 		_poll_ret = poll(_poll_fds, _nfds, 0);
-		if (_poll_ret > 0)
+		if (_poll_ret == -1)
+		{
+			std::cout << "poll error: " << strerror(errno) << std::endl;
+			_running = false;
+		}
+		else if (_poll_ret > 0)
 		{
 			for (size_t i = 0; i < _nsockets; i++)
 				if (_poll_fds[i].revents & POLLIN)
-					_accept_connection(_poll_fds[i].fd, _nfds);
+					_accept_connection(_poll_fds[i].fd);
 			for (size_t i = _nsockets; i < _nfds; i++)
 			{
-				if (_poll_fds[i].fd < 0)
+				if (_poll_fds[i].fd == -1)
 					continue ;
-				if (_poll_fds[i].revents & POLLNVAL)
+				client = _get_client_with_fd(_poll_fds[i].fd);
+				if (_poll_fds[i].revents & (POLLNVAL | POLLHUP))
 				{
-					close_fd(_poll_fds[i].fd);
+					std::cout << "Connection closed (" << _poll_fds[i].fd << ")" << std::endl;
+					_remove_client(_clients[client]);
 					_poll_fds[i].revents = 0;
 					continue ;
 				}
-				if (_poll_fds[i].revents & (POLLIN | POLLERR))
+				else if (_poll_fds[i].revents & (POLLIN | POLLERR))
 				{
-					client = _get_client_with_fd(_poll_fds[i].fd);
-					if (client)
-						_handle_request(*client);
-					client = NULL;
+					if (client != -1)
+						_handle_request(_clients[client]);
 				}
 			}
 		}
@@ -369,13 +374,37 @@ Webserv::_host_port_already_used(size_t max, const t_listen& l)
 	return (false);
 }
 
-t_client*
-Webserv::_get_client_with_fd(const int& fd)
+int
+Webserv::_get_client_with_fd(int fd)
 {
+	if (fd == -1)
+		return (-1);
+	for (size_t i = 0; i < _clients.size(); i++)
+		if (_clients[i].fd == fd)
+			return (i);
+	return (-1);
+}
+
+void
+Webserv::_remove_client(t_client& client)
+{
+	for (size_t i = 0; i < _nfds; i++)
+	{
+		if (_poll_fds[i].fd == client.fd)
+		{
+			_poll_fds[i].fd = -1;
+			break ;
+		}
+	}
 	for (std::vector<t_client>::iterator it = _clients.begin(); it != _clients.end(); it++)
-		if ((*it).fd == fd)
-			return (&*it);
-	return (NULL);
+	{
+		if ((*it) == client)
+		{
+			close(client.fd);
+			_clients.erase(it);
+			break ;
+		}
+	}
 }
 
 void

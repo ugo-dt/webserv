@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 20:08:13 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 11:12:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 20:15:47 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # include <vector>
 
 // add 1 for server socket
-# define MAX_CONNECTIONS	32 // no idea for now, this is totally random need to check later
+# define MAX_CONNECTIONS	255 // no idea for now, this is totally random need to check later
 # define BUFFER_SIZE		8192
 
 inline bool operator==(const t_listen& x, const t_listen& y)
@@ -96,16 +96,5 @@ public:
 };
 
 std::ostream&	operator<<(std::ostream &o, const Server& s);
-
-static inline
-void
-close_fd(int& fd)
-{
-	if (fd < 0)
-		return ;
-	WS_VALUE_LOG("File descriptor closed", fd);
-	close(fd);
-	fd = -1;
-}
 
 #endif // SERVER_HPP

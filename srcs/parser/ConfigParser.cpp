@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 11:10:08 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 18:24:03 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,6 +324,8 @@ ConfigParser:: _parse_directive_limit_except(std::list<ConfigToken>::const_itera
 		_method = get_word(cur);
 		if (_method == "GET")
 			l.add_method(METHOD_GET);
+		else if (_method == "HEAD")
+			l.add_method(METHOD_HEAD);
 		else if (_method == "POST")
 			l.add_method(METHOD_POST);
 		else if (_method == "DELETE")
@@ -448,7 +450,6 @@ ConfigParser::_parse_directive_upload_path(std::list<ConfigToken>::const_iterato
 	if (cur == token_newline)
 		_throw_token_error(_config_path, (*cur), "upload_path: too few parameters");
 	l.set_upload_path(get_word(cur));
-	std::cout << "path: " << get_word(cur) << std::endl;
 	cur++;
 	if (!is_line_break(cur))
 		_print_error(_config_path, (*cur), "upload_path: unexpected parameter ('" + get_word(cur) + "')");

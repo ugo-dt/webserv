@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:24:36 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:59:52 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,12 @@ const std::set<Location>& Server::get_locations() const
 void Server::set_socket(const int& socket)
 	{_socket = socket;}
 void Server::set_host(const std::string& host)
-	{_listen.host = host;}
+{
+	if (host == "localhost" || host == "0.0.0.0")
+		_listen.host = "127.0.0.1"; 
+	else
+	_listen.host = host;
+}
 void Server::set_port(const int& port)
 	{_listen.port = port;}
 void Server::set_server_names(const std::set<std::string> server_names)
@@ -162,6 +167,8 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 				<< "\033[93mAllowed methods: ";
 			if ((*it).get_methods() & METHOD_GET)
 				o << "GET ";
+			if ((*it).get_methods() & METHOD_HEAD)
+				o << "HEAD ";
 			if ((*it).get_methods() & METHOD_POST)
 				o << "POST ";
 			if ((*it).get_methods() & METHOD_DELETE)

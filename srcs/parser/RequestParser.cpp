@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:14 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:09:43 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 18:21:29 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ RequestParser::_parse_first_line()
 	tmp = std::string(line, 0, i);
 	if (tmp == "GET")
 		_request.set_method(METHOD_GET);
+	else if (tmp == "HEAD")
+		_request.set_method(METHOD_HEAD);
 	else if (tmp == "POST")
 		_request.set_method(METHOD_POST);
 	else if (tmp == "DELETE")

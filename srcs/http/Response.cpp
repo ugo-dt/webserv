@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:36:35 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/01 18:25:06 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,11 +237,8 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 	std::getline(_iss, _line); // first boundary
 	while (std::getline(_iss, _line) && _line != "" && _line != "\r" && _line != "\n" && _line != CRLF)
 	{
-		std::cout << "line: " << std::endl;
 		field = get_header_field(_line);
 		value = get_header_value(_line);
-		std::cout << "field: " <<field << std::endl;
-		std::cout << "value: " <<value<< std::endl;
 		_headers.insert(std::make_pair(field, value));
 	}
 	while (std::getline(_iss, _line))
@@ -249,7 +246,6 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 		_line.append(1, '\n');
 		if (_line == _boundary_end)
 			break ;
-		std::cout << "line: " << _line;
 		_file_content.push_back(_line);
 	}
 	if (!_file_content.empty())
@@ -265,7 +261,6 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 		return ;
 	}
 	file_path.insert(0, _dir);
-	std::cout << "file_path end: " << file_path << std::endl;
 	file.open(file_path);
 	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
 		file << (*it);
@@ -351,11 +346,11 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		WS_INFO_LOG("Searching for new location...");
 	}
 	_uri.insert(0, 1, '.');
-	if (_request.get_method() == METHOD_GET)
+	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))
 		_get_body(error_pages, listen);
-	else if (_request.get_method() == METHOD_POST)
+	else if (_request.get_method() & METHOD_POST)
 		_handle_post(error_pages, listen);
-	else if (_request.get_method() == METHOD_DELETE)
+	else if (_request.get_method() & METHOD_DELETE)
 		_handle_delete(error_pages, listen);
 }
 
@@ -374,6 +369,10 @@ Response::str()
 		str += "Location: " + _header.get_location() + CRLF;
 		str += "Content-Length: 0" CRLF;
 	}
+	else if (_request.get_method() & METHOD_HEAD)
+	{
+		str += "Content-Length: 0" CRLF;
+	}
 	else if (_status == STATUS_OK)
 	{
 		str += "Content-Length: " + _header.get_content_length() + CRLF;
@@ -382,7 +381,8 @@ Response::str()
 	str += "Date: " + _header.get_date() + CRLF;
 	str += "Server: " + _header.get_server() + CRLF;
 	str += CRLF;
-	str += _body;
+	if (!(_request.get_method() & METHOD_HEAD))
+		str += _body;
 	// std::cout << str << std::endl;
 	return (str);
 }
