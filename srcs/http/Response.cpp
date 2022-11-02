@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 16:59:20 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 19:45:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,6 @@ Response::_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages
 		return ;
 	}
 	_body = get_file_contents(f);
-	_header.set_status(STATUS_OK);
 	_set_content_type();
 }
 
@@ -252,10 +251,20 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 }
 
 void
-Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
+Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, size_t& body_size)
 {
 	std::string	_dir;
 
+	if ((_request.get_header_fields().count("Content-Length")
+		&& (unsigned long)atol(_request.get_header_fields().at("Content-Length").c_str()) > body_size)
+		|| _request.get_body().length() > body_size)
+	{
+		WS_ERROR_LOG("Payload too large.");
+		_header.set_status(STATUS_PAYLOAD_TOO_LARGE);
+		_uri = error_pages.at(STATUS_PAYLOAD_TOO_LARGE);
+		_get_body_from_uri(error_pages);
+		return ;
+	}
 	if (_request.get_post_boundary().empty())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
@@ -338,7 +347,8 @@ Response::_run_cgi_script(const std::string& ext)
 void
 Response::generate(const std::map<u_int16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
-				   const t_listen& listen)
+				   const t_listen& listen,
+				   size_t& client_body_buffer_size)
 {
 	const Location	*_old_loc;
 
@@ -393,7 +403,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))
 		_get_body(error_pages, listen);
 	else if (_request.get_method() & METHOD_POST)
-		_handle_post(error_pages);
+		_handle_post(error_pages, client_body_buffer_size);
 	else if (_request.get_method() & METHOD_DELETE)
 		_handle_delete(error_pages, listen);
 }

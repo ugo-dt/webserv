@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/11/02 17:30:55 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/11/02 19:04:51 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,9 +54,9 @@ fclean: clean
 re: fclean all
 
 docker: fclean
-	docker stop $$(docker ps -qa)
-	docker rm $$(docker ps -qa)
-	docker rmi -f $$(docker images -qa)
+	-docker stop $$(docker ps -qa)
+	-docker rm $$(docker ps -qa)
+	-docker rmi -f $$(docker images -qa)
 	docker system prune -af
 	docker build -t siege .
 	docker run -d -it siege

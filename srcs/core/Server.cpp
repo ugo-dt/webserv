@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 16:20:16 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 19:35:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ Server::generate_response(int& _fd, const Request& _req)
 	ssize_t		_bytes;
 	Response	_resp(_req);
 
-	_resp.generate(_error_pages, _locations, _listen);
+	_resp.generate(_error_pages, _locations, _listen, _client_body_buffer_size);
 	WS_INFO_LOG("Sending response.");
 	_bytes = send(_fd, _resp.str().c_str(), _resp.length(), 0);
 	if (_bytes < 0)
