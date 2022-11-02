@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/11/02 19:04:51 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/11/02 23:01:57 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ SRCS =	srcs/main.cpp \
 OBJS = $(SRCS:.cpp=.o)
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 INCLUDE = -I include -I include/core -I include/http -I include/parser
 
 all: $(NAME)
@@ -43,7 +43,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 debug:
-	$(CC) $(INCLUDE) -DDEBUG $(SRCS) -o debug
+	-$(CC) $(INCLUDE) -DDEBUG $(SRCS) -o debug
 
 clean:
 	rm -rf $(OBJS)
@@ -53,12 +53,15 @@ fclean: clean
 
 re: fclean all
 
-docker: fclean
+docker:
+	-docker build -t siege .
+	-docker run -d -it --name siege siege 2> /dev/null
+	-docker exec -it siege su
+
+clean_docker:
 	-docker stop $$(docker ps -qa)
 	-docker rm $$(docker ps -qa)
 	-docker rmi -f $$(docker images -qa)
 	docker system prune -af
-	docker build -t siege .
-	docker run -d -it siege
 
 .PHONY: all clean fclean re debug docker

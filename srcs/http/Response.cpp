@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 19:45:33 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 22:52:42 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,10 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	if (stat(_uri.c_str(), &_stat) == 0)
 	{
 		if (S_ISREG(_stat.st_mode))
+		{
+			_header.set_status(STATUS_OK);
 			_get_body_from_uri(error_pages);
+		}
 		else if (S_ISDIR(_stat.st_mode))
 		{
 			if (_location)
@@ -334,7 +337,13 @@ Response::_run_cgi_script(const std::string& ext)
 	try
 	{
 		cgi.init();
-		_body = cgi.run();
+		cgi.run();
+		_header.set_status(STATUS_OK);
+		_header.set_content_type(MIME_HTML);
+		std::cout << _header.get_content_type() << std::endl;
+		_body = cgi.get_body();
+		std::cout << _body << std::endl;
+		_header.set_content_length(_body.length());
 	}
 	catch (std::exception& e)
 	{
@@ -393,10 +402,11 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		{
 			if (_run_cgi_script(_uri.substr(_uri.find_last_of("."))) != EXIT_SUCCESS)
 			{
-				_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-				_uri = error_pages.at(STATUS_INTERNAL_SERVER_ERROR);
+				_header.set_status(STATUS_NOT_FOUND);
+				_uri = error_pages.at(STATUS_NOT_FOUND);
 				_get_body_from_uri(error_pages);
 			}
+			return ;
 		}
 	}
 	_uri.insert(0, 1, '.');

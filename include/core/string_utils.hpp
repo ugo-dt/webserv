@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 16:56:39 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:10:24 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 21:44:00 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@
 # include <algorithm>
 # include <string>
 # include <sstream>
+# include <vector>
 
+const std::vector<std::string>	ft_split(const std::string& str, char sep);
 const std::string	get_post_header_value(const std::string& header, const std::string& arg);
 const std::string	get_header_field(const std::string& line);
 const std::string	get_header_value(const std::string& line);

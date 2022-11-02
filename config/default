@@ -5,7 +5,6 @@ server
 	client_body_buffer_size	4
 
 	location / {
-		cgi				.php	/cgi-bin/php
 		autoindex		on
 		limit_except	GET
 	}
@@ -15,18 +14,14 @@ server
 		autoindex		on
 		upload_path		/www/upload/
 		rewrite			/www/redirect.html	/www/index.html
-		default_file	index.html
 		limit_except	GET POST
 	}
 
 	location /www/cgi-bin/ {
 		autoindex		on
 		limit_except	GET
-	}
-
-	location /www/cgi-bin/postCGI.cgi {
-		cgi				.cgi	php-cgi
-		limit_except	GET
+		cgi				.py		/opt/homebrew/bin/python3
+		cgi				.php	/opt/homebrew/bin/php
 	}
 
 	location /www/upload/ {

@@ -6,21 +6,28 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 15:05:38 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 17:00:12 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 22:59:39 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "core.hpp"
+#include "http.hpp"
+#include "log.hpp"
 
 #include "Location.hpp"
 #include "Request.hpp"
 #include "string_utils.hpp"
 
+#include <cstdlib>
+#include <cstring>
+#include <string>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <string>
+
+#define ENV_VARIABLES	6
+#define ARGS_VARIABLES	2
 
 class CGI
 {
@@ -30,13 +37,19 @@ private:
 	std::string		_executable;
 	char			**_args;
 	char			**_env;
+	std::string		_body;
+	size_t			_body_size;
 
-	std::string		_get_cgi_name();
+	void		_add_arg(const std::string& arg);
+	void		_add_env(const std::string& name, const std::string& value);
+	void		_clean();
 
 public:
 	CGI(const Request& req, const std::string& ext, const std::string& exec);
 	~CGI();
 
 	void				init();
-	const std::string	run();
+	void				run();
+	const std::string&	get_body();
+	const std::string&	body_size();
 };
