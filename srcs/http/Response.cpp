@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 11:23:04 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:42:06 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,17 +203,6 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	_header.set_content_length(_body.length());
 }
 
-/*
-POST:
-
-------WebKitFormBoundaryIzDpxmymu1HqNgOf
-Content-Disposition: form-data; name="myFile"; filename="postfile"
-Content-Type: application/octet-stream
-
-this is the file
-
-------WebKitFormBoundaryIzDpxmymu1HqNgOf--
-*/
 void
 Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir)
 {

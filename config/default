@@ -5,15 +5,16 @@ server
 	client_body_buffer_size	1000
 
 	location / {
-		upload_path		/test/
-		autoindex on
-		limit_except	GET
+		root			/www
+		cgi				.php	/cgi-bin/php
+		autoindex		on
 	}
 
 	location /www/
 	{
-		upload_path		/test/
+		upload_path		/www/upload/
 		rewrite			/www/redirect.html	/www/index.html
+		default_file	index.html
 		autoindex		on
 		limit_except	GET POST
 	}

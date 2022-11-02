@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 10:58:59 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:36:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,17 +345,17 @@ ConfigParser::_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& c
 
 	cur++;
 	if (cur == token_newline)
-		_throw_token_error(_config_path, (*cur), "rewrite: expected path\n\033[0m"
+		_throw_token_error(_config_path, (*cur), "rewrite: too few parameters\n\033[0m"
 						"          rewrite \033[32m\n"
-						"                  ^\n"
-					    "                  path");
+						"                  ^    ^\n"
+						"                  path redirection");
 	path = get_word(cur);
 	cur++;
 	if (cur == _end || cur != token_word)
 		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\033[0m"
-						"          rewrite path \033[32m\n"
-						"                       ^\n"
-					    "                       redirection");
+						"          rewrite " + path + "\033[32m\n"
+						"                  " + get_n_spaces(path.length()) + " ^\n"
+						"                  " + get_n_spaces(path.length()) + " redirection");
 	l.add_redirection(path, get_word(cur));
 	cur++;
 	if (cur != token_newline && cur != token_close_brace)
@@ -427,18 +427,28 @@ ConfigParser::_parse_directive_default_file(std::list<ConfigToken>::const_iterat
 }
 
 void
-ConfigParser::_parse_directive_cgi_extension(std::list<ConfigToken>::const_iterator& cur, Location& l)
+ConfigParser::_parse_directive_cgi(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
-	if (l.get_state() & state_cgi_extension)
-		show_repeat_warning(_config_path, (*cur));
+	std::string	extension;
+
 	cur++;
 	if (cur == token_newline)
-		_throw_token_error(_config_path, (*cur), "cgi_extension: too few parameters");
-	l.set_cgi_extension(get_word(cur));
+		_throw_token_error(_config_path, (*cur), "cgi: missing parameters\n\033[0m"
+						"          cgi \033[32m\n"
+						"              ^         ^\n"
+						"              extension executable");
+	extension = get_word(cur);
 	cur++;
-	if (!is_line_break(cur))
-		_print_error(_config_path, (*cur), "cgi_extension: unexpected parameter ('" + get_word(cur) + "')");
-	l.set_state(state_cgi_extension);
+	if (cur == _end || cur != token_word)
+		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\033[0m"
+						"          rewrite " + extension + "\033[32m\n"
+						"                  " + get_n_spaces(extension.length()) + " ^\n"
+						"                  " + get_n_spaces(extension.length()) + " redirection");
+	l.add_cgi_extension(extension, get_word(cur));
+	cur++;
+	if (cur != token_newline && cur != token_close_brace)
+		_print_error(this->_config_path, (*cur), "cgi: unexpected parameter ('" + get_word(cur) + "')");
+	l.set_state(state_cgi);
 }
 
 void
@@ -499,8 +509,8 @@ ConfigParser::_parse_location_block(std::list<ConfigToken>::const_iterator& cur,
 				_parse_directive_autoindex(cur, l);
 			else if (cur == DIRECTIVE_DEFAULT_FILE)
 				_parse_directive_default_file(cur, l);
-			else if (cur == DIRECTIVE_CGI_EXTENSION)
-				_parse_directive_cgi_extension(cur, l);
+			else if (cur == DIRECTIVE_CGI)
+				_parse_directive_cgi(cur, l);
 			else if (cur == DIRECTIVE_UPLOAD_PATH)
 				_parse_directive_upload_path(cur, l);
 			else if (cur != "newline")

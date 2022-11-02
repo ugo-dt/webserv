@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 11:55:28 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 13:03:02 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,8 +189,10 @@ std::ostream&	operator<<(std::ostream &o, const Server& s)
 			o << "Root: " << (*it).get_root() << std::endl
 				<< "Autoindex: " << (*it).is_autoindex_on() << std::endl
 				<< "Default file: " << (*it).get_default_file() << std::endl
-				<< "CGI extension: " << (*it).get_cgi_extension() << std::endl
-				<< "Upload path: " << (*it).get_upload_path() << std::endl;
+				<< "CGI extensions: " << std::endl;
+			for (std::map<std::string, std::string>::const_iterator i = (*it).get_cgi_extensions().begin(); i != (*it).get_cgi_extensions().end(); i++)
+				o << "\t" << (*i).first << ":" << (*i).second << std::endl;
+			o << "Upload path: " << (*it).get_upload_path() << std::endl;
 		}
 		o << "--------\033[0m" << std::endl;
 #else

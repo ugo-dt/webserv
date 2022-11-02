@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:09:22 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 21:12:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:21:33 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Location::Location()
 	  _redirections(),
 	  _autoindex(false),
 	  _default_file(),
-	  _cgi_extension(),
+	  _cgi_extensions(),
 	  _upload_path(""),
 	  _state(0)
 {
@@ -34,7 +34,7 @@ Location::Location(const Location& x)
 	  _redirections(x._redirections),
 	  _autoindex(x._autoindex),
 	  _default_file(x._default_file),
-	  _cgi_extension(x._cgi_extension),
+	  _cgi_extensions(x._cgi_extensions),
 	  _upload_path(x._upload_path),
 	  _state(x._state)
 {
@@ -52,7 +52,7 @@ Location::operator=(const Location& x)
 		_redirections = x._redirections;
 		_autoindex = x._autoindex;
 		_default_file = x._default_file;
-		_cgi_extension = x._cgi_extension;
+		_cgi_extensions = x._cgi_extensions;
 		_upload_path = x._upload_path;
 	}
 	return (*this);
@@ -76,8 +76,8 @@ bool	Location::is_autoindex_on() const
 	{return _autoindex;}
 const std::string&	Location::get_default_file() const
 	{return _default_file;}
-const std::string&	Location::get_cgi_extension() const
-	{return _cgi_extension;}
+const std::map<std::string, std::string>&	Location::get_cgi_extensions() const
+	{return _cgi_extensions;}
 const std::string&	Location::get_upload_path() const
 	{return _upload_path;}
 
@@ -95,8 +95,8 @@ void	Location::set_autoindex(bool a)
 	{_autoindex = a;}
 void	Location::set_default_file(const std::string& path)
 	{_default_file = path;}
-void	Location::set_cgi_extension(const std::string& ext)
-	{_cgi_extension = ext;}
+void	Location::set_cgi_extensions(const std::map<std::string, std::string>& cgi_ext)
+	{_cgi_extensions = cgi_ext;}
 void	Location::set_upload_path(const std::string& path)
 	{_upload_path = path;}
 
@@ -104,6 +104,8 @@ void	Location::add_method(const unsigned int& method)
 	{_methods |= method;}
 void	Location::add_redirection(const std::string& from, const std::string& to)
 	{_redirections.insert(std::make_pair(from, to));}
+void	Location::add_cgi_extension(const std::string& ext, const std::string& bin)
+	{_cgi_extensions.insert(std::make_pair(ext, bin));}
 
 void Location::set_state(unsigned int x)
 	{_state |= x;}

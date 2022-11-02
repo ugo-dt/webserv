@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:48:48 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/29 16:23:10 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:22:42 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # define DIRECTIVE_ROOT						"root"
 # define DIRECTIVE_AUTOINDEX				"autoindex"
 # define DIRECTIVE_DEFAULT_FILE				"default_file"
-# define DIRECTIVE_CGI_EXTENSION			"cgi_extension"
+# define DIRECTIVE_CGI						"cgi"
 # define DIRECTIVE_UPLOAD_PATH				"upload_path"
 
 typedef enum e_state
@@ -49,7 +49,7 @@ typedef enum e_state
 	state_server_name             = 0x40,
 	state_client_body_buffer_size = 0x80,
 	state_default_file            = 0x100,
-	state_cgi_extension           = 0x200,
+	state_cgi                     = 0x200,
 	state_upload_path             = 0x400,
 	state_limit_except            = 0x800
 }t_state;
@@ -86,7 +86,7 @@ private:
 	void 			_parse_directive_root(std::list<ConfigToken>::const_iterator& cur, Location& l);
 	void 			_parse_directive_autoindex(std::list<ConfigToken>::const_iterator& cur, Location& l);
 	void			_parse_directive_default_file(std::list<ConfigToken>::const_iterator& cur, Location& l);
-	void			_parse_directive_cgi_extension(std::list<ConfigToken>::const_iterator& cur, Location& l);
+	void			_parse_directive_cgi(std::list<ConfigToken>::const_iterator& cur, Location& l);
 	void			_parse_directive_upload_path(std::list<ConfigToken>::const_iterator& cur, Location& l);
 
 public:
