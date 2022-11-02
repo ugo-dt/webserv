@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 14:48:37 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 17:20:11 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,10 +315,10 @@ ConfigParser:: _parse_directive_limit_except(std::list<ConfigToken>::const_itera
 		l.set_methods(0);
 	cur++;
 	if (cur == token_newline)
-		_print_error(_config_path, (*cur), "limit_except: expected method\n\033[0m"
-					"        limit_except \033[32m\n"
-					"                     ^\n"
-					"                     method");
+		_print_error(_config_path, (*cur), "limit_except: missing method\n\033[0m"
+					"\033[0m        limit_except \n"
+					"\033[0m                     \033[32m^\n\033[0m"
+					"\033[0m                     \033[32mmethod\033[0m");
 	while (cur != _end && cur == token_word)
 	{
 		_method = get_word(cur);
@@ -346,16 +346,16 @@ ConfigParser::_parse_directive_rewrite(std::list<ConfigToken>::const_iterator& c
 	cur++;
 	if (cur == token_newline)
 		_throw_token_error(_config_path, (*cur), "rewrite: too few parameters\n\033[0m"
-						"          rewrite \033[32m\n"
-						"                  ^    ^\n"
-						"                  path redirection");
+						"\033[0m          rewrite \033[32m\n"
+						"\033[0m                  \033[32m^\033[0m    \033[32m^\n\033[0m"
+						"\033[0m                  \033[32mpath\033[0m \033[32mredirection\033[0m");
 	path = get_word(cur);
 	cur++;
 	if (cur == _end || cur != token_word)
-		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\033[0m"
-						"          rewrite " + path + "\033[32m\n"
-						"                  " + get_n_spaces(path.length()) + " ^\n"
-						"                  " + get_n_spaces(path.length()) + " redirection");
+		_throw_token_error(_config_path, (*cur), "rewrite: missing redirection\n\033[0m"
+						"\033[0m          rewrite " + path + "\033[32m\n"
+						"\033[0m                  " + get_n_spaces(path.length()) + " \033[32m^\n\033[0m"
+						"\033[0m                  " + get_n_spaces(path.length()) + " \033[32mredirection\033[0m");
 	l.add_redirection(path, get_word(cur));
 	cur++;
 	if (cur != token_newline && cur != token_close_brace)
@@ -384,8 +384,6 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 	std::string	_ai;
 	std::string	_uri;
 
-	if (l.get_state() & state_default_file)
-		std::cerr << _get_warning_string(_config_path, (*cur), "unused directive: autoindex takes precedence over default_file\n");
 	if (l.get_state() & state_autoindex)
 		show_repeat_warning(_config_path, (*cur));
 	cur++;
@@ -398,10 +396,10 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 	if (_uri.at(_uri.length() - 1) != '/')
 	{
 		_print_error(_config_path, (*cur),
-					"autoindex: not a folder ('" + _uri + "')\033[0m\n"
-					"        location " + _uri + "\033[0m\033[32m\n\033[21m"
-					"                 " + get_n_spaces(_uri.length()) + "^\n"
-					"                 " + get_n_spaces(_uri.length()) + "/\033[0m");
+					"autoindex: not a folder ('" + _uri + "')\n"
+					"\033[0m        location " + _uri + "\033[0m\n\033[21m"
+					"\033[0m                 " + get_n_spaces(_uri.length()) + "\033[32m^\n\033[0m"
+					"\033[0m                 " + get_n_spaces(_uri.length()) + "\033[32m/\033[0m");
 	}
 	if (_ai == "on")
 		l.set_autoindex(true);
@@ -410,19 +408,33 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 	cur++;
 	if (!is_line_break(cur))
 		_print_error(_config_path, (*cur), "autoindex: unexpected parameter ('" + get_word(cur) + "')");
+	if (l.get_state() & state_default_file && l.is_autoindex_on())
+		std::cerr << _get_warning_string(_config_path, (*cur), "unused directive: autoindex takes precedence over default_file\n");
 	l.set_state(state_autoindex);
 }
 
 void
 ConfigParser::_parse_directive_default_file(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
-	if (l.get_state() & state_autoindex)
+	std::string	file;
+	std::string	_uri;
+
+	if (l.get_state() & state_autoindex && l.is_autoindex_on())
 		std::cerr << _get_warning_string(_config_path, (*cur), "unused directive: autoindex takes precedence over default_file\n");
 	if (l.get_state() & state_default_file)
 		show_repeat_warning(_config_path, (*cur));
 	cur++;
 	if (cur == token_newline)
 		_throw_token_error(_config_path, (*cur), "default_file: too few parameters");
+	_uri = l.get_uri();
+	if (_uri.at(_uri.length() - 1) != '/')
+	{
+		_print_error(_config_path, (*cur),
+					"default_file: not a folder ('" + _uri + "')\n"
+					"\033[0m        location " + _uri + "\033[0m\n\033[21m"
+					"\033[0m                 " + get_n_spaces(_uri.length()) + "\033[32m^\n\033[0m"
+					"\033[0m                 " + get_n_spaces(_uri.length()) + "\033[32m/\033[0m");
+	}
 	l.set_default_file(get_word(cur));
 	cur++;
 	if (!is_line_break(cur))
@@ -438,16 +450,16 @@ ConfigParser::_parse_directive_cgi(std::list<ConfigToken>::const_iterator& cur, 
 	cur++;
 	if (cur == token_newline)
 		_throw_token_error(_config_path, (*cur), "cgi: missing parameters\n\033[0m"
-						"          cgi \033[32m\n"
-						"              ^         ^\n"
-						"              extension executable");
+						"\033[0m          cgi \033[32m\n"
+						"\033[0m              \033[32m^\033[0m         \033[32m^\n\033[0m"
+						"\033[0m              \033[32mextension\033[0m \033[32mexecutable\033[0m");
 	extension = get_word(cur);
 	cur++;
 	if (cur == _end || cur != token_word)
-		_throw_token_error(_config_path, (*cur), "rewrite: expected replacement\n\033[0m"
-						"          rewrite " + extension + "\033[32m\n"
-						"                  " + get_n_spaces(extension.length()) + " ^\n"
-						"                  " + get_n_spaces(extension.length()) + " redirection");
+		_throw_token_error(_config_path, (*cur), "cgi: missing executable\n\033[0m"
+						"\033[0m          cgi " + extension + "\033[32m\n"
+						"\033[0m              " + get_n_spaces(extension.length()) + " \033[32m^\n\033[0m"
+						"\033[0m              " + get_n_spaces(extension.length()) + " \033[32mexecutable\033[0m");
 	l.add_cgi_extension(extension, get_word(cur));
 	cur++;
 	if (cur != token_newline && cur != token_close_brace)

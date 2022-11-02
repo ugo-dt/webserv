@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 13:03:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 16:20:16 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Server::Server()
 	  _locations(),
 	  _state(0)
 {
-	_listen.host = "0.0.0.0";
+	_listen.host = "127.0.0.1";
 	_listen.port = DEFAULT_PORT;
 	_error_pages[STATUS_BAD_REQUEST] = "www/400.html";
 	_error_pages[STATUS_FORBIDDEN] = "www/403.html";
@@ -60,8 +60,8 @@ Server::setup(void)
 	_sockaddr_len = sizeof(_sockaddr);
 	memset((void *)&_sockaddr, 0, _sockaddr_len); 
 	_sockaddr.sin_family = AF_INET; 
-	if (_listen.host == "localhost")
-		_sockaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
+	if (_listen.host == "localhost" || _listen.host == "0.0.0.0")
+		_sockaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	else
 		_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
 	_sockaddr.sin_port = htons(_listen.port);
@@ -136,7 +136,7 @@ void Server::set_host(const std::string& host)
 	if (host == "localhost" || host == "0.0.0.0")
 		_listen.host = "127.0.0.1"; 
 	else
-	_listen.host = host;
+		_listen.host = host;
 }
 void Server::set_port(const int& port)
 	{_listen.port = port;}

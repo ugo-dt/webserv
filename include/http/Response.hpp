@@ -21,6 +21,7 @@
 # include "string_utils.hpp"
 
 # include "Autoindex.hpp"
+# include "CGI.hpp"
 # include "Location.hpp"
 # include "Request.hpp"
 # include "ResponseHeaders.hpp"
@@ -56,6 +57,8 @@ private:
 	void				_handle_post(const std::map<u_int16_t, std::string>& error_pages);
 	void				_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
 	void				_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir);
+	bool				_is_cgi(void);
+	int					_run_cgi_script(const std::string&);
 
 public:
 	Response(const Request& request);

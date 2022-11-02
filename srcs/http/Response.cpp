@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 14:34:22 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 16:59:20 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,6 +304,37 @@ Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, co
 	_body.clear();
 }
 
+bool
+Response::_is_cgi(void)
+{
+	std::string	_ext;
+
+	if (!_location || _uri.find('.') == std::string::npos)
+		return (false);
+	_ext = _uri.substr(_uri.find_last_of("."));
+	if (_ext.empty())
+		return (false);
+	return (_location->get_cgi_extensions().count(_ext));
+}
+
+int
+Response::_run_cgi_script(const std::string& ext)
+{
+	CGI	cgi(_request, ext, _location->get_cgi_extensions().at(ext));
+
+	try
+	{
+		cgi.init();
+		_body = cgi.run();
+	}
+	catch (std::exception& e)
+	{
+		WS_ERROR_LOG("could not run cgi: " << e.what());
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
+}
+
 void
 Response::generate(const std::map<u_int16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
@@ -346,9 +377,17 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			_get_body(error_pages, listen);
 			return ;
 		}
-		if (_location->get_redirections().size())
-			if (_check_redirections() == 1)
-				return ;
+		if (_location->get_redirections().size() && _check_redirections() == 1)
+			return ;
+		if (_is_cgi())
+		{
+			if (_run_cgi_script(_uri.substr(_uri.find_last_of("."))) != EXIT_SUCCESS)
+			{
+				_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
+				_uri = error_pages.at(STATUS_INTERNAL_SERVER_ERROR);
+				_get_body_from_uri(error_pages);
+			}
+		}
 	}
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))

@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/11/02 15:29:18 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/11/02 17:24:31 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ SRCS =	srcs/main.cpp \
 		srcs/core/Server.cpp \
 		srcs/core/Webserv.cpp \
 		srcs/http/Autoindex.cpp \
+		srcs/http/CGI.cpp \
 		srcs/http/raw.cpp \
 		srcs/http/Request.cpp \
 		srcs/http/Response.cpp \
@@ -53,7 +54,8 @@ fclean: clean
 re: fclean all
 
 docker: fclean
+	docker system prune -a
 	docker build -t siege .
-	docker run -d --name siege -it siege
+	docker run -d -it siege
 
 .PHONY: all clean fclean re debug docker

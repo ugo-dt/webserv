@@ -70,8 +70,4 @@ Norme:
 	arg1 = value1;
 	arg2 = value2
 
-make sure method allowed in response
-redirections
-
-post:
-	use 201 (created) and location header at the same time.
+warning redirections shoul take precedence over cgi
