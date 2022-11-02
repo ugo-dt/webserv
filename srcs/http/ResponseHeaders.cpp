@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 11:14:10 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 15:14:34 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 10:51:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ void	ResponseHeaders::set_server(const std::string& server)
 void	ResponseHeaders::set_location(const std::string& location)
 	{_location = location;}
 
-const std::string	ResponseHeaders::get_status() const
-	{return to_string(_status);}
+unsigned int	ResponseHeaders::get_status() const
+	{return _status;}
 const std::string&	ResponseHeaders::get_content_type() const
 	{return _content_type;}
 const std::string&	ResponseHeaders::get_content_length() const

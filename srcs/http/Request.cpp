@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:00 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:49:14 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:05:13 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,22 @@ Request::parse(const char *_buffer)
 	RequestParser	_parser(*this, _buffer);
 
 	_parser.run();
-#if defined(DEBUG)
-	std::cout << "[" << _buffer << "]" << std::endl;
+#ifdef WS_LOG
+	std::cout << "[\033[92m" << _buffer << "\033[0m]" << std::endl;
 #endif
+}
+
+void
+Request::clear(void)
+{
+	_method = 0;
+	_uri.clear();
+	_http_version.clear();
+	_query_string.clear();
+	_header_fields.clear();
+	_body.clear();
+	_valid = false;
+	_post_boundary.clear();
 }
 
 Request::~Request()

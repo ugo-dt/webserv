@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 10:03:08 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:03:58 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,16 +103,13 @@ Webserv::_find_matching_server(const std::string& _host, const std::string& _por
 {
 	Server	*_server;
 
-	WS_INFO_LOG("Client address: " << inet_ntoa(client.sockaddr.sin_addr));
-	WS_INFO_LOG("Client port: " << htons(client.sockaddr.sin_port));
-	WS_INFO_LOG("Request host: " << _host);
-	WS_INFO_LOG("Request port: " << _port);
+	WS_INFO_LOG("Client: " << inet_ntoa(client.sockaddr.sin_addr) << ":" << htons(client.sockaddr.sin_port));
+	WS_INFO_LOG("Host: " << _host);
+	WS_INFO_LOG("Port: " << _port);
 	_server = NULL;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
 		//WS_INFO_LOG("Server names (" << _server[i].get_host() << ":" << _server[i].get_port() << "): ");
-		for (std::set<std::string>::const_iterator it = _servers[i].get_server_names().begin(); it != _servers[i].get_server_names().end(); it++)
-			WS_INFO_LOG("\t" + (*it));
 		if (!_host.empty())
 		{
 			if (!_port.empty())
@@ -151,14 +148,14 @@ Webserv::_unchunked_the_request(Request& _req, t_client& client, const char *_bu
 		_req.parse(_buffer);
 		if (!_req.is_valid())
 		{
-			_send_bad_request(client.fd);
+			_send_bad_request(client);
 			return (1);
 		}
 		if (_req.get_method() == METHOD_POST)
 		{
 			if (_req.get_header_fields().count("Content-Length") == 0)
 			{
-				_send_bad_request(client.fd);
+				_send_bad_request(client);
 				return (1);
 			}
 			_bytes_max = atoi(_req.get_header_fields().at("Content-Length").c_str());
@@ -204,13 +201,22 @@ Webserv::_route_request_to_server(t_client& client, const char *_buffer)
 	_server = _find_matching_server(_host, _port, client);
 	if (_server)
 	{
+#ifdef WS_LOG
+		WS_INFO_LOG("Found a matching server: " << _server->get_host() << ":" << _server->get_port());
+		if (_server->get_server_names().count(_host))
+			WS_INFO_LOG("Server name: " << (*_server->get_server_names().find(_host)));
+#endif
 		if (_server->generate_response(client.fd, _req) != EXIT_SUCCESS)
+			_remove_client(client);
+		if (_req.get_header_fields().count("Connection") && str_to_lower(_req.get_header_fields().at("Connection")) == "close")
 			_remove_client(client);
 	}	
 	else
 	{
-		_send_bad_request(client.fd);
+		WS_INFO_LOG("Could not find a matching server.");
+		_send_bad_request(client);
 	}
+	_req.clear();
 }
 
 void
@@ -300,7 +306,7 @@ Webserv::_accept_connection(int& sock_fd)
 	else
 	{
 		// std::cout << "Accepted new connection (" << client.fd << ")" << std::endl;
-		WS_INFO_LOG("Accepted new connection (" << client.fd);
+		WS_INFO_LOG("Accepted new connection (" << client.fd << ")");
 		_clients.push_back(client);
 	}
 }
@@ -355,7 +361,7 @@ Webserv::run(void)
 }
 
 void
-Webserv::_send_bad_request(int& fd)
+Webserv::_send_bad_request(t_client& client)
 {
 	std::string	_page;
 	std::string	_str;
@@ -366,7 +372,8 @@ Webserv::_send_bad_request(int& fd)
 	_str += "Content-Length: " + to_string(_page.length()) + CRLF;
 	_str += CRLF;
 	_str += _page + CRLF;
-	send(fd, _str.c_str(), _str.length(), 0);
+	send(client.fd, _str.c_str(), _str.length(), 0);
+	_remove_client(client);
 }
 
 bool

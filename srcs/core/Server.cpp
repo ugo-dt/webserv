@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:52:30 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 11:55:28 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,15 @@ Server::setup(void)
 	int		option;
 
 	_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (_socket < 0)
+	if (_socket == -1)
 		_throw_errno("socket");
 	WS_INFO_LOG("Created new socket for " + _listen.host + ":" + to_string(_listen.port) + " (" + to_string(_socket) + ")");
 	option = 1;
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)))
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
+	{
+		close(_socket);
 		_throw_errno("setsockopt");
+	}
 	
 	_sockaddr_len = sizeof(_sockaddr);
 	memset((void *)&_sockaddr, 0, _sockaddr_len); 
@@ -63,13 +66,19 @@ Server::setup(void)
 		_sockaddr.sin_addr.s_addr = inet_addr(_listen.host.c_str());
 	_sockaddr.sin_port = htons(_listen.port);
 
-	if (bind(_socket, (struct sockaddr *)&_sockaddr, _sockaddr_len) < 0)
+	if (bind(_socket, (struct sockaddr *)&_sockaddr, _sockaddr_len) == -1)
+	{
+		close(_socket);
 		_throw_errno("bind");
+	}
 
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
-	if (listen(_socket, MAX_CONNECTIONS) < 0)
+	if (listen(_socket, MAX_CONNECTIONS) == -1)
+	{
+		close(_socket);
 		_throw_errno("listen");
+	}
 }
 
 int
@@ -81,11 +90,10 @@ Server::generate_response(int& _fd, const Request& _req)
 
 	_resp.generate(_error_pages, _locations, _listen);
 	WS_INFO_LOG("Sending response.");
-	_bytes = send(_fd, _resp.str().c_str(), strlen(_resp.str().c_str()), 0);
+	_bytes = send(_fd, _resp.str().c_str(), _resp.length(), 0);
 	if (_bytes < 0)
 	{
 		WS_ERROR_LOG("Could not send response to client (" + to_string(_fd) + "): " + std::strerror(errno));
-		close(_fd);
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
@@ -154,7 +162,7 @@ unsigned int Server::get_state(void) const
 
 std::ostream&	operator<<(std::ostream &o, const Server& s)
 {
-#ifdef DEBUG
+#ifdef WS_LOG
 	o << "\033[93m[Server]" << std::endl << "Host: " << s.get_host() << std::endl
 			<< "Port: " << s.get_port() << std::endl << "Names: " << std::endl;
 		for (std::set<std::string>::const_iterator i = s.get_server_names().begin(); i != s.get_server_names().end(); i++)

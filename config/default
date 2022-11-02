@@ -26,7 +26,7 @@ server
 
 server
 {
-	listen			localhost:3000
+	listen			localhost:8080
 	server_name		listing.com
 
 	location / {

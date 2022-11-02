@@ -6,24 +6,29 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 11:56:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/10/31 17:21:29 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 11:23:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raw.hpp"
+#include "iostream"
 
-const std::string	get_body_from_uri(const std::string& uri)
+const std::string	get_file_contents(std::ifstream& f)
 {
-	std::string		line;
-	std::string		result;
-	std::ifstream	f;
+	std::string	line;
+	std::string	result;
 
-	f.open(uri.c_str());
-	if (!f.is_open())
-		return ("");
 	while (std::getline(f, line))
 		result.append(line + "\n");
 	return (result);
+}
+
+const std::string	get_body_from_uri(const std::string& uri)
+{
+	std::ifstream	f;
+
+	f.open(uri.c_str(), std::ifstream::in | std::ifstream::binary);
+	return (get_file_contents(f));
 }
 
 const std::string	get_raw_page(unsigned int code, const char *msg)

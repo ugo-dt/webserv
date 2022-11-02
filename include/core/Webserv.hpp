@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 09:23:44 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 10:19:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ private:
 	void	_accept_connection(int& sock_fd);
 
 	bool	_host_port_already_used(size_t max, const t_listen& l);
-	void	_send_bad_request(int& fd);
+	void	_send_bad_request(t_client& client);
 	void	_remove_client(t_client& client);
 	int		_get_client_with_fd(int fd);
 

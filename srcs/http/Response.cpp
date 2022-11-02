@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 09:59:34 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 11:23:04 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ Response::Response(const Request& request)
 	  _header(),
 	  _uri(""),
 	  _body(),
-	  _location(0)
+	  _location(0),
+	  _data("")
 {
 	_uri = _request.get_uri();
 	if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
@@ -28,30 +29,6 @@ Response::~Response()
 {
 }
 
-/*
-	file or directory?
-	if directory found then
-		if path matches location
-			check method
-			if default file then
-				redirect to default file
-			else if autoindex
-				get_index() as body
-	else if file found then
-		get directory path
-		if directory matches location
-			check method
-	else
-		not found
-
-	path matches?
-	or directory matches?
-
-	method ok?
-	root
-	redirections
-	autoindex if directory?
-*/
 void
 Response::_check_uri(const std::set<Location>& locations)
 {
@@ -66,6 +43,7 @@ Response::_check_uri(const std::set<Location>& locations)
 	else
 		_dir = "/";
 	_location = NULL;
+
 	// Check if route exists for this specific file ...
 	if (_uri != "/" && _uri[_uri.length() - 1] != '/')
 	{
@@ -79,9 +57,9 @@ Response::_check_uri(const std::set<Location>& locations)
 			}
 		}
 	}
+	// ... or check if route exists for the parent directory ...
 	while (!_location && !_dir.empty())
 	{
-		// ... or check if route exists for the directory
 		for (std::set<Location>::const_iterator l = locations.begin(); l != locations.end(); l++)
 		{
 			if (_dir == (*l).get_uri())
@@ -91,6 +69,7 @@ Response::_check_uri(const std::set<Location>& locations)
 				break ;
 			}
 		}
+		// ... and it's parents as well
 		_dir.assign(_dir, 0, _dir.length() - 1);
 		_dir.assign(_dir, 0, _dir.find_last_of('/') + 1);
 	}
@@ -153,21 +132,21 @@ Response::_set_content_type(void)
 }
 
 void
-Response::_get_body_from_uri(void)
+Response::_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages)
 {
 	std::ifstream	f;
 	std::string		line;
 
-	f.open(_uri.c_str());
+	f.open(_uri.c_str(), std::ifstream::in | std::ifstream::binary);
 	if (!f.is_open())
 	{
-		_header.set_status(STATUS_INTERNAL_SERVER_ERROR);
-		_body = "501 Internal server error";
+		_header.set_status(STATUS_NOT_FOUND);
+		_body = get_body_from_uri(error_pages.at(STATUS_NOT_FOUND));
 		return ;
 	}
+	_body = get_file_contents(f);
 	_header.set_status(STATUS_OK);
 	_set_content_type();
-	_body = get_body_from_uri(_uri);
 }
 
 void
@@ -179,7 +158,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	if (stat(_uri.c_str(), &_stat) == 0)
 	{
 		if (S_ISREG(_stat.st_mode))
-			_get_body_from_uri();
+			_get_body_from_uri(error_pages);
 		else if (S_ISDIR(_stat.st_mode))
 		{
 			if (_location)
@@ -202,7 +181,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 					WS_WARN_LOG(_uri << ": forbidden (403): autoindex off + no default file");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
-					_get_body_from_uri();
+					_get_body_from_uri(error_pages);
 				}
 			}
 			else
@@ -210,7 +189,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 				WS_WARN_LOG(_uri << ": forbidden (403): no location for this path");
 				_header.set_status(STATUS_FORBIDDEN);
 				_uri = error_pages.at(STATUS_FORBIDDEN);
-				_get_body_from_uri();
+				_get_body_from_uri(error_pages);
 			}
 		}
 	}
@@ -219,7 +198,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 		WS_WARN_LOG(_uri << ": no such file or directory (404)");
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
-		_get_body_from_uri();
+		_get_body_from_uri(error_pages);
 	}
 	_header.set_content_length(_body.length());
 }
@@ -271,11 +250,11 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 	{
 		_header.set_status(STATUS_FORBIDDEN);
 		_uri = error_pages.at(STATUS_FORBIDDEN);
-		_get_body_from_uri();
+		_get_body_from_uri(error_pages);
 		return ;
 	}
 	file_path.insert(0, _dir);
-	file.open(file_path);
+	file.open(file_path, std::ifstream::out | std::ofstream::binary);
 	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
 		file << (*it);
 	_header.set_status(STATUS_CREATED);
@@ -292,7 +271,7 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
 		_uri = error_pages.at(STATUS_BAD_REQUEST);
-		_get_body_from_uri();
+		_get_body_from_uri(error_pages);
 		return ;
 	}
 	if (_location)
@@ -311,11 +290,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 	_body.clear();
 }
 
-// file exists
-// return ok
-//
-// file doesnt exist
-// return no content
 void
 Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
 {
@@ -397,34 +371,35 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 }
 
 const std::string
-Response::str()
+Response::str(void)
 {
-	std::string		str;
-	unsigned int	_status;
-
-	_status = atoi(_header.get_status().c_str());
-	str = "HTTP/1.1 " + _header.get_status() + " " + get_status_string(_status) + CRLF;
-
+	_data = "HTTP/1.1 " + to_string(_header.get_status()) + " " + get_status_string(_header.get_status()) + CRLF;
 	// 3xx status codes are redirections
-	if (_status / 100 == 3 || _status == STATUS_CREATED)
+	if (_header.get_status() / 100 == 3 || _header.get_status() == STATUS_CREATED)
 	{
-		str += "Location: " + _header.get_location() + CRLF;
-		str += "Content-Length: 0" CRLF;
+		_data += "Location: " + _header.get_location() + CRLF;
+		_data += "Content-Length: 0" CRLF;
 	}
 	else if (_request.get_method() & METHOD_HEAD)
 	{
-		str += "Content-Length: 0" CRLF;
+		_data += "Content-Length: 0" CRLF;
 	}
-	else if (_status == STATUS_OK)
+	else if (_header.get_status() == STATUS_OK)
 	{
-		str += "Content-Length: " + _header.get_content_length() + CRLF;
 		if (!_header.get_content_length().empty())
-			str += "Content-Type: " + _header.get_content_type() + CRLF;
+			_data += "Content-Length: " + _header.get_content_length() + CRLF;
+		_data += "Content-Type: " + _header.get_content_type() + CRLF;
 	}
-	str += "Date: " + _header.get_date() + CRLF;
-	str += "Server: " + _header.get_server() + CRLF;
-	str += CRLF;
+	_data += "Date: " + _header.get_date() + CRLF;
+	_data += "Server: " + _header.get_server() + CRLF;
+	_data += CRLF;
 	if (!(_request.get_method() & METHOD_HEAD))
-		str += _body;
-	return (str);
+		_data += _body;
+	return (_data);
+}
+
+size_t
+Response::length(void)
+{
+	return (_data.length());
 }

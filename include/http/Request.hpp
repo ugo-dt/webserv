@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 22:39:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 14:10:15 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:04:11 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ public:
 	
 	void				parse(const char *_buffer);
 	const std::string	get_post_header_value(const std::string& header, const std::string& arg) const;
+	void				clear();
 
 	const unsigned int&							get_method() const;
 	const std::string&							get_uri() const;
@@ -47,6 +48,7 @@ public:
 	const std::string&							get_body() const;
 	bool										is_valid() const;
 	const std::string&							get_post_boundary() const;
+	
 
 	void	add_header_field(const std::string& field, const std::string& value);
 	void	append_to_body(const std::string&);
