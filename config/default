@@ -15,7 +15,6 @@ server
 		upload_path		/www/upload/
 		rewrite			/www/redirect.html	/www/index.html
 		default_file	index.html
-		autoindex		on
 		limit_except	GET POST
 	}
 

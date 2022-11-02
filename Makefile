@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/11/02 13:05:13 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/11/02 15:29:18 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,4 +52,8 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug
+docker: fclean
+	docker build -t siege .
+	docker run -d --name siege -it siege
+
+.PHONY: all clean fclean re debug docker

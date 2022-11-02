@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 12:42:06 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 14:34:22 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 		return ;
 	}
 	file_path.insert(0, _dir);
-	file.open(file_path, std::ifstream::out | std::ofstream::binary);
+	file.open(file_path.c_str(), std::ifstream::out | std::ofstream::binary);
 	for (std::vector<std::string>::const_iterator it = _file_content.begin(); it != _file_content.end(); it++)
 		file << (*it);
 	_header.set_status(STATUS_CREATED);

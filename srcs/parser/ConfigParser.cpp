@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 22:50:25 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 12:36:13 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 14:48:37 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,6 +384,8 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 	std::string	_ai;
 	std::string	_uri;
 
+	if (l.get_state() & state_default_file)
+		std::cerr << _get_warning_string(_config_path, (*cur), "unused directive: autoindex takes precedence over default_file\n");
 	if (l.get_state() & state_autoindex)
 		show_repeat_warning(_config_path, (*cur));
 	cur++;
@@ -414,6 +416,8 @@ ConfigParser::_parse_directive_autoindex(std::list<ConfigToken>::const_iterator&
 void
 ConfigParser::_parse_directive_default_file(std::list<ConfigToken>::const_iterator& cur, Location& l)
 {
+	if (l.get_state() & state_autoindex)
+		std::cerr << _get_warning_string(_config_path, (*cur), "unused directive: autoindex takes precedence over default_file\n");
 	if (l.get_state() & state_default_file)
 		show_repeat_warning(_config_path, (*cur));
 	cur++;
