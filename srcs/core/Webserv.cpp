@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 12:03:58 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 17:43:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,6 +272,7 @@ Webserv::_accept_connection(int& sock_fd)
 	if (getsockname(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len) == -1)
 	{
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
+		_send_bad_request(client);
 		close(client.fd);
 		return ;
 	}
