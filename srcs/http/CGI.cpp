@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 15:07:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 23:00:48 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 23:14:04 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,10 @@ CGI::init(void)
 	_add_env("QUERY_STRING", _req.get_query_string());
 #ifdef WS_LOG
 	WS_INFO_LOG("Environment variables: ");
-	for (size_t i = 0; i < ENV_VARIABLES; i++)
+	for (size_t i = 0; _env[i]; i++)
 		WS_INFO_LOG(_env[i]);
 	WS_INFO_LOG("Arguments: ");
-	for (size_t i = 0; i < ARGS_VARIABLES; i++)
+	for (size_t i = 0; _args[i]; i++)
 		WS_INFO_LOG(_args[i]);
 #endif
 }
