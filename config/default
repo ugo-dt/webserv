@@ -13,6 +13,7 @@ server
 	location /www/
 	{
 		upload_path		/test/
+		rewrite			/www/redirect.html	/www/index.html
 		autoindex		on
 		limit_except	GET POST
 	}

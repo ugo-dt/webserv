@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:59:16 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 10:03:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,14 +103,14 @@ Webserv::_find_matching_server(const std::string& _host, const std::string& _por
 {
 	Server	*_server;
 
-	// WS_VALUE_LOG("Client address", inet_ntoa(client.sockaddr.sin_addr));
-	// WS_VALUE_LOG("Client port", htons(client.sockaddr.sin_port));
-	// WS_VALUE_LOG("Request host", _host);
-	// WS_VALUE_LOG("Request port", _port);
+	WS_INFO_LOG("Client address: " << inet_ntoa(client.sockaddr.sin_addr));
+	WS_INFO_LOG("Client port: " << htons(client.sockaddr.sin_port));
+	WS_INFO_LOG("Request host: " << _host);
+	WS_INFO_LOG("Request port: " << _port);
 	_server = NULL;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
-		WS_VALUE_LOG("Names", i);
+		//WS_INFO_LOG("Server names (" << _server[i].get_host() << ":" << _server[i].get_port() << "): ");
 		for (std::set<std::string>::const_iterator it = _servers[i].get_server_names().begin(); it != _servers[i].get_server_names().end(); it++)
 			WS_INFO_LOG("\t" + (*it));
 		if (!_host.empty())
@@ -221,16 +221,16 @@ Webserv::_handle_request(t_client& client)
 
 	// We're checking if we can actually read from the file descriptor
 	// This will read data without removing it from the queue
-	_bytes = recv(client.fd, _buffer, 1, MSG_PEEK);
-	if (_bytes < 0)
-	{
-		// This should usually not happen, as we're polling through the file descriptors
-		// Playing it safe, though
-		// std::cout << "Connection closed (" << client.fd << ")" << std::endl;
-		WS_ERROR_LOG("Could not read from client.");
-		_remove_client(client);
-		return ;
-	}
+	// _bytes = recv(client.fd, _buffer, 1, MSG_PEEK);
+	// if (_bytes < 0)
+	// {
+	// 	// This should usually not happen, as we're polling through the file descriptors
+	// 	// Playing it safe, though
+	// 	// std::cout << "Connection closed (" << client.fd << ")" << std::endl;
+	// 	WS_ERROR_LOG("Could not read from client.");
+	// 	_remove_client(client);
+	// 	return ;
+	// }
 
 	// Read the data from the client.
 	memset(_buffer, 0, BUFFER_SIZE + 1);
@@ -263,7 +263,6 @@ Webserv::_accept_connection(int& sock_fd)
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
 		return ;
 	}
-	WS_VALUE_LOG("client.fd", client.fd);
 	if (getsockname(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len) == -1)
 	{
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
@@ -301,7 +300,7 @@ Webserv::_accept_connection(int& sock_fd)
 	else
 	{
 		// std::cout << "Accepted new connection (" << client.fd << ")" << std::endl;
-		WS_INFO_LOG("Accepted new connection.");
+		WS_INFO_LOG("Accepted new connection (" << client.fd);
 		_clients.push_back(client);
 	}
 }

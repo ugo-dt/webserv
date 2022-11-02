@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:48:11 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 09:59:34 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ Response::_check_uri(const std::set<Location>& locations)
 		{
 			if (_uri == (*l).get_uri())
 			{
-				WS_VALUE_LOG("Found matching location (file): ",  (*l).get_uri());
+				WS_INFO_LOG("Found matching location for file '" << (*l).get_uri() << "'");
 				_location = &(*l);
 				break ;
 			}
@@ -86,7 +86,7 @@ Response::_check_uri(const std::set<Location>& locations)
 		{
 			if (_dir == (*l).get_uri())
 			{
-				WS_VALUE_LOG("Found matching location (directory): ", (*l).get_uri());
+				WS_INFO_LOG("Found matching location for directory '" << (*l).get_uri() << "'");
 				_location = &(*l);
 				break ;
 			}
@@ -96,8 +96,25 @@ Response::_check_uri(const std::set<Location>& locations)
 	}
 }
 
+int
+Response::_check_redirections(void)
+{
+	if (!_location)
+		return (0);
+	if (_location->get_redirections().count(_uri))
+	{
+		WS_INFO_LOG("Found redirection: " << _location->get_redirections().at(_uri));
+		_header.set_status(STATUS_FOUND);
+		_header.set_location(_location->get_redirections().at(_uri));
+		_header.set_content_length("0");
+		_body.clear();
+		return (1);
+	}
+	return (0);
+}
+
 void
-Response::_set_content_type()
+Response::_set_content_type(void)
 {
 	std::string	_ext;
 
@@ -174,6 +191,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 				}
 				else if (_location->get_default_file().size())
 				{
+					WS_INFO_LOG(_uri << ": default_file found (302), redirecting to '" << _location->get_default_file() << "'");
 					_header.set_status(STATUS_FOUND);
 					_header.set_location(_location->get_default_file());
 					_header.set_content_length("0");
@@ -181,21 +199,15 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 				}
 				else
 				{
+					WS_WARN_LOG(_uri << ": forbidden (403): autoindex off + no default file");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
 					_get_body_from_uri();
 				}
-				// redirections
-				// for (std::map<std::string, std::string>::const_iterator it = _location->get_redirections().begin(); it != _location->get_redirections().end(); it++)
-				// {
-				// 	if (_uri == (*it).second)
-				// 	{
-				// 		return ;
-				// 	}
-				// }
 			}
 			else
 			{
+				WS_WARN_LOG(_uri << ": forbidden (403): no location for this path");
 				_header.set_status(STATUS_FORBIDDEN);
 				_uri = error_pages.at(STATUS_FORBIDDEN);
 				_get_body_from_uri();
@@ -204,7 +216,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	}
 	else
 	{
-		WS_VALUE_LOG("No such file or directory", _uri);
+		WS_WARN_LOG(_uri << ": no such file or directory (404)");
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
 		_get_body_from_uri();
@@ -299,7 +311,6 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages)
 	_body.clear();
 }
 
-
 // file exists
 // return ok
 //
@@ -360,15 +371,21 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			if (!_location->get_root().empty())
 				_uri.insert(0, _location->get_root());
 		}
-		WS_INFO_LOG("Root is '" + _location->get_root() + "'");
+		WS_INFO_LOG("Root is '" << _location->get_root() << "'");
 		WS_INFO_LOG("Searching for new location...");
 	}
-	if (_location && !(_request.get_method() & _location->get_methods()))
+	if (_location)
 	{
-		_header.set_status(STATUS_METHOD_NOT_ALLOWED);
-		_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
-		_get_body(error_pages, listen);
-		return ;
+		if (!(_request.get_method() & _location->get_methods()))
+		{
+			_header.set_status(STATUS_METHOD_NOT_ALLOWED);
+			_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
+			_get_body(error_pages, listen);
+			return ;
+		}
+		if (_location->get_redirections().size())
+			if (_check_redirections() == 1)
+				return ;
 	}
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))
@@ -409,6 +426,5 @@ Response::str()
 	str += CRLF;
 	if (!(_request.get_method() & METHOD_HEAD))
 		str += _body;
-	// std::cout << str << std::endl;
 	return (str);
 }

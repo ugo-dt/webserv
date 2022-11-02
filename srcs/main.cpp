@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 20:49:06 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:53:59 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 10:03:27 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ void	sig_handler(int signum)
 	webserv.clean();
 	exit(EXIT_SUCCESS);
 }
+
+void	define_log(void);
 
 int	main(int argc, const char **argv)
 {

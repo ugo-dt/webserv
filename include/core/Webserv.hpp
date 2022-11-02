@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:37:41 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/01 22:58:06 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 09:23:44 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ close_fd(int& fd)
 {
 	if (fd == -1)
 		return ;
-	WS_VALUE_LOG("File descriptor closed", fd);
+	WS_INFO_LOG("File descriptor closed: " << fd);
 	close(fd);
 	fd = -1;
 }

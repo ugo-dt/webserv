@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 14:23:54 by madaniel          #+#    #+#             */
-/*   Updated: 2022/10/30 12:37:31 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/02 09:26:19 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ Autoindex::_create_link_and_sort(const t_listen& host_port, struct dirent *entit
 		line += "class=\"icon def\" draggable=\"true\" href=\"http://" + host_port.host + ":" + to_string(host_port.port) +
 			"/" + path + entity->d_name + "\">" + entity->d_name + "</a></p>\n";
 	}
-	// WS_VALUE_LOG("link", line);
 	_links.insert(std::pair<std::string, std::string>(str_to_lower(entity->d_name), line));
 }
 
