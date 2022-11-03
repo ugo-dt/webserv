@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:08:46 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 17:43:27 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 12:06:19 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,19 +225,6 @@ Webserv::_handle_request(t_client& client)
 	ssize_t		_bytes;
 	char		_buffer[BUFFER_SIZE + 1];
 
-	// We're checking if we can actually read from the file descriptor
-	// This will read data without removing it from the queue
-	// _bytes = recv(client.fd, _buffer, 1, MSG_PEEK);
-	// if (_bytes < 0)
-	// {
-	// 	// This should usually not happen, as we're polling through the file descriptors
-	// 	// Playing it safe, though
-	// 	// std::cout << "Connection closed (" << client.fd << ")" << std::endl;
-	// 	WS_ERROR_LOG("Could not read from client.");
-	// 	_remove_client(client);
-	// 	return ;
-	// }
-
 	// Read the data from the client.
 	memset(_buffer, 0, BUFFER_SIZE + 1);
 	_bytes = recv(client.fd, _buffer, BUFFER_SIZE, 0);
@@ -272,7 +259,17 @@ Webserv::_accept_connection(int& sock_fd)
 	if (getsockname(sock_fd, (struct sockaddr *)&client.sockaddr, (socklen_t *)&client.sockaddr_len) == -1)
 	{
 		std::cerr << "Refused new connection: " << std::strerror(errno) << std::endl;
-		_send_bad_request(client);
+		if (_default_error_pages.count(STATUS_BAD_REQUEST))
+			_page = get_body_from_uri(_default_error_pages.at(STATUS_BAD_REQUEST));
+		else
+			_page = get_raw_page(STATUS_BAD_REQUEST);
+		_str = "HTTP/1.1 400 Bad Request" CRLF;
+		_str += "Server: webserv" CRLF;
+		_str += "Content-Length: " + to_string(_page.length()) + CRLF;
+		_str += "Content-Type: text/html" CRLF;
+		_str += CRLF;
+		_str += _page + CRLF;
+		send(client.fd, _str.c_str(), _str.length(), 0);
 		close(client.fd);
 		return ;
 	}

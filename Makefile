@@ -6,7 +6,7 @@
 #    By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 20:51:30 by ugdaniel          #+#    #+#              #
-#    Updated: 2022/11/02 23:08:41 by ugdaniel         ###   ########.fr        #
+#    Updated: 2022/11/03 11:01:51 by ugdaniel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ SRCS =	srcs/main.cpp \
 OBJS = $(SRCS:.cpp=.o)
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98
 INCLUDE = -I include -I include/core -I include/http -I include/parser
 
 all: $(NAME)

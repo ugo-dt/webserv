@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/03 10:56:41 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 11:47:24 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,20 +141,28 @@ Response::_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages
 	f.open(_uri.c_str(), std::ifstream::in | std::ifstream::binary);
 	if (!f.is_open())
 	{
+		if (_uri == error_pages.at(STATUS_NOT_FOUND))
+		{
+			_body = get_raw_page(404);
+			_header.set_content_length(_body.length());
+			_header.set_content_type(MIME_HTML);
+			return ;
+		}
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
 		_get_body(error_pages);
 		return ;
 	}
 	_body = get_file_contents(f);
+	_header.set_content_length(_body.length());
 	_set_content_type();
 }
 
 void
 Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 {
-	struct stat		_stat;
-	Autoindex		_ai;
+	struct stat	_stat;
+	Autoindex	_ai;
 
 	if (stat(_uri.c_str(), &_stat) == 0)
 	{
@@ -170,6 +178,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 				{
 					_body = _ai.get_index(_uri, _listen);
 					_header.set_content_type(MIME_HTML);
+					_header.set_content_length(_body.length());
 				}
 				else if (_location->get_default_file().size())
 				{
@@ -184,7 +193,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 					WS_WARN_LOG(_uri << ": forbidden (403): autoindex off + no default file");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
-					_get_body(error_pages);
+					_get_body_from_uri(error_pages);
 				}
 			}
 			else
@@ -192,7 +201,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 				WS_WARN_LOG(_uri << ": forbidden (403): no location for this path");
 				_header.set_status(STATUS_FORBIDDEN);
 				_uri = error_pages.at(STATUS_FORBIDDEN);
-				_get_body(error_pages);
+				_get_body_from_uri(error_pages);
 			}
 		}
 	}
@@ -201,9 +210,8 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 		WS_WARN_LOG(_uri << ": no such file or directory (404)");
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
-		_get_body(error_pages);
+		_get_body_from_uri(error_pages);
 	}
-	_header.set_content_length(_body.length());
 }
 
 void
@@ -341,9 +349,7 @@ Response::_run_cgi_script(const std::string& ext)
 		cgi.run();
 		_header.set_status(STATUS_OK);
 		_header.set_content_type(MIME_HTML);
-		std::cout << _header.get_content_type() << std::endl;
 		_body = cgi.get_body();
-		std::cout << _body << std::endl;
 		_header.set_content_length(_body.length());
 	}
 	catch (std::exception& e)
@@ -362,6 +368,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 	const Location	*_old_loc;
 
 	_header.set_status(STATUS_OK);
+	_set_content_type();
 	if (!_request.is_valid())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
@@ -427,18 +434,9 @@ Response::str(void)
 	if (_header.get_status() / 100 == 3 || _header.get_status() == STATUS_CREATED)
 	{
 		_data += "Location: " + _header.get_location() + CRLF;
-		_data += "Content-Length: 0" CRLF;
 	}
-	else if (_request.get_method() & METHOD_HEAD)
-	{
-		_data += "Content-Length: 0" CRLF;
-	}
-	else if (_header.get_status() == STATUS_OK)
-	{
-		if (!_header.get_content_length().empty())
-			_data += "Content-Length: " + _header.get_content_length() + CRLF;
-		_data += "Content-Type: " + _header.get_content_type() + CRLF;
-	}
+	_data += "Content-Length: " + _header.get_content_length() + CRLF;
+	_data += "Content-Type: " + _header.get_content_type() + CRLF;
 	_data += "Date: " + _header.get_date() + CRLF;
 	_data += "Server: " + _header.get_server() + CRLF;
 	_data += CRLF;

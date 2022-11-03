@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 15:05:38 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 22:59:39 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 11:53:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,5 @@ public:
 	void				init();
 	void				run();
 	const std::string&	get_body();
-	const std::string&	body_size();
+	size_t				get_body_size();
 };

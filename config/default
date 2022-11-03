@@ -1,19 +1,18 @@
 server
 {
 	listen			localhost:8080
-	server_name		webserv.com test
-	client_body_buffer_size	4
+	server_name		webserv.com
 
 	location / {
-		autoindex		on
-		limit_except	GET
+		root			www
 	}
 
 	location /www/
 	{
 		autoindex		on
-		upload_path		/www/upload/
+		upload_path		/www/upload
 		rewrite			/www/redirect.html	/www/index.html
+		cgi				.php	/usr/bin/php
 		limit_except	GET POST
 	}
 
@@ -30,18 +29,9 @@ server
 	}
 }
 
-server
-{
-	listen			localhost:8080
-	server_name		listing.com
-
-	location / {
-		autoindex		on
-	}
-}
-
 server{
-	listen					127.0.0.1:1234
+	listen					127.0.0.1:8080
+	server_name				test.com
 	client_body_buffer_size	10
 	error_page				404	/www/505.html
 

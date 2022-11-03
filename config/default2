@@ -1,0 +1,11 @@
+server
+{
+	listen			localhost:1234
+	server_name		listing.com
+
+	location / {
+		autoindex		on
+		limit_except	GET
+		cgi		.py		/usr/bin/python3
+	}
+}

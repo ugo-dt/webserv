@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 15:07:16 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/03 10:38:51 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 11:57:14 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,12 @@ CGI::run(void)
         // Checking if execve correctly worked
         int status = 0;
         waitpid(pid, &status, 0);
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 255)
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		{
+			_clean();
+			close(fdOut[0]);
 			throw std::runtime_error("execve failed, make sure file exists and is accessible");
+		}
         
 		std::string msgbody;
 		char buf[2046 + 1];
@@ -181,58 +185,9 @@ CGI::run(void)
 		msgbody += buf;
 		close(fdOut[0]);
 		_body = msgbody;
-		
-		// remove the header part of the cgi output
-		_body_size = msgbody.size() - msgbody.find("\r\n\r\n") + 4;
 		_clean();
 	}
 }
-
-// CGI::CGI(const Request& req)
-// {
-// 	char		*pwd;
-// 	std::string	absolute_path;
-
-// 	//Getting absolute path
-// 	if ((pwd = getcwd(NULL, 0)) == NULL)
-// 		_throw_errno("getcwd");
-// 	absolute_path = pwd + req.get_uri();
-
-// 	//Getting extension
-// 	_extension = absolute_path.substr(absolute_path.find_last_of('.'), std::string::npos);
-
-// 	// Choosing which cgi bin to execve
-// 	// _executable = _get_cgi_name();
-
-// 	if ((_env = new char*[7]) == NULL)
-// 		throw std::runtime_error("webserv: env new failed.");
-	
-// 	int i = 0;
-// 	_env[i++] = strdup(("PATH_INFO=" + absolute_path).c_str());
-// 	_env[i++] = strdup("SERVER_PROTOCOL=HTTP/1.1");
-// 	_env[i++] = strdup("REDIRECT_STATUS=200");
-	
-// 	if (req.get_method() == METHOD_GET)
-// 	{
-// 		if (!_executable.compare("php-cgi"))
-//             _env[i++] = strdup("REQUEST_METHOD=GET");
-		
-// 		_env[i++] = strdup(("QUERY_STRING=" + req.get_query_string()).c_str());
-// 	}
-// 	_env[i++] = NULL;
-
-// 	if ((_args = new char*[3]) == NULL)
-// 		throw std::runtime_error("webserv: args new failed");
-
-// 	_args[0] = strdup(_executable.c_str());
-// 	_args[1] = (!_executable.compare(".cgi")) ? NULL : (char*)req.get_uri().c_str();
-// 	_args[2] = NULL;
-
-// 	for (int i = 0; _env[i] != NULL; i++)
-// 	{
-// 		std::cout << "_env: " << _env[i] << std::endl;			//CRAPPY DEBUG LINE HERE
-// 	}
-// }
 
 CGI::~CGI()
 {
@@ -243,4 +198,10 @@ const std::string&
 CGI::get_body()
 {
 	return _body;
+}
+
+size_t
+CGI::get_body_size()
+{
+	return _body_size;
 }
