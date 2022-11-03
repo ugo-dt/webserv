@@ -48,28 +48,29 @@ private:
 	std::string		_body;
 	const Location*	_location; // matching location (NULL if no match)
 	std::string		_data;
+	const t_listen&	_listen;
 
 	void			_check_uri(const std::set<Location>& server_locations);
 	int				_check_redirections(void);
-	void			_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void			_get_body(const std::map<u_int16_t, std::string>& error_pages);
 	void			_set_content_type();
 	void			_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages);
 	void			_handle_post(const std::map<u_int16_t, std::string>& error_pages, size_t& body_size);
-	void			_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen);
+	void			_handle_delete(const std::map<u_int16_t, std::string>& error_pages);
 	void			_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, const std::string& _dir);
 	bool			_is_cgi(void);
 	int				_run_cgi_script(const std::string&);
 
 public:
-	Response(const Request& request);
+	Response(const Request& request, const t_listen& listen);
 	~Response(void);
 
 	void				generate(const std::map<u_int16_t, std::string>& error_pages,
                                  const std::set<Location>& locations,
-								 const t_listen& listen,
 								 size_t& client_body_buffer_size);
 	const std::string	str();
 	size_t				length();
+	unsigned int		status();
 };
 
 static inline

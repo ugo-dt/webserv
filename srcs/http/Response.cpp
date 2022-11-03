@@ -6,19 +6,20 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:29:07 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 22:52:42 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 10:56:41 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(const Request& request)
+Response::Response(const Request& request, const t_listen& listen)
 	: _request(request),
 	  _header(),
 	  _uri(""),
 	  _body(),
 	  _location(0),
-	  _data("")
+	  _data(""),
+	  _listen(listen)
 {
 	_uri = _request.get_uri();
 	if (is_directory("./" + _uri) && _uri[_uri.length() - 1] != '/')
@@ -141,7 +142,8 @@ Response::_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages
 	if (!f.is_open())
 	{
 		_header.set_status(STATUS_NOT_FOUND);
-		_body = get_body_from_uri(error_pages.at(STATUS_NOT_FOUND));
+		_uri = error_pages.at(STATUS_NOT_FOUND);
+		_get_body(error_pages);
 		return ;
 	}
 	_body = get_file_contents(f);
@@ -149,7 +151,7 @@ Response::_get_body_from_uri(const std::map<u_int16_t, std::string>& error_pages
 }
 
 void
-Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
+Response::_get_body(const std::map<u_int16_t, std::string>& error_pages)
 {
 	struct stat		_stat;
 	Autoindex		_ai;
@@ -158,7 +160,6 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 	{
 		if (S_ISREG(_stat.st_mode))
 		{
-			_header.set_status(STATUS_OK);
 			_get_body_from_uri(error_pages);
 		}
 		else if (S_ISDIR(_stat.st_mode))
@@ -167,7 +168,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 			{
 				if (_location->is_autoindex_on())
 				{
-					_body = _ai.get_index(_uri, listen);
+					_body = _ai.get_index(_uri, _listen);
 					_header.set_content_type(MIME_HTML);
 				}
 				else if (_location->get_default_file().size())
@@ -183,7 +184,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 					WS_WARN_LOG(_uri << ": forbidden (403): autoindex off + no default file");
 					_header.set_status(STATUS_FORBIDDEN);
 					_uri = error_pages.at(STATUS_FORBIDDEN);
-					_get_body_from_uri(error_pages);
+					_get_body(error_pages);
 				}
 			}
 			else
@@ -191,7 +192,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 				WS_WARN_LOG(_uri << ": forbidden (403): no location for this path");
 				_header.set_status(STATUS_FORBIDDEN);
 				_uri = error_pages.at(STATUS_FORBIDDEN);
-				_get_body_from_uri(error_pages);
+				_get_body(error_pages);
 			}
 		}
 	}
@@ -200,7 +201,7 @@ Response::_get_body(const std::map<u_int16_t, std::string>& error_pages, const t
 		WS_WARN_LOG(_uri << ": no such file or directory (404)");
 		_header.set_status(STATUS_NOT_FOUND);
 		_uri = error_pages.at(STATUS_NOT_FOUND);
-		_get_body_from_uri(error_pages);
+		_get_body(error_pages);
 	}
 	_header.set_content_length(_body.length());
 }
@@ -241,7 +242,7 @@ Response::_parse_post_body(const std::map<u_int16_t, std::string>& error_pages, 
 	{
 		_header.set_status(STATUS_FORBIDDEN);
 		_uri = error_pages.at(STATUS_FORBIDDEN);
-		_get_body_from_uri(error_pages);
+		_get_body(error_pages);
 		return ;
 	}
 	file_path.insert(0, _dir);
@@ -265,14 +266,14 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, size
 		WS_ERROR_LOG("Payload too large.");
 		_header.set_status(STATUS_PAYLOAD_TOO_LARGE);
 		_uri = error_pages.at(STATUS_PAYLOAD_TOO_LARGE);
-		_get_body_from_uri(error_pages);
+		_get_body(error_pages);
 		return ;
 	}
 	if (_request.get_post_boundary().empty())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
 		_uri = error_pages.at(STATUS_BAD_REQUEST);
-		_get_body_from_uri(error_pages);
+		_get_body(error_pages);
 		return ;
 	}
 	if (_location)
@@ -292,7 +293,7 @@ Response::_handle_post(const std::map<u_int16_t, std::string>& error_pages, size
 }
 
 void
-Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, const t_listen& listen)
+Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages)
 {
 	if (std::remove(_uri.c_str()) != 0)
 	{
@@ -300,7 +301,7 @@ Response::_handle_delete(const std::map<u_int16_t, std::string>& error_pages, co
 		{
 			_header.set_status(STATUS_FORBIDDEN);
 			_uri = error_pages.at(STATUS_FORBIDDEN);
-			_get_body(error_pages, listen);
+			_get_body(error_pages);
 			return ;
 		}
 		if (errno == ENOENT)
@@ -356,16 +357,16 @@ Response::_run_cgi_script(const std::string& ext)
 void
 Response::generate(const std::map<u_int16_t, std::string>& error_pages,
                    const std::set<Location>& locations,
-				   const t_listen& listen,
 				   size_t& client_body_buffer_size)
 {
 	const Location	*_old_loc;
 
+	_header.set_status(STATUS_OK);
 	if (!_request.is_valid())
 	{
 		_header.set_status(STATUS_BAD_REQUEST);
 		_uri = error_pages.at(STATUS_BAD_REQUEST);
-		_get_body(error_pages, listen);
+		_get_body(error_pages);
 		return ;
 	}
 	for (int i = 0; i < 10; i++)
@@ -393,7 +394,7 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 		{
 			_header.set_status(STATUS_METHOD_NOT_ALLOWED);
 			_uri = error_pages.at(STATUS_METHOD_NOT_ALLOWED);
-			_get_body(error_pages, listen);
+			_get_body(error_pages);
 			return ;
 		}
 		if (_location->get_redirections().size() && _check_redirections() == 1)
@@ -404,18 +405,18 @@ Response::generate(const std::map<u_int16_t, std::string>& error_pages,
 			{
 				_header.set_status(STATUS_NOT_FOUND);
 				_uri = error_pages.at(STATUS_NOT_FOUND);
-				_get_body_from_uri(error_pages);
+				_get_body(error_pages);
 			}
 			return ;
 		}
 	}
 	_uri.insert(0, 1, '.');
 	if (_request.get_method() & (METHOD_GET | METHOD_HEAD))
-		_get_body(error_pages, listen);
+		_get_body(error_pages);
 	else if (_request.get_method() & METHOD_POST)
 		_handle_post(error_pages, client_body_buffer_size);
 	else if (_request.get_method() & METHOD_DELETE)
-		_handle_delete(error_pages, listen);
+		_handle_delete(error_pages);
 }
 
 const std::string
@@ -450,4 +451,10 @@ size_t
 Response::length(void)
 {
 	return (_data.length());
+}
+
+unsigned int
+Response::status()
+{
+	return _header.get_status();
 }

@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 21:49:36 by ugdaniel          #+#    #+#             */
-/*   Updated: 2022/11/02 19:35:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2022/11/03 10:54:36 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,13 @@ Server::generate_response(int& _fd, const Request& _req)
 {
 	// Create and send response based on request
 	ssize_t		_bytes;
-	Response	_resp(_req);
+	Response	_resp(_req, _listen);
+	std::string	_str;
 
-	_resp.generate(_error_pages, _locations, _listen, _client_body_buffer_size);
+	_resp.generate(_error_pages, _locations, _client_body_buffer_size);
 	WS_INFO_LOG("Sending response.");
-	_bytes = send(_fd, _resp.str().c_str(), _resp.length(), 0);
+	_str = _resp.str();
+	_bytes = send(_fd, _str.c_str(), _str.length(), 0);
 	if (_bytes < 0)
 	{
 		WS_ERROR_LOG("Could not send response to client (" + to_string(_fd) + "): " + std::strerror(errno));
